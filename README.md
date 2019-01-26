@@ -1,4 +1,5 @@
 # Agado
+[![Build Status](https://travis-ci.org/phonxvzf/agado.svg?branch=master)](https://travis-ci.org/phonxvzf/agado) [![Coverage Status](https://coveralls.io/repos/github/phonxvzf/agado/badge.svg)](https://coveralls.io/github/phonxvzf/agado)
 This has nothing to do with the online hotel reservation system [Agoda](https://www.agoda.com).
 
 ## Installation
