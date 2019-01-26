@@ -1,7 +1,7 @@
 {
-  "name": "dbsys",
+  "name": "agado",
   "version": "1.0.0",
-  "description": "",
+  "description": "Agado backend API",
   "main": "build/index.js",
   "scripts": {
     "start": "node ./build/index.js",
