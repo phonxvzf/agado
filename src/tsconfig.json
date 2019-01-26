@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "../build",
+    "allowSyntheticDefaultImports": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "target": "es2017",
+    "removeComments": true,
+    "typeRoots": [
+      "./node_modules/@types"
+    ],
+    "esModuleInterop": true
+  }
+}
