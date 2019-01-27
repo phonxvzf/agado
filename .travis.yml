@@ -1,7 +1,29 @@
+sudo: false
+
 language: node_js
+
 node_js:
   - "lts/*"
+
 install:
   - npm install
-script:
-  - npm run test-coverage-ci
+
+cache:
+  directories:
+    - "$HOME/google-cloud-sdk/"
+
+services:
+  - docker
+
+env:
+  global:
+    - GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
+    - NODE_ENV=CI
+
+jobs:
+  include:
+    - stage: test
+      script: npm run test-coverage-ci
+    - stage: deploy
+      script: ./deploy-ci.sh
+      skip_cleanup: true
