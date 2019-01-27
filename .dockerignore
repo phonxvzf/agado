@@ -1,0 +1,16 @@
+Dockerfile
+node_modules
+database
+coverage
+deploy_scripts
+docker-compose.yml
+rm_all_containers.sh
+auto-build-rolling-update.sh
+README.md
+README.old.md
+DOCUMENTATION.md
+.dockerignore
+.env
+.git
+.gitignore
+.nyc_output
