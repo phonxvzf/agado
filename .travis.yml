@@ -25,5 +25,7 @@ jobs:
     - stage: test
       script: npm run test-coverage-ci
     - stage: deploy
-      script: ./deploy-ci.sh
+      script:
+        - chmod +x ./deploy-ci.sh
+        - ./deploy-ci.sh
       skip_cleanup: true
