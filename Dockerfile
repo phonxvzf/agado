@@ -12,6 +12,7 @@ RUN addgroup -S app\
 # Switch to the new user
 USER app
 
+ENV NODE_ENV=production
 RUN npm install\
   && npm run build
 
