@@ -23,7 +23,9 @@ env:
 jobs:
   include:
     - stage: test
-      script: npm run test-coverage-ci
+      script: 
+        - npm run test-coverage-ci
+        - docker build .
     - stage: deploy
       if: branch = master
       script:
