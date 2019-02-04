@@ -8,7 +8,7 @@
     "migrate": "knex migrate:latest",
     "test": "jest --forceExit",
     "test-coverage": "jest --forceExit --coverage --collectCoverageFrom=src/**/*.ts",
-    "test-coverage-ci": "jest --forceExit --coverage --collectCoverageFrom=src/**/*.ts --coverageReporters=text-lcov | coveralls",
+    "test-coverage-ci": "jest --forceExit --coverage --collectCoverageFrom=src/**/*.ts --coverageReporters=json && mv coverage/coverage-final.json coverage/coverage.json",
     "lint": "tslint --project . --config tslint.json",
     "build": "tsc -p src",
     "gcp-build": "tsc -p src",

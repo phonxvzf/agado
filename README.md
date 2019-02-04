@@ -1,5 +1,6 @@
 # Agado
-[![Build Status](https://travis-ci.org/phonxvzf/agado.svg?branch=master)](https://travis-ci.org/phonxvzf/agado) [![Coverage Status](https://coveralls.io/repos/github/phonxvzf/agado/badge.svg)](https://coveralls.io/github/phonxvzf/agado) [![Code Style](https://badgen.net/badge/code%20style/airbnb/ff5a5f?icon=airbnb)](https://github.com/airbnb/javascript)
+[![Build Status](https://travis-ci.org/phonxvzf/agado.svg?branch=master)](https://travis-ci.org/phonxvzf/agado)
+[![codecov](https://codecov.io/gh/phonxvzf/agado/branch/master/graph/badge.svg)](https://codecov.io/gh/phonxvzf/agado)
 
 This has nothing to do with the online hotel reservation system [Agoda](https://www.agoda.com).
 
