@@ -1,10 +1,10 @@
 require('dotenv').config();
 
 const config = {
-  host: '127.0.0.1',
-  database: process.env.MYSQL_DB,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASSWORD,
+  host: process.env.DB_HOST,
+  database: process.env.DB_DATABASE,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
   charset: 'utf8mb4',
   socketPath: `/cloudsql/${process.env.GCLOUD_MYSQL_INSTANCE}`,
   multipleStatements: true,
@@ -18,7 +18,7 @@ if (process.env.GCLOUD_MYSQL_INSTANCE) {
 
 module.exports = {
   test: {
-    client: 'mysql',
+    client: 'pg',
     connection: config,
     migrations: {
       tableName: 'knex_migrations',
@@ -26,7 +26,7 @@ module.exports = {
   },
 
   development: {
-    client: 'mysql',
+    client: 'pg',
     connection: config,
     migrations: {
       tableName: 'knex_migrations',
@@ -34,7 +34,7 @@ module.exports = {
   },
 
   production: {
-    client: 'mysql',
+    client: 'pg',
     connection: config,
     pool: {
       min: 2,

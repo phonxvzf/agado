@@ -14,9 +14,10 @@ USER app
 
 ENV NODE_ENV=production
 RUN npm install\
-  && npm run build
+  && npm run build\
+  && chmod +x ./start-server.sh
 
 EXPOSE 3000
 
 # Init database and start server
-CMD [ "npm", "start" ]
+CMD [ "./start-server.sh" ]

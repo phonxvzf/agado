@@ -76,3 +76,4 @@ typings/
 build/
 database/
 deploy_scripts/
+secrets/
