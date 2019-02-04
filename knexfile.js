@@ -33,6 +33,14 @@ module.exports = {
     },
   },
 
+  CI: {
+    client: 'pg',
+    connection: config,
+    migrations: {
+      tableName: 'knex_migrations',
+    },
+  },
+
   production: {
     client: 'pg',
     connection: config,
