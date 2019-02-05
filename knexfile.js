@@ -10,12 +10,6 @@ const config = {
   multipleStatements: true,
 };
 
-if (process.env.GCLOUD_MYSQL_INSTANCE) {
-  delete config.host;
-} else {
-  delete config.socketPath;
-}
-
 module.exports = {
   test: {
     client: 'pg',
