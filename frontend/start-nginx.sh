@@ -5,4 +5,4 @@ while curl http://agado-api-svc:3000; [ $? -ne 0 ]; do
 done
 
 echo '[INFO] API server is now reachable.';
-nginx -g daemon off;
+nginx -g 'daemon off;'
