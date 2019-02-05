@@ -20,7 +20,9 @@ app.use(errorParser);
 app.use(allRoutes.routes());
 
 const server = app.listen(config.SERVICE_PORT, async () => {
-  console.log(`Server started at port ${config.SERVICE_PORT}.`);
+  if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') {
+    console.log(`Server started at port ${config.SERVICE_PORT}.`);
+  }
 });
 
 export default server;
