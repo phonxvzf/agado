@@ -38,6 +38,7 @@ jobs:
         - npm run migrate
         - npm run test-coverage-ci
         - docker build .
+        - docker build frontend
       after_success:
         - codecov
     - stage: deploy
