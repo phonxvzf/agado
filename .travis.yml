@@ -7,13 +7,11 @@ node_js:
 
 install:
   - npm install
+  - npm install codecov -g
 
 cache:
   directories:
     - "$HOME/google-cloud-sdk/"
-
-services:
-  - docker
 
 env:
   global:
@@ -23,11 +21,29 @@ env:
 jobs:
   include:
     - stage: test
+      services:
+        - postgresql
+        - docker
+      addons:
+        postgresql: "9.6"
+      before_script:
+        - psql -c 'create database agado_test;' -U postgres
+      env:
+        - DB_HOST=localhost
+        - DB_DATABASE=agado_test
+        - DB_USER=postgres
+        - DB_PASSWORD=
       script: 
+        - npm run lint
+        - npm run migrate
         - npm run test-coverage-ci
         - docker build .
+      after_success:
+        - codecov
     - stage: deploy
       if: branch = master
+      services:
+        - docker
       script:
         - chmod +x ./deploy-ci.sh
         - ./deploy-ci.sh

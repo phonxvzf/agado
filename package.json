@@ -5,9 +5,10 @@
   "main": "build/index.js",
   "scripts": {
     "start": "node ./build/index.js",
+    "migrate": "knex migrate:latest",
     "test": "jest --forceExit",
     "test-coverage": "jest --forceExit --coverage --collectCoverageFrom=src/**/*.ts",
-    "test-coverage-ci": "jest --forceExit --coverage --collectCoverageFrom=src/**/*.ts --coverageReporters=text-lcov | coveralls",
+    "test-coverage-ci": "jest --forceExit --coverage --collectCoverageFrom=src/**/*.ts --coverageReporters=json && mv coverage/coverage-final.json coverage/coverage.json",
     "lint": "tslint --project . --config tslint.json",
     "build": "tsc -p src",
     "gcp-build": "tsc -p src",
@@ -39,7 +40,7 @@
     "koa": "^2.5.2",
     "koa-bodyparser": "^4.2.1",
     "koa-router": "^7.4.0",
-    "mysql": "^2.16.0",
+    "pg": "^7.8.0",
     "ts-node": "^7.0.1",
     "typescript": "^3.0.1"
   }

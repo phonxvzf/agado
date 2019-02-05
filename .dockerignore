@@ -2,6 +2,7 @@ Dockerfile
 node_modules
 database
 coverage
+secrets
 deploy_scripts
 docker-compose.yml
 rm_all_containers.sh
