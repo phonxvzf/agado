@@ -1,9 +1,13 @@
 import httpStatus from './http-status';
 
 const codes = {
+  // General codes
   NO_ERROR: 0x00,
   BAD_VALUE: 0x01,
   UNKNOWN_ERROR: 0xFF,
+  // Authentication related
+  UNAUTHORIZED: 0x10,
+  USER_NOT_FOUND: 0x11,
 };
 
 class ErrorResponse {
