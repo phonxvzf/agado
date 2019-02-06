@@ -110,8 +110,8 @@ const ctrl = {
   },
 
   createUser: async (ctx: koa.Context, next: () => Promise<any>) => {
-    const invalidMessage =
-      'specify username, password, first_name, last_name, gender, email, phone_nume, date_of_birth';
+    const invalidMessage = 'specify username, password, first_name, last_name, gender, email, '
+      + 'phone_num, user_type, date_of_birth';
     const username = validator.validateUndefined(ctx.request.body['username'], invalidMessage);
     const rawPassword = validator.validateUndefined(ctx.request.body['password'], invalidMessage);
     const firstName = validator.validateUndefined(ctx.request.body['first_name'], invalidMessage);
