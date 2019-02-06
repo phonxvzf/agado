@@ -71,11 +71,21 @@ describe('Modify user', () => {
     res = await request(server).put('/user').send(modifiedUser)
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
+
     res = await request(server).get('/user').set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
     expect(res.body.email).toEqual(modifiedUser.email);
     expect(res.body.username).toEqual(modifiedUser.username);
     expect(res.body.date_of_birth.substr(0, 10)).toEqual(modifiedUser.date_of_birth);
+
+    const [oldPassword] = await database('user').select('password').where('id', '=', id);
+
+    delete modifiedUser.password;
+    res = await request(server).put('/user').set('Authorization', `Bearer ${token}`)
+      .send(modifiedUser);
+    expect(res.status).toEqual(200);
+    const [newPassword] = await database('user').select('password').where('id', '=', id);
+    expect(newPassword).toEqual(oldPassword);
   });
 });
 

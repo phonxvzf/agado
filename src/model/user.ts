@@ -39,8 +39,10 @@ const userRepo = {
 
   updateUser: async (id: number, userData: User): Promise<number[]> => {
     const encrypted = Object.assign({}, userData) as User;
-    const bcryptSalt = await bcrypt.genSalt(Math.random());
-    encrypted.password = await bcrypt.hash(userData.password, bcryptSalt);
+    if (encrypted.password) {
+      const bcryptSalt = await bcrypt.genSalt(Math.random());
+      encrypted.password = await bcrypt.hash(userData.password, bcryptSalt);
+    }
     return database('user').update(encrypted).returning('id').where('id', '=', id);
   },
 

@@ -146,10 +146,10 @@ const ctrl = {
   },
 
   updateUser: async (ctx: koa.Context, next: () => Promise<any>) => {
-    const invalidMessage = 'specify username, password, first_name, '
+    const rawPassword: string = ctx.request.body['password'];
+    const invalidMessage = 'specify username, (password,) first_name, '
       + 'last_name, gender, email, user_type, phone_num, date_of_birth';
     const username = validator.validateUndefined(ctx.request.body['username'], invalidMessage);
-    const rawPassword = validator.validateUndefined(ctx.request.body['password'], invalidMessage);
     const firstName = validator.validateUndefined(ctx.request.body['first_name'], invalidMessage);
     const lastName = validator.validateUndefined(ctx.request.body['last_name'], invalidMessage);
     const gender = validator.validateUndefined(ctx.request.body['gender'], invalidMessage);
@@ -170,6 +170,9 @@ const ctrl = {
       user_type: userType,
       date_of_birth: dateOfBirth,
     };
+
+    // If password is not specified, don't update it.
+    if (rawPassword == null) delete userData.password;
 
     const [userId] = await userRepo.updateUser(ctx.request.body['user_id'], userData);
     ctx.response.body = { id: userId };
