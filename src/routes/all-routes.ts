@@ -9,10 +9,11 @@ router.get('/ping', general.ping);
 router.post('/ping', general.ping);
 
 // User
-router.get('/user', auth.getUser);
+router.get('/user', auth.requireAuth, auth.getUser);
 router.post('/user', auth.createUser);
 router.post('/login', auth.login);
-router.put('/user', auth.updateUser);
-router.del('/user', auth.deleteUser);
+router.post('/logout', auth.requireAuth, auth.logout);
+router.put('/user', auth.requireAuth, auth.updateUser);
+router.del('/user', auth.requireAuth, auth.deleteUser);
 
 export default router;

@@ -6,8 +6,10 @@ import util from './util';
 const request = supertest;
 const server = index;
 const db = database;
+const defaultUserData = util.generateUserData();
 
 beforeEach(async (done) => {
+  await util.addUser(defaultUserData);
   done();
 });
 
@@ -19,15 +21,16 @@ afterEach(async (done) => {
 
 describe('Get user information', () => {
   it('[GET /user] should fail', async () => {
-    const res = await request(server).get('/user?id=99999999');
-    expect(res.status).toEqual(404);
+    const res = await request(server).get('/user?id=100');
+    expect(res.status).toEqual(401);
   });
 
   it('[GET /user] should succeed', async () => {
-    const [userId] = await util.generateUser();
-    const res = await request(server).get(`/user?id=${userId}`);
+    let res = await request(server).post('/login').send(defaultUserData);
+    const { id, token } = res.body;
+    res = await request(server).get('/user').set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
-    expect(res.body.id).toEqual(userId);
+    expect(res.body.id).toEqual(id);
   });
 });
 
@@ -41,7 +44,9 @@ describe('Create user', () => {
     const user = util.generateUserData();
     let res = await request(server).post('/user').send(user);
     expect(res.status).toEqual(201);
-    res = await request(server).get(`/user?id=${res.body.id}`);
+    res = await request(server).post('/login').send(user);
+    const { id, token } = res.body;
+    res = await request(server).get('/user').set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
     expect(res.body.email).toEqual(user.email);
     expect(res.body.username).toEqual(user.username);
@@ -51,17 +56,22 @@ describe('Create user', () => {
 
 describe('Modify user', () => {
   it('[PUT /user] should fail', async () => {
-    const res = await request(server).put('/user').send({});
+    let res = await request(server).put('/user').send({});
+    expect(res.status).toEqual(401);
+    res = await request(server).post('/login').send(defaultUserData);
+    const { id, token } = res.body;
+    res = await request(server).put('/user').set('Authorization', `Bearer ${token}`).send({});
     expect(res.status).toEqual(400);
   });
 
   it('[PUT /user] should succeed', async () => {
-    const [userId] = await util.generateUser();
+    let res = await request(server).post('/login').send(defaultUserData);
+    const { id, token } = res.body;
     const modifiedUser = util.generateUserData();
-    modifiedUser['id'] = userId;
-    let res = await request(server).put('/user').send(modifiedUser);
+    res = await request(server).put('/user').send(modifiedUser)
+      .set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
-    res = await request(server).get(`/user?id=${userId}`);
+    res = await request(server).get('/user').set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
     expect(res.body.email).toEqual(modifiedUser.email);
     expect(res.body.username).toEqual(modifiedUser.username);
@@ -71,17 +81,18 @@ describe('Modify user', () => {
 
 describe('Delete user', () => {
   it('[DELETE /user] should fail', async () => {
-    const res = await request(server).del('/user').send({});
-    expect(res.status).toEqual(400);
+    let res = await request(server).post('/login')
+      .send({ username: defaultUserData.username, password: defaultUserData.password });
+    expect(res.status).toEqual(200);
+    res = await request(server).del('/user').set('Authorization', `Bearer ${res.body['token']}bad`);
+    expect(res.status).toEqual(401);
   });
 
   it('[DELETE /user] should succeed', async () => {
-    const [id] = await util.generateUser();
-    let res = await request(server).del('/user').send({ id });
-    expect(res.status).toEqual(204);
-    res = await request(server).get(`/user?id=${id}`);
-    expect(res.status).toEqual(404);
-    res = await request(server).del('/user').send({ id: 9999999 });
+    let res = await request(server).post('/login')
+      .send({ username: defaultUserData.username, password: defaultUserData.password });
+    expect(res.status).toEqual(200);
+    res = await request(server).del('/user').set('Authorization', `Bearer ${res.body['token']}`);
     expect(res.status).toEqual(204);
   });
 });
@@ -93,22 +104,24 @@ describe('Login', () => {
   });
 
   it('[POST /login] should succeed', async () => {
-    const user = util.generateUserData();
-    let res = await request(server).post('/user').send(user);
-    expect(res.status).toEqual(201);
-    res = await request(server).post('/login')
-      .send({ username: user.username, password: 'DEFINITELY INCORRECT PASSWORD' });
+    let res = await request(server).post('/login')
+      .send({ username: defaultUserData.username, password: 'DEFINITELY INCORRECT PASSWORD' });
     expect(res.status).toEqual(401);
     res = await request(server).post('/login')
-      .send({ username: user.username, password: user.password });
+      .send({ username: defaultUserData.username, password: defaultUserData.password });
     expect(res.status).toEqual(200);
+    expect(res.body).toHaveProperty('id');
+    expect(res.body).toHaveProperty('token');
+    const { token } = res.body;
 
     const modifiedUser = util.generateUserData();
-    modifiedUser['id'] = res.body.id;
-    res = await request(server).put('/user').send(modifiedUser);
+    const [old] = await database.select('*').from('user');
+    res = await request(server).put('/user')
+      .send(modifiedUser).set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
+    const [newData] = await database.select('*').from('user');
     res = await request(server).post('/login')
-      .send({ username: modifiedUser.username, password: user.password });
+      .send({ username: modifiedUser.username, password: defaultUserData.password });
     expect(res.status).toEqual(401);
     res = await request(server).post('/login')
       .send({ username: modifiedUser.username, password: modifiedUser.password });
@@ -116,18 +129,26 @@ describe('Login', () => {
   });
 });
 
-/* TODO
 describe('Logout', () => {
   it('[POST /logout] should fail', async () => {
     let res = await request(server).post('/login').send({});
     expect(res.status).toEqual(400);
-    res = await request(server).post('/login').send({ id: 0 });
+    res = await request(server).post('/logout').set('Authorization', 'Bearer abcd');
     expect(res.status).toEqual(401);
-    res = await request(server).post('/login').send({ id: 99999999 });
-    expect(res.status).toEqual(404);
   });
 
   it('[POST /logout] should succeed', async () => {
+    let res = await request(server).post('/login')
+      .send({ username: defaultUserData.username, password: defaultUserData.password });
+    expect(res.status).toEqual(200);
+    const token = res.body.token;
+    res = await request(server)
+      .post('/logout')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toEqual(204);
+    res = await request(server)
+      .get('/user?id=10')
+      .set('Authorization', `Bearer ${token}`);
+    expect(res.status).toEqual(401);
   });
 });
- */

@@ -4,7 +4,7 @@ import { codes, ApiError } from '../common/api-error';
 import { validator } from '../common/validator';
 
 const ctrl = {
-  ping: async (ctx: koa.Context, next: Function) => {
+  ping: async (ctx: koa.Context, next: () => Promise<any>) => {
     ctx.body = 'pong';
     ctx.response.status = httpStatus.OK.code;
     return next();

@@ -30,6 +30,10 @@ const util = {
     const userData = util.generateUserData();
     return userRepo.createUser(userData);
   },
+
+  addUser: async (userData: User): Promise<number[]> => {
+    return userRepo.createUser(userData);
+  },
 };
 
 export default util;
