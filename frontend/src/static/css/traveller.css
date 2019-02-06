@@ -1,3 +1,7 @@
+body {
+    background-color: black;
+}
+
 .slide1 {
     position: relative;
 	background: linear-gradient(
