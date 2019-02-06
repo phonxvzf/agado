@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import database from './database';
 
 interface User {
@@ -13,30 +14,44 @@ interface User {
 }
 
 const userRepo = {
-  getAllUsers: async (): Promise<User[]> => database.select('*').from('user'),
+  createUser: async (userData: User): Promise<number[]> => {
+    const encrypted = Object.assign({}, userData) as User;
+    const bcryptSalt = await bcrypt.genSalt(Math.random());
+    encrypted.password = await bcrypt.hash(userData.password, bcryptSalt);
+    return database.insert(encrypted).returning('id').into('user');
+  },
+
+  getAllUsers: async (): Promise<User[]> => {
+    return database.select('*').from('user');
+  },
 
   getUser: async (userId: number): Promise<User[]> => {
     return database.select('*').from('user').where('id', '=', userId);
+  },
+
+  getToken: async (userId: number): Promise<any[]> => {
+    return database.select('token').from('user').where('id', '=', userId);
   },
 
   getUserByName: async (username: string): Promise<User[]> => {
     return database.select('*').from('user').where('username', '=', username);
   },
 
-  createUser: async (userData: User): Promise<number[]> => {
-    return database.insert(userData).returning('id').into('user');
+  updateUser: async (id: number, userData: User): Promise<number[]> => {
+    const encrypted = Object.assign({}, userData) as User;
+    if (encrypted.password) {
+      const bcryptSalt = await bcrypt.genSalt(Math.random());
+      encrypted.password = await bcrypt.hash(userData.password, bcryptSalt);
+    }
+    return database('user').update(encrypted).returning('id').where('id', '=', id);
   },
 
-  updateUser: async (id: number, userData: User): Promise<number[]> => {
-    return database('user').update(userData).returning('id').where('id', '=', id);
+  updateToken: async (userId, newToken: string) => {
+    return database('user').update({ token: newToken }).where('id', '=', userId);
   },
 
   deleteUser: async (userId: number) => {
     return database.del().from('user').where('id', '=', userId);
-  },
-
-  setLoginFlag: async (userId, loggedIn: boolean) => {
-    return database('user').update({ logged_in: loggedIn }).where('id', '=', userId);
   },
 };
 

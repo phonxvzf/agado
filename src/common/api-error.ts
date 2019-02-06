@@ -4,10 +4,13 @@ const codes = {
   // General codes
   NO_ERROR: 0x00,
   BAD_VALUE: 0x01,
+  NOT_IMPLEMENTED: 0x02,
   UNKNOWN_ERROR: 0xFF,
   // Authentication related
   UNAUTHORIZED: 0x10,
   USER_NOT_FOUND: 0x11,
+  DEPRECATED_TOKEN: 0x12,
+  DUPLICATE_USER: 0x13,
 };
 
 class ErrorResponse {
