@@ -1,3 +1,5 @@
+var user
+
 function show(obj) {
     obj.fadeIn(500)
     obj.removeClass('d-none')
@@ -41,20 +43,23 @@ $(document).ready(function () {
     $("#travelerRegisterForm").delegate(".btn-register", "click", function () {
         if ($("#travelerRegisterUsr").val() && $("#travelerRegisterPwd").val() && $("#travelerRegisterFname").val() && $("#travelerRegisterSname").val() &&
             $("#travelerRegisterGender").val() && $("#travelerRegisterEmail").val() && $("#travelerRegisterPhone").val() && $("#travelerRegisterBirthDate").val()) {
+            
+            user = {
+                username: $("#travelerRegisterUsr").val(),
+                password: $("#travelerRegisterPwd").val(),
+                first_name: $("#travelerRegisterFname").val(),
+                last_name: $("#travelerRegisterSname").val(),
+                gender: $("#travelerRegisterGender").val(),
+                email: $("#travelerRegisterEmail").val(),
+                phone_num: $("#travelerRegisterPhone").val(),
+                date_of_birth: $("#travelerRegisterBirthDate").val(),
+                user_type: "traveler"
+            }
+            
             $.ajax({
                 method: "POST",
                 url: `${window.location.origin}/api/user`,
-                data: {
-                    username: $("#travelerRegisterUsr").val(),
-                    password: $("#travelerRegisterPwd").val(),
-                    first_name: $("#travelerRegisterFname").val(),
-                    last_name: $("#travelerRegisterSname").val(),
-                    gender: $("#travelerRegisterGender").val(),
-                    email: $("#travelerRegisterEmail").val(),
-                    phone_num: $("#travelerRegisterPhone").val(),
-                    date_of_birth: $("#travelerRegisterBirthDate").val(),
-                    user_type: "traveler"
-                },
+                data: user,
                 success: function () {
                     $("#modalTitle").html("Register completed");
                     $("#modalBody").html("Please log in with this account.")

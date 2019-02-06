@@ -48,14 +48,14 @@
 
 .overlay {
     position: absolute;
-    top: 10vh;
-    bottom: 0;
+    top: 5vh;
+    bottom: 5vh;
 	right: 0;
     left: 0;
 }
 
 .card{
-    height: 80%;
+    height: 90%;
     width: 40%;
     background-color: rgba(255,255,255,1);
 }
@@ -86,3 +86,6 @@
     object-fit: cover;
 }
 
+.w-60 {
+    width: 60%;
+}
