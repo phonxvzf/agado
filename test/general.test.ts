@@ -6,15 +6,6 @@ const request = supertest;
 const server = index;
 const db = database;
 
-beforeAll(async () => {
-  // TODO
-});
-
-afterAll(async () => {
-  // TODO
-  server.close();
-});
-
 describe('Database Connection', () => {
   it('Delete all, insert, select', async () => {
     await db.del('code').from('test');

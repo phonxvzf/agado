@@ -1,5 +1,8 @@
 import { codes, ApiError } from './api-error';
 
+const validGender = new Set(['Male', 'Female', 'Not specified', 'Prefer not to say']);
+const validUserType = new Set(['traveler', 'hotel', 'admin']);
+
 const validator = {
   validateUndefined: (str: string, errorMessage: string) => {
     if (str == null) {
@@ -31,6 +34,16 @@ const validator = {
     }
     return parse;
   },
+
+  validateGender: (gender: string, errorMessage: string) => {
+    if (validGender.has(gender)) return gender;
+    throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
+  },
+
+  validateUserType: (userType: string, errorMessage: string) => {
+    if (validUserType.has(userType)) return userType;
+    throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
+  },
 };
 
-export default validator;
+export { validator, validGender, validUserType };

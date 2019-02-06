@@ -10,11 +10,8 @@ const db = knex({
     database: config.DB_DATABASE,
   },
   pool: {
-    afterCreate: (con, done) => {
-      con.query('SET timezone TO \'UTC\';', (err) => {
-        done(err, con);
-      });
-    },
+    min: 2,
+    max: 10,
   },
 });
 
