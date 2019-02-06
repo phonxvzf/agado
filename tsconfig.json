@@ -10,7 +10,7 @@
       "./node_modules/@types"
     ],
     "esModuleInterop": true,
-    "allowJs": true,
+    "allowJs": false,
     "checkJs": true,
     "sourceMap": true,
     "inlineSourceMap": true

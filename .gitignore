@@ -77,3 +77,4 @@ build/
 database/
 deploy_scripts/
 secrets/
+.DS_Store
