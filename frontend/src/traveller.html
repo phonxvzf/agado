@@ -29,11 +29,12 @@
                 <div class="slide3"></div>
             </div>
         </div>
+        
         <!-- Traveler main page -->
         <div id="mainPage">
             <!-- Traveler navbar -->
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navBar">
-                <div class="navbar-brand" href="#"><strong>agado</strong></div>
+                <div class="navbar-brand"><strong>agado</strong></div>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                     aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
@@ -42,13 +43,13 @@
                 <div class="collapse navbar-collapse" id="navbarSupportedContent">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a class="nav-link" href="#" id="profileLink">Profile</a>
+                            <a class="nav-link" id="profileLink">Profile</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" id="bookNowLink">Book now</a>
+                            <a class="nav-link" id="bookNowLink">Book now</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#" id="statusLink">Status</a>
+                            <a class="nav-link" id="statusLink">Status</a>
                         </li>
                     </ul>
                     <div class="my-2 my-lg-0">
@@ -66,118 +67,6 @@
                     </div>
                     <hr class="my-4">
                     <div class="container text-center" id="profileBody"></div>
-                </div>
-
-                <!-- Book now -->
-                <div class="jumbotron jumbotron-fluid" id="bookNow">
-                    <div class="container">
-                        <div>
-                            <h1 class="display-4 text-center">Book now</h1>
-                            <hr class="my-4">
-                        </div>
-
-                        <div class="form-group">
-                            <h3 class="mx-4">Travel to:</h3>
-                        </div>
-                        <form class="form-inline ml-4">
-                            <div class="form-group ml-4">
-                                <label class="mr-2">Destination:</label>
-                                <select class="form-control mr-4" id="destination"></select>
-                            </div>
-                            <div class="form-group ml-4">
-                                <label class="mr-2">Arrival date: </label>
-                                <input type="date" class="form-control" id="arrivalDate" placeholder="Arrival date">
-                            </div>
-                        </form>
-
-                        <div class="form-group">
-                            <br><br>
-                            <h3 class="mx-4">Add bag(s):</h3>
-                        </div>
-                        <form class="form-inline">
-                            <div class="form-group ml-4 my-2">
-                                <label class="ml-4 mr-2">Type:</label>
-                                <select class="form-control mr-4" id="bagType">
-                                    <option>hand bag</option>
-                                    <option>luggage</option>
-                                    <option>backpack</option>
-                                </select>
-                            </div>
-                            <div class="form-group ml-4">
-                                <label class="mr-2">Weight (Kg): </label>
-                                <input type="number" min="1" max="40" class="form-control col mr-4" id="bagWeight">
-                                <p class="small my-auto">Start 200฿/bag, Add 100฿/Kg</p>
-                            </div>
-                        </form>
-                        <form class="form-inline">
-                            <div class="form-group ml-4 my-2">
-                                <label class="ml-4 mr-2">Lost insurance:</label>
-                                <select class="form-control mr-4" id="bagInsuranceLost"></select>
-                                <label class="ml-4 mr-2">Damage insurance:</label>
-                                <select class="form-control mr-4" id="bagInsuranceDamage"></select>
-                            </div>
-                            <div class="form-group ml-4">
-                                <button type="submit" class="btn-addbag btn btn-dark">Add</button>
-                            </div>
-                        </form>
-
-                        <div class="form-group">
-                            <br><br>
-                            <h3 class="mx-4">Your bags:</h3>
-                            <div class="mx-4">
-                                <div class="mx-4">
-                                    <table class="table mr-4">
-                                        <thead class="thead-dark">
-                                            <tr>
-                                                <th scope="col">Type</th>
-                                                <th scope="col">Weight</th>
-                                                <th scope="col">Lost Insurance</th>
-                                                <th scope="col">Damage Insurance</th>
-                                                <th scope="col">Price</th>
-                                                <th scope="col">Remove</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody id="bagList"></tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="text-center">
-                            <hr>
-                            <div id="totalPrice">
-                                <h3>Total Price: 0</h3>
-                            </div>
-                            <br>
-                            <button type="submit" class="btn-pay btn btn-dark center">Pay now</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Status -->
-                <div class="jumbotron jumbotron-fluid" id="status">
-                    <div class="container">
-                        <h1 class="display-4 text-center">Status</h1>
-                    </div>
-                    <hr class="my-4">
-                    <div class="form-group">
-                        <div class="mx-4">
-                            <div class="mx-4">
-                                <table class="table mr-4">
-                                    <thead class="thead-dark">
-                                        <tr>
-                                            <th scope="col">Arrival date</th>
-                                            <th scope="col">Hotel</th>
-                                            <th scope="col">Price</th>
-                                            <!-- <th scope="col">Edit</th> -->
-                                            <th scope="col">Cancel</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="subList"></tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

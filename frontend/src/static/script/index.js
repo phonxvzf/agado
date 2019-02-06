@@ -14,14 +14,6 @@ $(document).ready(function () {
         pause: false
     })
 
-    $('#travelerRegisterBirthDate').datepicker({
-        uiLibrary: 'bootstrap4'
-    });
-
-    $('#dropdown').dropdown({
-        uiLibrary: 'bootstrap4'
-    });
-
     $("#travelerBtn").click(function () {
         hide($("#welcome"))
         show($("#travelerUser"))
@@ -44,7 +36,6 @@ $(document).ready(function () {
         $(this).addClass("active")
         hide($("#travelerLoginForm"))
         show($("#travelerRegisterForm"))
-
     })
 
     $("#travelerRegisterForm").delegate(".btn-register", "click", function () {
@@ -56,24 +47,54 @@ $(document).ready(function () {
                 data: {
                     username: $("#travelerRegisterUsr").val(),
                     password: $("#travelerRegisterPwd").val(),
-                    firstName: $("#travelerRegisterFname").val(),
-                    lastName: $("#travelerRegisterSname").val(),
+                    first_name: $("#travelerRegisterFname").val(),
+                    last_name: $("#travelerRegisterSname").val(),
                     gender: $("#travelerRegisterGender").val(),
                     email: $("#travelerRegisterEmail").val(),
-                    phoneNum: $("#travelerRegisterPhone").val(),
-                    dateOfBirth: $("#travelerRegisterBirthDate").val()
+                    phone_num: $("#travelerRegisterPhone").val(),
+                    date_of_birth: $("#travelerRegisterBirthDate").val(),
+                    user_type: "traveler"
                 },
                 success: function () {
                     $("#modalTitle").html("Register completed");
                     $("#modalBody").html("Please log in with this account.")
                     $("#modal").modal("show")
+
+                    $("#travelerRegisterLink").removeClass("active")
+                    $(this).addClass("active")
+                    hide($("#travelerRegisterForm"))
+                    show($("#travelerLoginForm"))
                 },
                 error: function (error) {
-                    $("#modalTitle").html(JSON.stringify(error))
-                    $("#modalBody").html("Please try again.")
+                    $("#modalTitle").html("This username is taken")
+                    $("#modalBody").html("Please try another username.")
                     $("#modal").modal("show")
                 }
             })
         }
+    })
+
+    $("#travelerLoginForm").delegate(".btn-login", "click", function () {
+        event.preventDefault()
+        $.ajax({
+            method: "POST",
+            url: `${window.location.origin}/api/login`,
+            data: {
+                username: $("#travelerLoginUsr").val(),
+                password: $("#travelerLoginPwd").val()
+            },
+            success: function (usr) {
+                localStorage.setItem("user", JSON.stringify(usr))
+
+                window.location.href = "../../traveller.html"
+            },
+            error: function (error) {
+                if ($("#travelerLoginUsr").val() && $("#travelerLoginPwd").val()) {
+                    $("#modalTitle").html("Incorrect username or password");
+                    $("#modalBody").html("Please try again.");
+                    $("#modal").modal("show");
+                }
+            }
+        });
     })
 })
