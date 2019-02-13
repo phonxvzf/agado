@@ -39,6 +39,10 @@ body {
     z-index: 999;
 }
 
+#travelerNavBar a.active {
+    color: white;
+}
+
 #mainBody {
     position: absolute;
     top: 100px;

@@ -16,14 +16,15 @@ $(document).ready(function () {
         pause: false
     })
 
+    $(".back-btn").click(function () {
+        hide($("#travelerUser"))
+        hide($("#hotelUser"))
+        show($("#welcome"))
+    })
+
     $("#travelerBtn").click(function () {
         hide($("#welcome"))
         show($("#travelerUser"))
-    })
-
-    $(".back-btn").click(function () {
-        hide($("#travelerUser"))
-        show($("#welcome"))
     })
 
     $("#travelerLoginLink").click(function () {
@@ -91,10 +92,92 @@ $(document).ready(function () {
             success: function (usr) {
                 localStorage.setItem("user", JSON.stringify(usr))
 
-                window.location.href = "../../traveller.html"
+                window.location.href = "../../traveler_profile.html"
             },
             error: function (error) {
                 if ($("#travelerLoginUsr").val() && $("#travelerLoginPwd").val()) {
+                    $("#modalTitle").html("Incorrect username or password");
+                    $("#modalBody").html("Please try again.");
+                    $("#modal").modal("show");
+                }
+            }
+        });
+    })
+
+    $("#hotelBtn").click(function () {
+        hide($("#welcome"))
+        show($("#hotelUser"))
+    })
+
+    $("#hotelLoginLink").click(function () {
+        $("#hotelRegisterLink").removeClass("active")
+        $(this).addClass("active")
+        hide($("#hotelRegisterForm"))
+        show($("#hotelLoginForm"))
+    })
+
+    $("#hotelRegisterLink").click(function () {
+        $("#hotelLoginLink").removeClass("active")
+        $(this).addClass("active")
+        hide($("#hotelLoginForm"))
+        show($("#hotelRegisterForm"))
+    })
+
+    $("#hotelRegisterForm").delegate(".btn-register", "click", function () {
+        if ($("#hotelRegisterUsr").val() && $("#hotelRegisterPwd").val() && $("#hotelRegisterFname").val() && $("#hotelRegisterSname").val() &&
+            $("#hotelRegisterGender").val() && $("#hotelRegisterEmail").val() && $("#hotelRegisterPhone").val() && $("#hotelRegisterBirthDate").val()) {
+            
+            user = {
+                username: $("#hotelRegisterUsr").val(),
+                password: $("#hotelRegisterPwd").val(),
+                first_name: $("#hotelRegisterFname").val(),
+                last_name: $("#hotelRegisterSname").val(),
+                gender: $("#hotelRegisterGender").val(),
+                email: $("#hotelRegisterEmail").val(),
+                phone_num: $("#hotelRegisterPhone").val(),
+                date_of_birth: $("#hotelRegisterBirthDate").val(),
+                user_type: "hotel_manager"
+            }
+            
+            $.ajax({
+                method: "POST",
+                url: `${window.location.origin}/api/user`,
+                data: user,
+                success: function () {
+                    $("#modalTitle").html("Register completed");
+                    $("#modalBody").html("Please log in with this account.")
+                    $("#modal").modal("show")
+
+                    $("#hotelRegisterLink").removeClass("active")
+                    $(this).addClass("active")
+                    hide($("#hotelRegisterForm"))
+                    show($("#hotelLoginForm"))
+                },
+                error: function (error) {
+                    $("#modalTitle").html("This username is taken")
+                    $("#modalBody").html("Please try another username.")
+                    $("#modal").modal("show")
+                }
+            })
+        }
+    })
+
+    $("#hotelLoginForm").delegate(".btn-login", "click", function () {
+        event.preventDefault()
+        $.ajax({
+            method: "POST",
+            url: `${window.location.origin}/api/login`,
+            data: {
+                username: $("#hotelLoginUsr").val(),
+                password: $("#hotelLoginPwd").val()
+            },
+            success: function (usr) {
+                localStorage.setItem("user", JSON.stringify(usr))
+
+                window.location.href = "../../hotel_manager_profile.html"
+            },
+            error: function (error) {
+                if ($("#hotelLoginUsr").val() && $("#hotelLoginPwd").val()) {
                     $("#modalTitle").html("Incorrect username or password");
                     $("#modalBody").html("Please try again.");
                     $("#modal").modal("show");

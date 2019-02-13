@@ -14,7 +14,7 @@ body {
 .slide2 {
     position: relative;
 	background: linear-gradient(
-            rgba(0,0,0, 0.7),
+            rgba(0,0,0, 0.7), 
             rgba(0,0,0, 0.7)),
             url("../img/index_background2.png") center center fixed;
     height: 100vh;
@@ -30,63 +30,31 @@ body {
     background-size: cover;
 }
 
-#welcome {
+#navBar {
     position: absolute;
-    top: 10vh;
-    bottom: 0;
+    top: 0;
 	right: 0;
     left: 0;
+    font-size: 18px;
+    z-index: 999;
 }
 
-.btn-lightblue {
-    background-color: rgb(52, 174, 223);
+#hotelManagerNavBar a.active {
     color: white;
 }
 
-.btn-darkgray {
-    background-color: rgb(42, 40, 51);
-    color: white;
-}
-
-.overlay {
+#mainBody {
     position: absolute;
-    top: 5vh;
-    bottom: 5vh;
+    top: 100px;
 	right: 0;
     left: 0;
+    font-size: 18px;
 }
 
-.card{
-    height: 90%;
-    background-color: rgba(255,255,255,1);
+.jumbotron {
+    background: rgba(255,255,255,1);
 }
 
-.login-register a{
-	color: #666;
-	font-weight: bold;
-	font-size: 15px;
-	transition: all 0.1s linear;
-}
-.login-register a.active{
-	color: #029f5b;
-	font-size: 18px;
-}
-
-.login-register hr {
-    margin-top: 10px;
-	margin-bottom: 0px;
-	clear: both;
-	border: 0;
-	height: 1px;
-	background-image: linear-gradient(left,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.15),rgba(0, 0, 0, 0));
-}
-
-.img-fit {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: cover;
-}
-
-.w-60 {
-    width: 60%;
+.w-40 {
+    max-width: 40%;
 }
