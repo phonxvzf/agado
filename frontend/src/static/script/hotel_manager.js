@@ -1,4 +1,5 @@
-var user
+var hotelManager
+var hotelCards
 
 function show(obj) {
     obj.fadeIn(500)
@@ -18,8 +19,13 @@ function updateProfile(user) {
 }
 
 window.onload = function () {
-    user = JSON.parse(localStorage.getItem("user"))
-    updateProfile(user)
+    hotelManager = JSON.parse(localStorage.getItem("hotelManager"))
+    updateProfile(hotelManager)
+
+    hotelCards = localStorage.getItem("hotelCards")
+    if (hotelCards != undefined) {
+        $("#hotelCards").html(hotelCards)
+    }
 }
 
 $(document).ready(function () {
@@ -32,13 +38,13 @@ $(document).ready(function () {
         window.location.href = "../../index.html"
     })
 
-    user = JSON.parse(localStorage.getItem("user"))
+    hotelManager = JSON.parse(localStorage.getItem("hoteManager"))
 
     $("#profileData").delegate(".btn-edit-profile", "click", function () {
-        $("#editFname").attr("placeholder", user.first_name)
-        $("#editSname").attr("placeholder", user.last_name)
-        $("#editEmail").attr("placeholder", user.email)
-        $("#editTel").attr("placeholder", user.phone_num)
+        $("#editFname").attr("placeholder", hotelManager.first_name)
+        $("#editSname").attr("placeholder", hotelManager.last_name)
+        $("#editEmail").attr("placeholder", hotelManager.email)
+        $("#editTel").attr("placeholder", hotelManager.phone_num)
 
         $("#profileData").addClass('d-none')
         $("#profileEdit").removeClass('d-none')
@@ -46,30 +52,30 @@ $(document).ready(function () {
 
     $("#profileEdit").delegate(".btn-save", "click", function () {
         if ($("#editFname").val())
-            user.first_name = $("#editFname").val();
+            hotelManager.first_name = $("#editFname").val();
         if ($("#editSname").val())
-            user.last_name = $("#editSname").val();
+            hotelManager.last_name = $("#editSname").val();
         if ($("#editEmail").val())
-            user.email = $("#editEmail").val();
+            hotelManager.email = $("#editEmail").val();
         if ($("#editTel").val())
-            user.phone_num = $("#editTel").val();
+            hotelManager.phone_num = $("#editTel").val();
 
-        localStorage.setItem("user", user)
+        localStorage.setItem("hotelManager", hotelManager)
         $.ajax({
             method: "PUT",
             url: `${window.location.origin}/api/user`,
             headers: {
-                'Authorization': `Bearer ${user.token}`,
+                'Authorization': `Bearer ${hotelManager.token}`,
             },
             data: {
-                username: user.username,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                gender: user.gender,
-                email: user.email,
-                phone_num: user.phone_num,
-                date_of_birth: user.date_of_birth,
-                user_type: user.user_type
+                username: hotelManager.username,
+                first_name: hotelManager.first_name,
+                last_name: hotelManager.last_name,
+                gender: hotelManager.gender,
+                email: hotelManager.email,
+                phone_num: hotelManager.phone_num,
+                date_of_birth: hotelManager.date_of_birth,
+                user_type: hotelManager.user_type
             },
             success: function () {
                 $("#modalTitle").html("Save completed");
@@ -77,8 +83,8 @@ $(document).ready(function () {
                 $("#modalFooter").html(`<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>`)
                 $("#modal").modal("show")
 
-                updateProfile(user)
-                
+                updateProfile(hotelManager)
+
                 $("#profileEdit").addClass('d-none')
                 $("#profileData").removeClass('d-none')
             }
@@ -100,7 +106,7 @@ $(document).ready(function () {
             method: "DELETE",
             url: `${window.location.origin}/api/user`,
             headers: {
-                'Authorization': `Bearer ${user.token}`,
+                'Authorization': `Bearer ${hotelManager.token}`,
             },
             success: function () {
                 $("#modalTitle").html("Delete completed");
@@ -108,10 +114,62 @@ $(document).ready(function () {
                 $("#modalFooter").html(`<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>`)
                 $("#modal").modal("show")
 
-                setTimeout(function(){
+                setTimeout(function () {
                     window.location.href = "../../index.html"
                 }, 3000);
             }
         })
+    })
+
+    $("#hotelCards").delegate(".btn-add-hotel", "click", function () {
+        $("#addHotelModal").modal("show")
+    })
+
+    $(".btn-add").click(function () {
+        if ($("#newHname").val() && $("#newAddr").val() && $("#newProv").val() && $("#newLat").val() &&
+            $("#newLng").val()) {
+
+            hotel = {
+                name: $("#newHname").val(),
+                addr: $("#newAddr").val(),
+                prov: $("#newProv").val(),
+                lat: $("#newLat").val(),
+                long: $("#newLng").val()
+            }
+
+            $.ajax({
+                method: "POST",
+                url: `${window.location.origin}/api/hotel`,
+                headers: {
+                    'Authorization': `Bearer ${hotelManager.token}`,
+                },
+                data: hotel,
+                success: function () {
+                    $("#hotelCards").prepend(`
+                        <div class="col-lg-5 col-md-5 col-sm-5 col-12 card bg-light mx-1 my-2">
+                            <div class="card-header">
+                                <div class="text-center">${hotel.name}</div>
+                            </div>
+                            <div class="card-body">
+                                <p>Address: ${hotel.addr}</p>
+                                <p>Province: ${hotel.prov}</p>
+                                <p>Latitude: ${hotel.lat}</p>
+                                <p>Longitude: ${hotel.long}</p>
+                            </div>
+                        </div>
+                    `)
+
+                    localStorage.setItem("hotelCards", $("#hotelCards").html())
+
+                    $("#modalTitle").html("Create completed");
+                    $("#modalBody").html("Your hotel will be saved in database")
+                    $("#modalFooter").html(`<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>`)
+                    $("#modal").modal("show")
+                },
+                error: function (err) {
+                    console.log(err)
+                }
+            })
+        }
     })
 })

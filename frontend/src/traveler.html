@@ -43,10 +43,10 @@
                 <div class="collapse navbar-collapse" id="travelerNavBar">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a href="traveler.html" class="nav-link" id="homeLink">Home</a>
+                            <a href="traveler.html" class="nav-link active" id="homeLink">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a href="traveler_profile.html" class="nav-link active" id="profileLink">Profile</a>
+                            <a href="traveler_profile.html" class="nav-link" id="profileLink">Profile</a>
                         </li>
                     </ul>
                     <div class="my-2 my-lg-0">
@@ -57,49 +57,14 @@
 
             <!-- Body -->
             <div class="container" id="mainBody">
-                <!-- Profile -->
-                <div class="jumbotron jumbotron-fluid" id="profile">
-                    <div class="container">
-                        <h1 class="display-4 text-center">Profile</h1>
+                <form class="form-inline row justify-content-center">
+                    <div class="form-group col-8">
+                        <input type="text" class="form-control col" id="searchHname" placeholder="Search for the hotels...">
                     </div>
-                    <hr class="my-4">
+                    <button class="btn-search btn btn-info col-2">Search</button>
+                </form>
 
-                    <!-- Profile's data -->
-                    <div class="container text-center" id="profileData">
-                        <p><strong>First name: </strong>
-                            <nobr id="Fname"></nobr>
-                        </p>
-                        <p><strong>Last name: </strong>
-                            <nobr id="Sname"></nobr>
-                        </p>
-                        <p><strong>Email: </strong>
-                            <nobr id="Email"></nobr>
-                        </p>
-                        <p><strong>Phone number: </strong>
-                            <nobr id="Tel"></nobr>
-                        </p>
-                        <button class="btn-edit-profile btn btn-dark">Edit profile</button>
-                    </div>
-
-                    <!-- Profile's edit -->
-                    <div class="container text-center d-none" id="profileEdit">
-                        <div class="w-40 mx-auto">
-                            <p><strong>First name: </strong><input type="text" class="form-control" id="editFname"
-                                    placeholder="${user.first_name}" required></p>
-                            <p><strong>Last name: </strong><input type="text" class="form-control" id="editSname"
-                                    placeholder="${user.last_name}" required></p>
-                            <p><strong>Email: </strong><input type="email" class="form-control" id="editEmail"
-                                    placeholder="${user.email}" required></p>
-                            <p><strong>Phone number: </strong><input type="tel" class="form-control" id="editTel"
-                                    placeholder="${user.phone_num}" required></p>
-                        </div>
-                        <hr class="my-4">
-                        <div class="row justify-content-around">
-                            <button class="btn-save btn btn-success vcenter col-3">SAVE CHANGES</button>
-                            <button class="btn-delete btn btn-danger vcenter col-3">DELETE ACCOUNT</button>
-                        </div>
-                    </div>
-                </div>
+                <div class="row justify-content-around mt-5" id="hotelCards"></div>
             </div>
         </div>
 

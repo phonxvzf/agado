@@ -43,10 +43,10 @@
                 <div class="collapse navbar-collapse" id="hotelManagerNavBar">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a href="hotel_manager.html" class="nav-link" id="homeLink">Home</a>
+                            <a href="hotel_manager.html" class="nav-link active" id="homeLink">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a href="hotel_manager_profile.html" class="nav-link active" id="profileLink">Profile</a>
+                            <a href="hotel_manager_profile.html" class="nav-link" id="profileLink">Profile</a>
                         </li>
                     </ul>
                     <div class="my-2 my-lg-0">
@@ -57,47 +57,57 @@
 
             <!-- Body -->
             <div class="container" id="mainBody">
-                <!-- Profile -->
-                <div class="jumbotron jumbotron-fluid" id="profile">
-                    <div class="container">
-                        <h1 class="display-4 text-center">Profile</h1>
-                    </div>
-                    <hr class="my-4">
-
-                    <!-- Profile's data -->
-                    <div class="container text-center" id="profileData">
-                        <p><strong>First name: </strong>
-                            <nobr id="Fname"></nobr>
-                        </p>
-                        <p><strong>Last name: </strong>
-                            <nobr id="Sname"></nobr>
-                        </p>
-                        <p><strong>Email: </strong>
-                            <nobr id="Email"></nobr>
-                        </p>
-                        <p><strong>Phone number: </strong>
-                            <nobr id="Tel"></nobr>
-                        </p>
-                        <button class="btn-edit-profile btn btn-dark">Edit profile</button>
-                    </div>
-
-                    <!-- Profile's edit -->
-                    <div class="container text-center d-none" id="profileEdit">
-                        <div class="w-40 mx-auto">
-                            <p><strong>First name: </strong><input type="text" class="form-control" id="editFname"
-                                    placeholder="${user.first_name}" required></p>
-                            <p><strong>Last name: </strong><input type="text" class="form-control" id="editSname"
-                                    placeholder="${user.last_name}" required></p>
-                            <p><strong>Email: </strong><input type="email" class="form-control" id="editEmail"
-                                    placeholder="${user.email}" required></p>
-                            <p><strong>Phone number: </strong><input type="tel" class="form-control" id="editTel"
-                                    placeholder="${user.phone_num}" required></p>
+                <div class="row justify-content-around" id="hotelCards">
+                    <div class="col-lg-5 col-md-5 col-sm-5 col-12 card bg-light mx-1 my-1">
+                        <div class="card-body">
+                            <div class="text-center">Add new hotel</div>
+                            <div class="text-center">
+                                <a class="btn btn-add-hotel">
+                                    <h1 class="display-1">+</h1>
+                                </a>
+                            </div>
                         </div>
-                        <hr class="my-4">
-                        <div class="row justify-content-around">
-                            <button class="btn-save btn btn-success vcenter col-3">SAVE CHANGES</button>
-                            <button class="btn-delete btn btn-danger vcenter col-3">DELETE ACCOUNT</button>
-                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add hotel modal -->
+        <div class="modal fade" id="addHotelModal">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Add new hotel</h5>
+                    </div>
+                    <div class="modal-body">
+                        <form>
+                            <div class="form-group">
+                                <p><strong>Hotel's name: </strong><input type="text" class="form-control" id="newHname"
+                                        placeholder="Name" required></p>
+                            </div>
+                            <div class="form-group">
+                                <p><strong>Address: </strong><input type="text" class="form-control" id="newAddr"
+                                        placeholder="Address" required></p>
+                            </div>
+                            <div class="form-group">
+                                <p><strong>Province: </strong><input type="text" class="form-control" id="newProv"
+                                        placeholder="Province" required></p>
+                            </div>
+                            <div class="form-group">
+                                <p><strong>Coordinate:</strong>
+                                    <div class="form-row">
+                                        <input type="tel" class="form-control col-4" id="newLat" placeholder="Latitude"
+                                            required>
+                                        <input type="tel" class="form-control col-4 ml-2" id="newLng" placeholder="Longitude"
+                                            required>
+                                    </div>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-add btn btn-success" data-dismiss="modal">Add</button>
+                        <button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>

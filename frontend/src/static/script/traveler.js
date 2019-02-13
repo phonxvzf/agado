@@ -1,4 +1,5 @@
 var user
+var hotels
 
 function show(obj) {
     obj.fadeIn(500)
@@ -17,9 +18,39 @@ function updateProfile(user) {
     $("#Tel").html(user.phone_num)
 }
 
+function searchByHotelName(name) {
+    $.ajax({
+        method: "GET",
+        url: `${window.location.origin}/api/search?hotel_name=${name}`,
+        success: function (htls) {
+            hotels = htls
+
+            $("#hotelCards").html("")
+            for (var i = 0; i < hotels.length; ++i) {
+                var hotel = hotels[i]
+                $("#hotelCards").append(`
+                    <div class="col-lg-5 col-md-5 col-sm-5 col-12 card bg-light mx-1 my-2">
+                        <div class="card-header">
+                            <div class="text-center">${hotel.name}</div>
+                        </div>
+                        <div class="card-body">
+                            <p>Address: ${hotel.addr}</p>
+                            <p>Province: ${hotel.prov}</p>
+                            <p>Latitude: ${hotel.lat}</p>
+                            <p>Longitude: ${hotel.long}</p>
+                        </div>
+                    </div>
+                `)
+            }
+        }
+    })
+}
+
 window.onload = function () {
     user = JSON.parse(localStorage.getItem("user"))
     updateProfile(user)
+
+    searchByHotelName(" ")
 }
 
 $(document).ready(function () {
@@ -78,7 +109,7 @@ $(document).ready(function () {
                 $("#modal").modal("show")
 
                 updateProfile(user)
-                
+
                 $("#profileEdit").addClass('d-none')
                 $("#profileData").removeClass('d-none')
             }
@@ -108,10 +139,15 @@ $(document).ready(function () {
                 $("#modalFooter").html(`<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>`)
                 $("#modal").modal("show")
 
-                setTimeout(function(){
+                setTimeout(function () {
                     window.location.href = "../../index.html"
                 }, 3000);
             }
         })
+    })
+
+    $(".btn-search").click(function () {
+        event.preventDefault()
+        searchByHotelName($("#searchHname").val())
     })
 })

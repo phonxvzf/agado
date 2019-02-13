@@ -92,7 +92,7 @@ $(document).ready(function () {
             success: function (usr) {
                 localStorage.setItem("user", JSON.stringify(usr))
 
-                window.location.href = "../../traveler_profile.html"
+                window.location.href = "../../traveler.html"
             },
             error: function (error) {
                 if ($("#travelerLoginUsr").val() && $("#travelerLoginPwd").val()) {
@@ -172,9 +172,9 @@ $(document).ready(function () {
                 password: $("#hotelLoginPwd").val()
             },
             success: function (usr) {
-                localStorage.setItem("user", JSON.stringify(usr))
+                localStorage.setItem("hotelManager", JSON.stringify(usr))
 
-                window.location.href = "../../hotel_manager_profile.html"
+                window.location.href = "../../hotel_manager.html"
             },
             error: function (error) {
                 if ($("#hotelLoginUsr").val() && $("#hotelLoginPwd").val()) {
