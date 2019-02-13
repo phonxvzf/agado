@@ -8,7 +8,7 @@ interface HotelManager {
 
 const hotelManagerRepo = {
   createHotelManager: async (hotelManagerData: HotelManager) => {
-    database.insert(hotelManagerData).into('hotel_manager');
+    return database.insert(hotelManagerData).into('hotel_manager');
   },
 
   getAllHotelManagers: async (): Promise<HotelManager[]> => {

@@ -16,33 +16,27 @@ defaultHotelManagerData.user_type = 'hotel_manager';
 
 const defaultHotelData = util.generateHotelData();
 
-let idTraveler: number;
-let tokenTraveler: string;
-let idHotelManager: number;
-let tokenHotelManager: string;
+let travelerToken: string;
+let hotelManagerToken: string;
 
-let hid: number;
+let hotelId: number;
 
 // Test after user.test
 
 beforeAll(async (done) => {
   let resTraveler = await request(server).post('/user').send(defaultTravelerData);
-  idTraveler = resTraveler.body.id;
-
   resTraveler = await request(server).post('/login').send(defaultTravelerData);
-  tokenTraveler = resTraveler.body.token;
+  travelerToken = resTraveler.body.token;
 
   let resHotelManager = await request(server).post('/user').send(defaultHotelManagerData);
-  idHotelManager = resHotelManager.body.id;
-
   resHotelManager = await request(server).post('/login').send(defaultHotelManagerData);
-  tokenHotelManager = resHotelManager.body.token;
+  hotelManagerToken = resHotelManager.body.token;
 
   done();
 });
 
 beforeEach(async (done) => {
-  [hid] = await util.addHotel(defaultHotelData);
+  [hotelId] = await util.addHotel(defaultHotelData);
   done();
 });
 
@@ -65,24 +59,24 @@ describe('Get hotel information', () => {
 
   it('[GET /hotel] should succeed (traveler access)', async () => {
     const res = await request(server)
-      .get('/hotel?id=' + hid)
-      .set('Authorization', `Bearer ${tokenTraveler}`);
-    expect(res.body['id']).toEqual(hid);
+      .get('/hotel?id=' + hotelId)
+      .set('Authorization', `Bearer ${travelerToken}`);
+    expect(res.body['id']).toEqual(hotelId);
     expect(res.status).toEqual(httpStatus.OK.code);
   });
 
   it('[GET /hotel] should succeed (hotel manager access)', async () => {
     const res = await request(server)
-      .get('/hotel?id=' + hid)
-      .set('Authorization', `Bearer ${tokenHotelManager}`);
+      .get('/hotel?id=' + hotelId)
+      .set('Authorization', `Bearer ${hotelManagerToken}`);
     expect(res.status).toEqual(httpStatus.OK.code);
   });
 
   it('[GET /hotel] should fail (hotel not exists)', async () => {
     const res = await request(server)
       .get('/hotel?id=2000000')
-      .set('Authorization', `Bearer ${tokenHotelManager}`);
-    expect(res.status).toEqual(404);
+      .set('Authorization', `Bearer ${hotelManagerToken}`);
+    expect(res.status).toEqual(httpStatus.NOT_FOUND.code);
   });
 });
 
@@ -95,7 +89,7 @@ describe('Create hotel', () => {
   it('[POST /hotel] should fail (traveler access)', async () => {
     const res = await request(server)
       .post('/hotel')
-      .set('Authorization', `Bearer ${tokenTraveler}`)
+      .set('Authorization', `Bearer ${travelerToken}`)
       .send(defaultHotelData);
     expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
   });
@@ -103,8 +97,85 @@ describe('Create hotel', () => {
   it('[POST /hotel] should succeed (hotel access)', async () => {
     const res = await request(server)
       .post('/hotel')
-      .set('Authorization', `Bearer ${tokenHotelManager}`)
+      .set('Authorization', `Bearer ${hotelManagerToken}`)
       .send(defaultHotelData);
     expect(res.status).toEqual(httpStatus.CREATED.code);
   });
+
+  it('[POST /hotel] should fail (insufficient information)', async () => {
+    const res = await request(server)
+      .post('/hotel')
+      .set('Authorization', `Bearer ${hotelManagerToken}`)
+      .send({});
+    expect(res.status).toEqual(httpStatus.BAD_REQUEST.code);
+  });
 });
+
+describe('Edit hotel data', () => {
+  it('[PUT /hotel] should fail (not logged on)', async () => {
+    const res = await request(server).put('/hotel').send({});
+    expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
+  });
+
+  it('[PUT /hotel] should fail (traveler access)', async () => {
+    const res = await request(server)
+      .put('/hotel')
+      .set('Authorization', `Bearer ${travelerToken}`)
+      .send({});
+    expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
+  });
+
+  // Test after hotel_manager.test -- TODO
+  // it('[PUT /hotel] should succeed (hotel access)', async () => {
+  //   const completeHotelData = Object.assign({ id: hotelId }, defaultHotelData);
+  //   const res = await request(server)
+  //     .put('/hotel')
+  //     .set('Authorization', `Bearer ${hotelManagerToken}`)
+  //     .send(completeHotelData);
+  //   console.log(res.body);
+  //   expect(res.status).toEqual(httpStatus.OK.code);
+  // });
+
+  it('[PUT /hotel] should fail (insufficient information)', async () => {
+    const res = await request(server)
+      .put('/hotel')
+      .set('Authorization', `Bearer ${hotelManagerToken}`)
+      .send({});
+    expect(res.status).toEqual(httpStatus.BAD_REQUEST.code);
+  });
+});
+
+describe('Delete hotel data', () => {
+  it('[DEL /hotel] should fail (not logged on)', async () => {
+    const res = await request(server).del('/hotel').send({});
+    expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
+  });
+
+  it('[DEL /hotel] should fail (traveler access)', async () => {
+    const res = await request(server)
+      .del('/hotel')
+      .set('Authorization', `Bearer ${travelerToken}`)
+      .send({});
+    expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
+  });
+
+  // Test after hotel_manager.test -- TODO
+  // it('[DEL /hotel] should succeed (hotel access)', async () => {
+  //   const completeHotelData = Object.assign({ id: hotelId }, defaultHotelData);
+  //   const res = await request(server)
+  //     .del('/hotel')
+  //     .set('Authorization', `Bearer ${hotelManagerToken}`)
+  //     .send(completeHotelData);
+  //   console.log(res.body);
+  //   expect(res.status).toEqual(httpStatus.NO_CONTENT.code);
+  // });
+
+  it('[DEL /hotel] should fail (insufficient information)', async () => {
+    const res = await request(server)
+      .del('/hotel')
+      .set('Authorization', `Bearer ${hotelManagerToken}`)
+      .send({});
+    expect(res.status).toEqual(httpStatus.BAD_REQUEST.code);
+  });
+});
+

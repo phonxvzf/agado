@@ -16,15 +16,15 @@ const util = {
   },
 
   wipeHotels: async () => {
-    database.del().from('hotel');
+    return database.del().from('hotel');
   },
 
   wipeHotelRooms: async () => {
-    database.del().from('hotel_room');
+    return database.del().from('hotel_room');
   },
 
   wipeHotelManagers: async () => {
-    database.del().from('hotel_manager');
+    return database.del().from('hotel_manager');
   },
 
   generateUserData: (): User => {
@@ -97,7 +97,7 @@ const util = {
     const userId = 1;
     const hotelId = 1;
     const hotelManagerData = util.generateHotelManagerData(userId, hotelId);
-    hotelManagerRepo.createHotelManager(hotelManagerData);
+    return hotelManagerRepo.createHotelManager(hotelManagerData);
   },
 
   addUser: async (userData: User): Promise<number[]> => {

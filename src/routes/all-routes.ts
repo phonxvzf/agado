@@ -3,6 +3,7 @@ import general from '../controller/general';
 import auth from '../controller/auth';
 import hotel from '../controller/hotel';
 import hotelManager from '../controller/hotel_manager';
+import search from '../controller/search';
 
 const router = new koaRouter();
 
@@ -29,5 +30,8 @@ router.get('/hotelManager', auth.requireAuth, auth.checkHotelManagerType, hotelM
 router.post('/hotelManager', auth.requireAuth, auth.checkHotelManagerType, hotelManager.createHotelManager);
 router.put('/hotelManager', auth.requireAuth, auth.checkHotelManagerType, hotelManager.checkHotelManagerPermission, hotelManager.createHotelManager);
 router.del('/hotelManager', auth.requireAuth, auth.checkHotelManagerType, hotelManager.checkHotelManagerPermission, hotelManager.deleteHotelManager);
+
+// Search
+router.get('/search', search.searchByHotelName);
 
 export default router;

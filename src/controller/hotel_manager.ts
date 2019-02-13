@@ -10,10 +10,10 @@ const ctrlHotelManager = {
   getHotelManager: async (ctx: koa.Context, next: () => Promise<any>) => {
     const invalidMessage = 'Please specify user_id and/or hotel_id.';
     const uid = validator.validateId(ctx.request.body['user_id'], invalidMessage);
-    const hid = validator.validateId(ctx.request.body['hotel_id'], invalidMessage);
+    const hid = validator.validateId(ctx.request.query['hotel_id'], invalidMessage);
 
     try {
-      const hotelManagerInfo = hotelManagerRepo.getHotelManager(uid, hid);
+      const hotelManagerInfo = await hotelManagerRepo.getHotelManager(uid, hid);
       ctx.response.body = hotelManagerInfo;
       ctx.response.status = httpStatus.OK.code;
     } catch (e) {
@@ -29,7 +29,7 @@ const ctrlHotelManager = {
     const hid = validator.validateId(ctx.request.body['hotel_id'], invalidMessage);
 
     try {
-      const hotelManagerInfo = hotelManagerRepo.getHotelManager(uid, hid);
+      const hotelManagerInfo = await hotelManagerRepo.getHotelManager(uid, hid);
       if (hotelManagerInfo[0].permitted != 'pmt') {
         throw new ApiError('access denied', codes.UNAUTHORIZED, 401); // check--throw inside try?
       }
@@ -54,7 +54,7 @@ const ctrlHotelManager = {
     }
 
     try {
-      hotelManagerRepo.createHotelManager(hotelManagerInfo);
+      await hotelManagerRepo.createHotelManager(hotelManagerInfo);
       ctx.response.status = httpStatus.CREATED.code;
     } catch (e) {
       throw new ApiError('hotel manager already exists', codes.DUPLICATE_HOTEL_MANAGER, 400);
@@ -76,7 +76,7 @@ const ctrlHotelManager = {
     }
 
     try {
-      hotelManagerRepo.updateHotelManager(hotelManagerInfo);
+      await hotelManagerRepo.updateHotelManager(hotelManagerInfo);
       ctx.response.status = httpStatus.OK.code;
     } catch (e) {
       throw new ApiError('hotel manager not found', codes.HOTEL_MANAGER_NOT_FOUND, 400);
@@ -91,7 +91,7 @@ const ctrlHotelManager = {
     const hid = validator.validateId(ctx.request.body['hotel_id'], invalidMessage);
 
     try {
-      hotelManagerRepo.deleteHotelManager(uid, hid);
+      await hotelManagerRepo.deleteHotelManager(uid, hid);
       ctx.response.status = httpStatus.NO_CONTENT.code;
     } catch (e) {
       throw new ApiError('hotel manager not found', codes.HOTEL_MANAGER_NOT_FOUND, 400);
