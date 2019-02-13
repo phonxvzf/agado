@@ -109,6 +109,16 @@ const ctrl = {
     return next();
   },
 
+  checkHotelManagerType: async (ctx: koa.Context, next: () => Promise<any>) => {
+    // always check getUser first
+    const [userInfo] = await userRepo.getUser(ctx.request.body['user_id']);
+    if (userInfo.user_type !== 'hotel_manager') {
+      throw new ApiError('access denied', codes.UNAUTHORIZED, 401);
+    }
+    ctx.response.status = httpStatus.NO_CONTENT.code;
+    return next();
+  },
+
   createUser: async (ctx: koa.Context, next: () => Promise<any>) => {
     const invalidMessage = 'specify username, password, first_name, last_name, gender, email, '
       + 'phone_num, user_type, date_of_birth';

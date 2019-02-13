@@ -1,7 +1,8 @@
 import { codes, ApiError } from './api-error';
 
 const validGender = new Set(['Male', 'Female', 'Not specified', 'Prefer not to say']);
-const validUserType = new Set(['traveler', 'hotel', 'admin']);
+const validUserType = new Set(['traveler', 'hotel_manager', 'admin']);
+const validPermitted = new Set(['no', 'req', 'pmt']);
 
 const validator = {
   validateUndefined: (str: string, errorMessage: string) => {
@@ -44,6 +45,25 @@ const validator = {
     if (validUserType.has(userType)) return userType;
     throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
   },
+
+  validateRating: (rating: string, errorMessage: string) => {
+    if (rating == null) {
+      return null;
+    }
+
+    const parse = validator.validateNumber(rating, errorMessage);
+    if (parse < 0 || parse > 5) {
+      throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
+    }
+    return parse;
+  },
+
+  validatePermitted: (permitted: string, errorMessage: string) => {
+    if (validPermitted.has(permitted)) {
+      return permitted;
+    }
+    throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
+  }
 };
 
-export { validator, validGender, validUserType };
+export { validator, validGender, validUserType, validPermitted };

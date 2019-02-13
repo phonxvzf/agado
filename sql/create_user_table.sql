@@ -1,5 +1,5 @@
 CREATE TYPE genders AS ENUM ('Male','Female','Not specified','Prefer not to say');
-CREATE TYPE user_types AS ENUM ('traveler', 'hotel','admin');
+CREATE TYPE user_types AS ENUM ('traveler', 'hotel_manager', 'admin');
 
 create table "user" (
   id serial,
