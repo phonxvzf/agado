@@ -1,4 +1,5 @@
 var user
+var hotels
 
 function show(obj) {
     obj.fadeIn(500)
@@ -10,16 +11,46 @@ function hide(obj) {
     obj.addClass('d-none')
 }
 
+function updateProfile(user) {
+    $("#Fname").html(user.first_name)
+    $("#Sname").html(user.last_name)
+    $("#Email").html(user.email)
+    $("#Tel").html(user.phone_num)
+}
+
+function searchByHotelName(name) {
+    $.ajax({
+        method: "GET",
+        url: `${window.location.origin}/api/search?hotel_name=${name}`,
+        success: function (htls) {
+            hotels = htls
+
+            $("#hotelCards").html("")
+            for (var i = 0; i < hotels.length; ++i) {
+                var hotel = hotels[i]
+                $("#hotelCards").append(`
+                    <div class="col-lg-5 col-md-5 col-sm-5 col-12 card bg-light mx-1 my-2">
+                        <div class="card-header">
+                            <div class="text-center">${hotel.name}</div>
+                        </div>
+                        <div class="card-body">
+                            <p>Address: ${hotel.addr}</p>
+                            <p>Province: ${hotel.prov}</p>
+                            <p>Latitude: ${hotel.lat}</p>
+                            <p>Longitude: ${hotel.long}</p>
+                        </div>
+                    </div>
+                `)
+            }
+        }
+    })
+}
+
 window.onload = function () {
     user = JSON.parse(localStorage.getItem("user"))
+    updateProfile(user)
 
-    $("#profileBody").html(`
-        <p><strong>First name: </strong>${user.first_name}</p>
-        <p><strong>Last name: </strong>${user.last_name}</p>
-        <p><strong>Email: </strong>${user.email}</p>
-        <p><strong>Phone number: </strong>${user.phone_num}</p>
-        <button class="btn-edit-profile btn btn-dark">Edit profile</button>
-    `);
+    searchByHotelName(" ")
 }
 
 $(document).ready(function () {
@@ -32,28 +63,19 @@ $(document).ready(function () {
         window.location.href = "../../index.html"
     })
 
-    $("#profileBody").delegate(".btn-edit-profile", "click", function () {
-        $("#profileBody").html(`
-            <div class="container">
-                <div class="w-40 mx-auto">
-                    <p><strong>First name: </strong><input type="text" class="form-control" id="editFname" placeholder="${user.first_name}" required></p>
-                    <p><strong>Last name: </strong><input type="text" class="form-control" id="editSname" placeholder="${user.last_name}" required></p>
-                    <p><strong>Email: </strong><input type="email" class="form-control" id="editEmail" placeholder="${user.email}" required></p>
-                    <p><strong>Phone number: </strong><input type="tel" class="form-control" id="editTel" placeholder="${user.phone_num}" required></p>
-                </div>
-                <hr class="my-4">
-                <div class="row">
-                    <div class="col-2"></div>
-                    <button class="btn-save btn btn-success vcenter col-3">SAVE CHANGES</button>
-                    <div class="col-2"></div>
-                    <button class="btn-delete btn btn-danger vcenter col-3">DELETE ACCOUNT</button>
-                    <div class="col-2"></div>
-                </div>
-            </div>
-        `);
+    user = JSON.parse(localStorage.getItem("user"))
+
+    $("#profileData").delegate(".btn-edit-profile", "click", function () {
+        $("#editFname").attr("placeholder", user.first_name)
+        $("#editSname").attr("placeholder", user.last_name)
+        $("#editEmail").attr("placeholder", user.email)
+        $("#editTel").attr("placeholder", user.phone_num)
+
+        $("#profileData").addClass('d-none')
+        $("#profileEdit").removeClass('d-none')
     })
 
-    $("#profileBody").delegate(".btn-save", "click", function () {
+    $("#profileEdit").delegate(".btn-save", "click", function () {
         if ($("#editFname").val())
             user.first_name = $("#editFname").val();
         if ($("#editSname").val())
@@ -86,18 +108,15 @@ $(document).ready(function () {
                 $("#modalFooter").html(`<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>`)
                 $("#modal").modal("show")
 
-                $("#profileBody").html(`
-                    <p><strong>First name: </strong>${user.first_name}</p>
-                    <p><strong>Last name: </strong>${user.last_name}</p>
-                    <p><strong>Email: </strong>${user.email}</p>
-                    <p><strong>Phone number: </strong>${user.phone_num}</p>
-                    <button class="btn-edit-profile btn btn-dark">Edit profile</button>
-                `);
+                updateProfile(user)
+
+                $("#profileEdit").addClass('d-none')
+                $("#profileData").removeClass('d-none')
             }
         })
     })
 
-    $("#profileBody").delegate(".btn-delete", "click", function () {
+    $("#profile").delegate(".btn-delete", "click", function () {
         $("#modalTitle").html("Are you sure?");
         $("#modalBody").html("You won't be able to revert this!")
         $("#modalFooter").html(`
@@ -120,10 +139,15 @@ $(document).ready(function () {
                 $("#modalFooter").html(`<button type="button" class="btn btn-dark" data-dismiss="modal">Close</button>`)
                 $("#modal").modal("show")
 
-                setTimeout(function(){
+                setTimeout(function () {
                     window.location.href = "../../index.html"
                 }, 3000);
             }
         })
+    })
+
+    $(".btn-search").click(function () {
+        event.preventDefault()
+        searchByHotelName($("#searchHname").val())
     })
 })

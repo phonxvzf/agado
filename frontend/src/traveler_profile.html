@@ -8,9 +8,9 @@
     <title>agado system</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
         crossorigin="anonymous">
-    <link rel="stylesheet" media="screen" href="static/css/traveller.css" />
+    <link rel="stylesheet" media="screen" href="static/css/traveler.css" />
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="./static/script/traveller.js"></script>
+    <script src="./static/script/traveler.js"></script>
 </head>
 
 <body>
@@ -35,21 +35,18 @@
             <!-- Traveler navbar -->
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark" id="navBar">
                 <div class="navbar-brand"><strong>agado</strong></div>
-                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#travelerNavBar"
+                    aria-controls="travelerNavBar" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
 
-                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                <div class="collapse navbar-collapse" id="travelerNavBar">
                     <ul class="navbar-nav mr-auto">
                         <li class="nav-item">
-                            <a class="nav-link" id="profileLink">Profile</a>
+                            <a href="traveler.html" class="nav-link" id="homeLink">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" id="bookNowLink">Book now</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" id="statusLink">Status</a>
+                            <a href="traveler_profile.html" class="nav-link active" id="profileLink">Profile</a>
                         </li>
                     </ul>
                     <div class="my-2 my-lg-0">
@@ -66,7 +63,42 @@
                         <h1 class="display-4 text-center">Profile</h1>
                     </div>
                     <hr class="my-4">
-                    <div class="container text-center" id="profileBody"></div>
+
+                    <!-- Profile's data -->
+                    <div class="container text-center" id="profileData">
+                        <p><strong>First name: </strong>
+                            <nobr id="Fname"></nobr>
+                        </p>
+                        <p><strong>Last name: </strong>
+                            <nobr id="Sname"></nobr>
+                        </p>
+                        <p><strong>Email: </strong>
+                            <nobr id="Email"></nobr>
+                        </p>
+                        <p><strong>Phone number: </strong>
+                            <nobr id="Tel"></nobr>
+                        </p>
+                        <button class="btn-edit-profile btn btn-dark">Edit profile</button>
+                    </div>
+
+                    <!-- Profile's edit -->
+                    <div class="container text-center d-none" id="profileEdit">
+                        <div class="w-40 mx-auto">
+                            <p><strong>First name: </strong><input type="text" class="form-control" id="editFname"
+                                    placeholder="${user.first_name}" required></p>
+                            <p><strong>Last name: </strong><input type="text" class="form-control" id="editSname"
+                                    placeholder="${user.last_name}" required></p>
+                            <p><strong>Email: </strong><input type="email" class="form-control" id="editEmail"
+                                    placeholder="${user.email}" required></p>
+                            <p><strong>Phone number: </strong><input type="tel" class="form-control" id="editTel"
+                                    placeholder="${user.phone_num}" required></p>
+                        </div>
+                        <hr class="my-4">
+                        <div class="row justify-content-around">
+                            <button class="btn-save btn btn-success vcenter col-3">SAVE CHANGES</button>
+                            <button class="btn-delete btn btn-danger vcenter col-3">DELETE ACCOUNT</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
