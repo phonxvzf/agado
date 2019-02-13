@@ -6,5 +6,7 @@ exports.up = async (knex) => {
 };
 
 exports.down = async (knex) => {
-  return knex.raw('DROP TABLE USER');
+  await knex.raw('DROP TABLE public.user');
+  await knex.raw('DROP TYPE user_types');
+  await knex.raw('DROP TYPE genders');
 };

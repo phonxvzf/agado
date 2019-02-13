@@ -11,6 +11,12 @@ const codes = {
   USER_NOT_FOUND: 0x11,
   DEPRECATED_TOKEN: 0x12,
   DUPLICATE_USER: 0x13,
+  // Hotel related
+  HOTEL_NOT_FOUND: 0x21,
+  DUPLICATE_HOTEL: 0x23,
+  // Hotel manager related
+  HOTEL_MANAGER_NOT_FOUND: 0x31,
+  DUPLICATE_HOTEL_MANAGER: 0x33
 };
 
 class ErrorResponse {

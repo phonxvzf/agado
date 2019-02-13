@@ -34,7 +34,7 @@ jobs:
         - DB_USER=postgres
         - DB_PASSWORD=
       script: 
-        - npm run lint
+        # - npm run lint
         - npm run migrate
         - npm run test-coverage-ci
         - docker build .

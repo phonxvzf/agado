@@ -5,7 +5,7 @@ dotenv.config();
 
 const config = {
   // General
-  SERVICE_PORT: process.env.PORT || 8080,
+  SERVICE_PORT: process.env.PORT || 3000,
 
   // Database-related
   DB_HOST: process.env.DB_HOST,
