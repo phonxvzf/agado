@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<style>
+.date {
+  font-weight: bold;
+}
+.name {
+  font-size: 150%;
+  font-weight: bold;
+}
+.addition {
+  background-color: #deffd1;
+  color: black;
+}
+.deletion {
+  background-color: #ffb3b2;
+  color: black;
+}
+.commit {
+  background-color: #d1f3ff;
+  color: black;
+}
+.unchanged {
+  background-color: #e5e5e5;
+  color: black;
+}
+</style>
+<html>
+  <head>
+    <meta charset='UTF-8'>
+    <title>Agado Contributions Viewer</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script> 
+  </head>
+  <body>
+    <h1>Weekly Contributions Report</h1>
+    <div id="contributors"></div>
+  </body>
+  <script>
+    window.onload = () => {
+      $.ajax('https://api.github.com/repos/phonxvzf/agado/stats/contributors')
+        .done((contribs) => {
+          for (i = 0; i < contribs.length; ++i) {
+            c = contribs[i];
+            const member = $('<div/>').appendTo($('#contributors'));
+            const a = $('<a/>').attr('href', c.author.html_url)
+              .attr('class', 'name')
+              .attr('id', 'member_' + c.author.login)
+              .text((i+1) + '. ' + c.author.login)
+              .appendTo(member);
+            c.weeks.forEach((week) => {
+              const w = member.append('<br><br>');
+              w.append($('<div/>').attr('class', 'date').text(new Date(week.w * 1000)));
+              w.append($('<div/>').attr('class', week.a > 0 ? 'addition' : 'unchanged')
+                .text('Additions: ' + week.a));
+              w.append($('<div/>').attr('class', week.d > 0 ? 'deletion' : 'unchanged')
+                .text('Deletions: ' + week.d));
+              w.append($('<div/>').attr('class', week.c > 0 ? 'commit' : 'unchanged')
+                .text('Commits: ' + week.c));
+            });
+            member.append('<br><hr>');
+            $.ajax('https://api.github.com/users/' + c.author.login)
+              .done((user) => {
+                $('#member_' + user.login).text(user.login + ' (' + user.name + ')');
+              });
+          }
+        });
+    }
+  </script>
+</html>
