@@ -28,7 +28,9 @@ const hotelManagerRepo = {
   },
 
   getHotelManager: async (userId: number, hotelId: number): Promise<HotelManager[]> => {
-    return database.select('*').from('hotel_manager').where('uid', '=', userId, 'and', 'hid', '=', hotelId);
+    return database.select('*')
+      .from('hotel_manager')
+      .where('uid', '=', userId, 'and', 'hid', '=', hotelId);
   },
 
   updateHotelManager: async (hotelManagerData: HotelManager) => {
@@ -36,8 +38,10 @@ const hotelManagerRepo = {
   },
 
   deleteHotelManager: async (userId: number, hotelId: number) => {
-    return database.del().from('hotel_manager').where('uid', '=', userId, 'and', 'hid', '=', hotelId);
-  }
+    return database.del()
+      .from('hotel_manager')
+      .where('uid', '=', userId, 'and', 'hid', '=', hotelId);
+  },
 };
 
 export { hotelManagerRepo, HotelManager };

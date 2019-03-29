@@ -16,7 +16,7 @@ const codes = {
   DUPLICATE_HOTEL: 0x23,
   // Hotel manager related
   HOTEL_MANAGER_NOT_FOUND: 0x31,
-  DUPLICATE_HOTEL_MANAGER: 0x33
+  DUPLICATE_HOTEL_MANAGER: 0x33,
 };
 
 class ErrorResponse {

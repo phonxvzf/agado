@@ -4,7 +4,6 @@ import { userRepo, User } from '../src/model/user';
 import { hotelRepo, Hotel } from '../src/model/hotel';
 import { hotelRoomRepo, HotelRoom } from '../src/model/hotel_room';
 import { hotelManagerRepo, HotelManager } from '../src/model/hotel_manager';
-import searchRepo from '../src/model/search';
 import crypto from 'crypto';
 
 const validGenderArray = Array.from(validGender);
@@ -50,7 +49,7 @@ const util = {
       prov: crypto.randomBytes(10).toString('base64'),
       lat: Math.random() * 180 - 90,
       long: Math.random() * 360 - 180,
-      rating: Math.random() * 5
+      rating: Math.random() * 5,
     };
   },
 
@@ -61,19 +60,19 @@ const util = {
       max_cap: Math.floor(Math.random() * 1000) + 1,
       ex_bed: Math.floor(Math.random() * 1000) + 1,
       ex_bed_price: Math.floor(Math.random() * 1e12),
-      reserved: Math.round(Math.random()) == 1 ? true : false,
-      rstatus: Math.round(Math.random()) == 1 ? 'avail' : 'unavail',
-      price: Math.floor(Math.random() * 1e12)
+      reserved: Math.round(Math.random()) === 1 ? true : false,
+      rstatus: Math.round(Math.random()) === 1 ? 'avail' : 'unavail',
+      price: Math.floor(Math.random() * 1e12),
     };
   },
 
   generateHotelManagerData: (userId: number, hotelId: number): HotelManager => {
-    const permit_mode = Math.floor(Math.random() * 3) + 1;
-    const permitted = (permit_mode == 0 ? 'pmt' : (permit_mode == 1 ? 'no' : 'req'));
+    const permitMode = Math.floor(Math.random() * 3) + 1;
+    const permitted = (permitMode === 0 ? 'pmt' : (permitMode === 1 ? 'no' : 'req'));
     return {
+      permitted,
       uid: userId,
       hid: hotelId,
-      permitted: permitted
     };
   },
 
@@ -114,7 +113,7 @@ const util = {
 
   addHotelManager: async (hotelManagerData: HotelManager) => {
     return hotelManagerRepo.createHotelManager(hotelManagerData);
-  }
+  },
 };
 
 export default util;

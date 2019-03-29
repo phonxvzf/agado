@@ -59,7 +59,7 @@ describe('Get hotel information', () => {
 
   it('[GET /hotel] should succeed (traveler access)', async () => {
     const res = await request(server)
-      .get('/hotel?id=' + hotelId)
+      .get(`/hotel?id=${hotelId}`)
       .set('Authorization', `Bearer ${travelerToken}`);
     expect(res.body['id']).toEqual(hotelId);
     expect(res.status).toEqual(httpStatus.OK.code);
@@ -67,7 +67,7 @@ describe('Get hotel information', () => {
 
   it('[GET /hotel] should succeed (hotel manager access)', async () => {
     const res = await request(server)
-      .get('/hotel?id=' + hotelId)
+      .get(`/hotel?id=${hotelId}`)
       .set('Authorization', `Bearer ${hotelManagerToken}`);
     expect(res.status).toEqual(httpStatus.OK.code);
   });
@@ -178,4 +178,3 @@ describe('Delete hotel data', () => {
     expect(res.status).toEqual(httpStatus.BAD_REQUEST.code);
   });
 });
-

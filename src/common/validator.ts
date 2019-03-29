@@ -63,7 +63,7 @@ const validator = {
       return permitted;
     }
     throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
-  }
+  },
 };
 
 export { validator, validGender, validUserType, validPermitted };

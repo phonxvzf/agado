@@ -1,5 +1,4 @@
 import database from './database';
-import { User } from './user';
 
 interface Hotel {
   name: string;

@@ -1,9 +1,7 @@
 import koa from 'koa';
 import httpStatus from '../common/http-status';
-import config from '../common/config';
-import jsonwebtoken from 'jsonwebtoken';
 import { codes, ApiError } from '../common/api-error';
-import { hotelManagerRepo, HotelManager } from '../model/hotel_manager';
+import { hotelManagerRepo } from '../model/hotel_manager';
 import { validator } from '../common/validator';
 
 const ctrlHotelManager = {
@@ -30,13 +28,13 @@ const ctrlHotelManager = {
 
     try {
       const hotelManagerInfo = await hotelManagerRepo.getHotelManager(uid, hid);
-      if (hotelManagerInfo[0].permitted != 'pmt') {
+      if (hotelManagerInfo[0].permitted !== 'pmt') {
         throw new ApiError('access denied', codes.UNAUTHORIZED, 401); // check--throw inside try?
       }
     } catch (e) {
       throw new ApiError('hotel manager not found', codes.HOTEL_MANAGER_NOT_FOUND, 404);
     }
-    
+
     ctx.response.status = httpStatus.OK.code;
     return next();
   },
@@ -45,13 +43,16 @@ const ctrlHotelManager = {
     const invalidMessage = 'Please specify user_id, hotel_id, and permission_type.';
     const uid = validator.validateId(ctx.request.body['user_id'], invalidMessage);
     const hid = validator.validateId(ctx.request.body['hotel_id'], invalidMessage);
-    const permitted = validator.validatePermitted(ctx.request.body['permission_type'], invalidMessage);
+    const permitted = validator.validatePermitted(
+      ctx.request.body['permission_type'],
+      invalidMessage,
+    );
 
     const hotelManagerInfo = {
-      uid: uid,
-      hid: hid,
-      permitted: permitted
-    }
+      uid,
+      hid,
+      permitted,
+    };
 
     try {
       await hotelManagerRepo.createHotelManager(hotelManagerInfo);
@@ -67,13 +68,16 @@ const ctrlHotelManager = {
     const invalidMessage = 'Please specify user_id, hotel_id, and permission_type.';
     const uid = validator.validateId(ctx.request.body['user_id'], invalidMessage);
     const hid = validator.validateId(ctx.request.body['hotel_id'], invalidMessage);
-    const permitted = validator.validatePermitted(ctx.request.body['permission_type'], invalidMessage);
+    const permitted = validator.validatePermitted(
+      ctx.request.body['permission_type'],
+      invalidMessage,
+    );
 
     const hotelManagerInfo = {
-      uid: uid,
-      hid: hid,
-      permitted: permitted
-    }
+      uid,
+      hid,
+      permitted,
+    };
 
     try {
       await hotelManagerRepo.updateHotelManager(hotelManagerInfo);
@@ -98,7 +102,7 @@ const ctrlHotelManager = {
     }
 
     return next();
-  }
+  },
 };
 
 export default ctrlHotelManager;
