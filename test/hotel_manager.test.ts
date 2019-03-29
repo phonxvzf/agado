@@ -1,13 +1,10 @@
 import supertest from 'supertest';
 import index from '../src/index';
-import database from '../src/model/database';
 import util from './util';
 import httpStatus from '../src/common/http-status';
-import { hotelManagerRepo } from '../src/model/hotel_manager';
 
 const request = supertest;
 const server = index;
-const db = database;
 
 const travelerData = util.generateUserData();
 travelerData.user_type = 'traveler';
@@ -55,7 +52,7 @@ beforeAll(async (done) => {
   reqHotelManagerId = resReqHotelManager.body.id;
   reqHotelManagerToken = resReqHotelManager.body.token;
 
-  let resHotel = await request(server)
+  const resHotel = await request(server)
     .post('/hotel')
     .set('Authorization', `Bearer ${pmtHotelManagerToken}`)
     .send(hotelData);
@@ -68,17 +65,17 @@ beforeEach(async (done) => {
   await util.addHotelManager({
     uid: pmtHotelManagerId,
     hid: hotelId,
-    permitted: 'pmt'
+    permitted: 'pmt',
   });
   await util.addHotelManager({
     uid: noHotelManagerId,
     hid: hotelId,
-    permitted: 'no'
+    permitted: 'no',
   });
   await util.addHotelManager({
     uid: reqHotelManagerId,
     hid: hotelId,
-    permitted: 'req'
+    permitted: 'req',
   });
 
   done();

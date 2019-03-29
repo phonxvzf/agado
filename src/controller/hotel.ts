@@ -1,9 +1,7 @@
 import koa from 'koa';
 import httpStatus from '../common/http-status';
-import config from '../common/config';
-import jsonwebtoken from 'jsonwebtoken';
 import { codes, ApiError } from '../common/api-error';
-import { hotelRepo, Hotel } from '../model/hotel';
+import { hotelRepo } from '../model/hotel';
 import { validator } from '../common/validator';
 
 const ctrlHotel = {
@@ -13,7 +11,7 @@ const ctrlHotel = {
     if (hotelInfo == null) {
       throw new ApiError('hotel not found', codes.HOTEL_NOT_FOUND, 404);
     }
-    ctx.response.body = Object.assign({ id: id }, hotelInfo);
+    ctx.response.body = Object.assign({ id }, hotelInfo);
     ctx.response.status = httpStatus.OK.code;
     return next();
   },
@@ -29,13 +27,13 @@ const ctrlHotel = {
     const rating = validator.validateRating(ctx.request.body['rating'], invalidMessage);
 
     const hotelData = {
-      name: name,
-      desc: desc,
-      addr: addr,
-      prov: prov,
-      lat: lat,
-      long: long,
-      rating: rating
+      name,
+      desc,
+      addr,
+      prov,
+      lat,
+      long,
+      rating,
     };
 
     try {
@@ -45,7 +43,7 @@ const ctrlHotel = {
     } catch (e) {
       throw new ApiError('hotel already exists', codes.DUPLICATE_HOTEL, 400);
     }
-    
+
     return next();
   },
 
@@ -61,13 +59,13 @@ const ctrlHotel = {
     const rating = validator.validateRating(ctx.request.body['rating'], invalidMessage);
 
     const hotelData = {
-      name: name,
-      desc: desc,
-      addr: addr,
-      prov: prov,
-      lat: lat,
-      long: long,
-      rating: rating
+      name,
+      desc,
+      addr,
+      prov,
+      lat,
+      long,
+      rating,
     };
 
     try {
@@ -77,12 +75,12 @@ const ctrlHotel = {
     } catch (e) {
       throw new ApiError('hotel not found', codes.HOTEL_NOT_FOUND, 404);
     }
-    
+
     return next();
-  }, 
+  },
 
   deleteHotel: async(ctx: koa.Context, next: () => Promise<any>) => {
-    const id = validator.validateId(ctx.request.body['id'], 'Please specify id.')
+    const id = validator.validateId(ctx.request.body['id'], 'Please specify id.');
     try {
       await hotelRepo.deleteHotel(id);
       ctx.response.status = httpStatus.NO_CONTENT.code;
@@ -91,7 +89,7 @@ const ctrlHotel = {
     }
 
     return next();
-  }
+  },
 };
 
 export default ctrlHotel;
