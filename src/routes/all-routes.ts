@@ -55,7 +55,7 @@ router.put(
   auth.requireAuth,
   auth.checkHotelManagerType,
   hotelManager.checkHotelManagerPermission,
-  hotelManager.createHotelManager,
+  hotelManager.updateHotelManager,
 );
 router.del(
   '/hotelManager',

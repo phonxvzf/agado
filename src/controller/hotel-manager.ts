@@ -83,7 +83,7 @@ const ctrlHotelManager = {
       await hotelManagerRepo.updateHotelManager(hotelManagerInfo);
       ctx.response.status = httpStatus.OK.code;
     } catch (e) {
-      throw new ApiError('hotel manager not found', codes.HOTEL_MANAGER_NOT_FOUND, 400);
+      throw new ApiError('hotel manager not found', codes.HOTEL_MANAGER_NOT_FOUND, 404);
     }
 
     return next();
@@ -98,7 +98,7 @@ const ctrlHotelManager = {
       await hotelManagerRepo.deleteHotelManager(uid, hid);
       ctx.response.status = httpStatus.NO_CONTENT.code;
     } catch (e) {
-      throw new ApiError('hotel manager not found', codes.HOTEL_MANAGER_NOT_FOUND, 400);
+      throw new ApiError('hotel manager not found', codes.HOTEL_MANAGER_NOT_FOUND, 404);
     }
 
     return next();
