@@ -82,6 +82,7 @@ const ctrl = {
     userInfo['token'] = token;
 
     await userRepo.updateToken(userInfo['id'], userInfo['token']);
+    delete userInfo.password;
     ctx.response.body = userInfo;
     ctx.response.status = httpStatus.OK.code;
     return next();
@@ -104,6 +105,7 @@ const ctrl = {
       throw new ApiError('user not found', codes.USER_NOT_FOUND, 404);
     }
     delete userInfo['password'];
+    delete userInfo['token'];
     ctx.response.body = userInfo;
     ctx.response.status = httpStatus.OK.code;
     return next();
