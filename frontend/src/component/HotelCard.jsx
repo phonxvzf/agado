@@ -4,15 +4,6 @@ import { Badge, Button, Card, Col, Row } from 'react-bootstrap';
 import '../css/HotelCard.css';
 
 export default class HotelCard extends Component {
-  componentWillMount() {
-    const pathname = window.location.pathname;
-    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-    this.setState({
-      pathname: pathname,
-      search: search
-    });
-  }
-
   getRatingStar = (rating) => {
     rating = Math.round(rating * 2) / 2;
 
@@ -38,9 +29,9 @@ export default class HotelCard extends Component {
   getHotelLink = () => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hid: this.props.hotel.hid,
-      checkin: this.state.search.checkin,
-      checkout: this.state.search.checkout
+      hotel_id: this.props.hotel.hotel_id,
+      checkin: this.props.search.checkin,
+      checkout: this.props.search.checkout
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -58,7 +49,7 @@ export default class HotelCard extends Component {
             <Col xs={4} className="text-center">
               {this.getRatingStar(hotel.rating)}
               <br />
-              {hotel.review} reviews
+              {hotel.total_reviews} reviews
             </Col>
           </Row>
         </Card.Header>
@@ -69,7 +60,7 @@ export default class HotelCard extends Component {
               : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
           }
         </div>
-        <Badge variant="info" className="right-card"><div className="price mx-4 my-2">฿ {hotel.price}</div></Badge>
+        <Badge variant="info" className="right-card"><div className="price mx-4 my-2">฿ {hotel.start_price}</div></Badge>
         <Card.Body className="hotel-desc">
           <Card.Text>{hotel.desc.length < 120 ? hotel.desc : hotel.desc.slice(0, 120) + "..."}</Card.Text>
         </Card.Body>
@@ -78,7 +69,7 @@ export default class HotelCard extends Component {
             <Col xs={5}>
               <i className="fas fa-door-open" />
               <br />
-              {hotel.roomLeft} rooms left
+              {hotel.room_left} rooms left
             </Col>
             <Col xs={1} />
             <Col xs={6}>

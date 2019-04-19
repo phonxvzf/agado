@@ -21,7 +21,7 @@ export default class Profile extends Component {
       search: search
     });
 
-    const user = userService.getUser(search.uid);
+    const user = userService.getUser(search.user_id);
     const currentUser = userService.getCurrentUser();
 
     this.setState({
@@ -52,7 +52,7 @@ export default class Profile extends Component {
     e.preventDefault();
     const editedUser = this.state.editedUser;
     const user = {
-      uid: editedUser.uid,
+      user_id: editedUser.user_id,
       first_name: editedUser.first_name,
       last_name: editedUser.last_name,
       gender: editedUser.gender,
@@ -74,24 +74,24 @@ export default class Profile extends Component {
 
   deleteAccount = (e) => {
     e.preventDefault();
-    if (userService.deleteUser(this.state.currentUser.uid)) {
+    if (userService.deleteUser(this.state.currentUser.user_id)) {
       // this.setState({ showModal: "delete_completed" });
       userService.signout()
     }
   }
 
-  getProfileLink = (uid) => {
+  getProfileLink = (user_id) => {
     const pathname = "/profile";
     const search = qs.stringify({
-      uid: uid
+      user_id: user_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
 
-  getHotelLink = (hid) => {
+  getHotelLink = (hotel_id) => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hid: hid
+      hotel_id: hotel_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -174,7 +174,7 @@ export default class Profile extends Component {
             <Col as="h6">{user.phone_num}</Col>
           </Row>
           {
-            !currentUser || "" + currentUser.uid !== "" + this.state.search.uid ? "" :
+            !currentUser || "" + currentUser.user_id !== "" + this.state.search.user_id ? "" :
               <>
                 <Button variant="success" className="mr-4 my-2" onClick={() => this.setState({ mode: "edit" })}>Edit profile</Button>
                 <Button variant="danger" className="my-2" onClick={() => this.setState({ showModal: "delete_confirm" })}>Delete account</Button>
@@ -272,7 +272,7 @@ export default class Profile extends Component {
               </Col>
             </Row>
             {
-              "" + editedUser.uid !== "" + this.state.search.uid ? "" :
+              "" + editedUser.user_id !== "" + this.state.search.user_id ? "" :
                 <>
                   <Button type="submit" variant="success" className="mr-4 my-2">Save changes</Button>
                   <Button variant="secondary" className="my-2" onClick={() => this.setState({ mode: "" })}>Cancel</Button>
@@ -285,10 +285,10 @@ export default class Profile extends Component {
   }
 
   getPreviousReviews = () => {
-    const reviews = reviewService.getReviewsOf(this.state.user.uid);
+    const reviews = reviewService.getReviewsOf(this.state.user.user_id);
     const user = this.state.user;
     if (reviews.length === 0) {
-      return;
+      return <></>;
     }
     return (
       <div className="px-content">
@@ -297,22 +297,22 @@ export default class Profile extends Component {
         </Row>
         {
           reviews.map(review => {
-            const hotel = hotelService.getHotel(review.hid);
+            const hotel = hotelService.getHotel(review.hotel_id);
             return (
               <>
                 <hr className="my-2" />
                 <Row className="align-items-center scroll-snap-child">
                   <Col xs={12} sm={4} md={3} lg={2} className="text-center">
-                    <a className="text-dark" href={this.getProfileLink(user.uid)}>
+                    <a className="text-dark" href={this.getProfileLink(user.user_id)}>
                       <div className="w-xs-25 w-sm-50">
                         <div className="circle-avatar w-100 my-2" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
                       </div>
-                      {this.state.currentUser && "" + this.state.currentUser.uid === "" + user.uid ? <strong>Me</strong> : user.first_name + " " + user.last_name}
+                      {this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}
                     </a>
                   </Col>
                   <Col xs={12} sm={8} md={9} lg={10}>
                     <h5 className="d-inline">{review.title} </h5>
-                    <a className="fs-14 text-dark" href={this.getHotelLink(hotel.hid)}>@{hotel.name}</a>
+                    <a className="fs-14 text-dark" href={this.getHotelLink(hotel.hotel_id)}>@{hotel.name}</a>
                     <div className="fs-14">{this.getRatingStar(review.rating)} {new Date(review.date).toLocaleDateString()}</div>
                     {review.comment}
                   </Col>
@@ -349,17 +349,7 @@ export default class Profile extends Component {
   }
 
   getHotelsManaged = () => {
-    let hotels = hotelService.getHotelOf(this.state.user.uid);
-    hotels = hotels.map(hotel => {
-      const reviews = reviewService.getHotelReviews(hotel.hid);
-      hotel.review = reviews.length;
-      hotel.rating = reviews.length <= 0 ? 0 :
-        (reviews.map(review => review.rating).reduce((a, b) => a + b, 0)) / reviews.length;
-      hotel.price = hotel.rooms.map(room => room.price).reduce((a, b) => Math.min(a, b), Infinity);
-      hotel.price = hotel.price === Infinity ? 0 : hotel.price;
-      hotel.roomLeft = hotel.rooms.map(room => room.availableRoom).reduce((a, b) => a + b, 0);
-      return hotel
-    })
+    let hotels = hotelService.getHotelOf(this.state.user.user_id);
     return (
       <div className="px-content">
         <Row className="align-items-center mt-5 scroll-snap-child" noGutters>
@@ -369,8 +359,8 @@ export default class Profile extends Component {
           {
             hotels.map(hotel => {
               return (
-                <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hid}>
-                  <HotelCard hotel={hotel} />
+                <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hotel_id}>
+                  <HotelCard search={this.state.search} hotel={hotel} />
                 </Col>
               )
             })

@@ -33,8 +33,8 @@ export default class ReviewModal extends Component {
   createReview = (e) => {
     e.preventDefault();
     const review = {
-      hid: this.props.hid,
-      uid: this.state.currentUser.uid,
+      hotel_id: this.props.hotel_id,
+      user_id: this.state.currentUser.user_id,
       title: this.state.review.title,
       date: new Date(),
       rating: this.state.review.rating,
@@ -53,14 +53,14 @@ export default class ReviewModal extends Component {
       rating: this.state.review.rating,
       comment: this.state.review.comment
     }
-    if (reviewService.editReview(this.props.oldReview.rid, editedReview)) {
+    if (reviewService.editReview(this.props.oldReview.review_id, editedReview)) {
       this.setState({ showModal: "edit_completed" });
     }
   }
 
   deleteReview = (e) => {
     e.preventDefault();
-    if (reviewService.deleteReview(this.props.oldReview.rid)) {
+    if (reviewService.deleteReview(this.props.oldReview.review_id)) {
       window.history.go();
     }
   }

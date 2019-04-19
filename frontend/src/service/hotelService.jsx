@@ -1,37 +1,57 @@
+import { reviewService } from "./reviewService";
+
 export class hotelService {
   static getHotels = () => {
-    return JSON.parse(localStorage.getItem("hotels"));
+    let hotels = JSON.parse(localStorage.getItem("hotels"));
+    for (let i = 0; i < hotels.length; i++) {
+      let hotel = hotels[i];
+      const reviews = reviewService.getHotelReviews(hotel.hotel_id);
+
+      hotel.reviews = reviews;
+      hotel.rating = reviews.length > 0 ? (reviews.map(review => review.rating).reduce((a, b) => a + b, 0)) / reviews.length : 0;
+      hotel.total_reviews = reviews.length;
+      hotel.num_rating = [0, 0, 0, 0, 0];
+      reviews.forEach(review => hotel.num_rating[5 - review.rating] = hotel.num_rating[5 - review.rating] + 1 );
+      hotel.start_price = hotel.rooms.map(room => room.price).reduce((a, b) => Math.min(a, b), Infinity);
+      hotel.start_price = hotel.start_price === Infinity ? 0 : hotel.start_price;
+      hotel.room_left = hotel.rooms.map(room => room.available_rooms).reduce((a, b) => a + b, 0);
+
+      hotels[i] = hotel;
+    }
+    localStorage.setItem("hotels", JSON.stringify(hotels));
+
+    return hotels;
   }
 
-  static getHotel = (hid) => {
+  static getHotel = (hotel_id) => {
     const hotels = this.getHotels();
     for (let i = 0; i < hotels.length; i++) {
       const hotel = hotels[i];
-      if ("" + hid === "" + hotel.hid) {
+      if ("" + hotel_id === "" + hotel.hotel_id) {
         return hotel;
       }
     }
     return null;
   }
 
-  static getHotelOf = (uid) => {
+  static getHotelOf = (user_id) => {
     let hotels = this.getHotels();
-    hotels = hotels.filter(hotel => hotel.managers.includes(uid));
+    hotels = hotels.filter(hotel => hotel.managers.includes(user_id));
     return hotels;
   }
 
   static createHotel = (hotel) => {
     let hotels = this.getHotels();
-    hotel.hid = hotels.length + 1;
+    hotel.hotel_id = hotels.length + 1;
     hotels.push(hotel);
     localStorage.setItem("hotels", JSON.stringify(hotels));
     return true;
   }
 
-  static editHotel = (hid, editedHotel) => {
+  static editHotel = (hotel_id, editedHotel) => {
     let hotels = this.getHotels();
     for (let i = 0; i < hotels.length; i++) {
-      if ("" + hid === "" + hotels[i].hid) {
+      if ("" + hotel_id === "" + hotels[i].hotel_id) {
         hotels[i] = {
           ...hotels[i],
           ...editedHotel
@@ -43,20 +63,20 @@ export class hotelService {
     return false;
   }
 
-  static deleteHotel = (hid) => {
+  static deleteHotel = (hotel_id) => {
     let hotels = this.getHotels();
-    hotels = hotels.filter(hotel => { return "" + hotel.hid !== "" + hid });
+    hotels = hotels.filter(hotel => { return "" + hotel.hotel_id !== "" + hotel_id });
     localStorage.setItem("hotels", JSON.stringify(hotels));
     return true;
   }
 
-  static cancelManagement = (hid, uid) => {
+  static cancelManagement = (hotel_id, user_id) => {
     let hotels = this.getHotels();
     for (let i = 0; i < hotels.length; i++) {
-      if ("" + hid === "" + hotels[i].hid) {
-        hotels[i].managers = hotels[i].managers.filter(manager => "" + manager !== "" + uid);
+      if ("" + hotel_id === "" + hotels[i].hotel_id) {
+        hotels[i].managers = hotels[i].managers.filter(manager => "" + manager !== "" + user_id);
         if (hotels[i].managers.length === 0) {
-          return this.deleteHotel(hid);
+          return this.deleteHotel(hotel_id);
         }
         localStorage.setItem("hotels", JSON.stringify(hotels));
         return true;
@@ -65,11 +85,11 @@ export class hotelService {
     return false;
   }
 
-  static addManager = (hid, uid) => {
+  static addManager = (hotel_id, user_id) => {
     let hotels = this.getHotels();
     for (let i = 0; i < hotels.length; i++) {
-      if ("" + hid === "" + hotels[i].hid) {
-        hotels[i].managers.push(uid);
+      if ("" + hotel_id === "" + hotels[i].hotel_id) {
+        hotels[i].managers.push(user_id);
         localStorage.setItem("hotels", JSON.stringify(hotels));
         return true;
       }

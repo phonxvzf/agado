@@ -3,15 +3,15 @@ export class reservationService {
     return JSON.parse(localStorage.getItem("reservations"));
   }
 
-  static getReservationOf = (uid) => {
+  static getReservationOf = (user_id) => {
     let reservations = this.getReservations();
-    reservations = reservations.filter(reservation => "" + reservation.uid === "" + uid );
+    reservations = reservations.filter(reservation => "" + reservation.user_id === "" + user_id );
     return reservations;
   }
 
-  static getReservationOfHotel = (hid) => {
+  static getReservationOfHotel = (hotel_id) => {
     let reservations = this.getReservations();
-    reservations = reservations.filter(reservation => "" + reservation.hid === "" + hid );
+    reservations = reservations.filter(reservation => "" + reservation.hotel_id === "" + hotel_id );
     return reservations;
   }
 

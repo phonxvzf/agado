@@ -10,9 +10,9 @@ import ReviewModal from './ReviewModal';
 export default class ReservationCard extends Component {
   componentWillMount() {
     const reservation = this.props.reservation;
-    const oldReview = reviewService.getOldReview(reservation.uid, reservation.hid);
+    const oldReview = reviewService.getOldReview(reservation.user_id, reservation.hotel_id);
     this.setState({
-      hotel: hotelService.getHotel(reservation.hid),
+      hotel: hotelService.getHotel(reservation.hotel_id),
       oldReview: oldReview
     })
   }
@@ -34,8 +34,8 @@ export default class ReservationCard extends Component {
     const checkin = this.props.reservation.checkin;
     const checkout = this.props.reservation.checkout;
     const interval = Math.max(0, (new Date(checkout) - new Date(checkin)) / 24 / 60 / 60 / 1000);
-    const hotel = hotelService.getHotel(this.props.reservation.hid);
-    const room = hotel.rooms[Number(this.props.reservation.rid)];
+    const hotel = hotelService.getHotel(this.props.reservation.hotel_id);
+    const room = hotel.rooms[Number(this.props.reservation.reservation_id)];
     return interval * (room ? room.price : 0) * Number(this.props.reservation.num);
   }
 
@@ -46,7 +46,7 @@ export default class ReservationCard extends Component {
   getHotelLink = () => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hid: this.props.reservation.hid
+      hotel_id: this.props.reservation.hotel_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -84,7 +84,7 @@ export default class ReservationCard extends Component {
             }
           </div>
           <Card.Body>
-            <Card.Text>Room: {hotel.rooms[Number(reservation.rid)] ? hotel.rooms[Number(reservation.rid)].name : ""}</Card.Text>
+            <Card.Text>Room: {hotel.rooms[Number(reservation.reservation_id)] ? hotel.rooms[Number(reservation.reservation_id)].name : ""}</Card.Text>
             <Card.Text>Number of room: {reservation.num}</Card.Text>
             <Card.Text>Price: ฿ {this.getPrice()}</Card.Text>
           </Card.Body>
@@ -103,7 +103,7 @@ export default class ReservationCard extends Component {
           </Card.Footer>
         </Card>
         <ReviewModal
-          hid={reservation.hid}
+          hotel_id={reservation.hotel_id}
           oldReview={this.state.oldReview}
           showModal={this.state.showModal === "review"}
           closeModal={() => this.setState({ showModal: null })} />

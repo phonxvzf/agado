@@ -13,8 +13,8 @@ export default class Request extends Component {
 
     let requests = [];
     if (currentUser) {
-      requests = requestService.getRequestOf(currentUser.uid).reduce((r, request) => {
-        r[request.hid] = (r[request.hid] || []).concat(request);
+      requests = requestService.getRequestOf(currentUser.user_id).reduce((r, request) => {
+        r[request.hotel_id] = (r[request.hotel_id] || []).concat(request);
         return r;
       }, []);
     }
@@ -28,18 +28,18 @@ export default class Request extends Component {
     });
   }
 
-  getProfileLink = (uid) => {
+  getProfileLink = (user_id) => {
     const pathname = "/profile";
     const search = qs.stringify({
-      uid: uid
+      user_id: user_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
 
-  getHotelLink = (hid) => {
+  getHotelLink = (hotel_id) => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hid: hid
+      hotel_id: hotel_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -66,42 +66,42 @@ export default class Request extends Component {
             <>
               {
                 requests.map(request => {
-                  if (!request) return;
-                  const hotel = hotelService.getHotel(request[0].hid);
+                  if (!request) return <></>;
+                  const hotel = hotelService.getHotel(request[0].hotel_id);
                   return (
                     <div className="px-content scroll-snap-child mb-5">
                       <div className="px-content">
                         <Card>
                           <Card.Header>
                             <Row className="align-items-center text-center justify-content-center">
-                              <a className="text-dark" href={this.getHotelLink(hotel.hid)}>
+                              <a className="text-dark" href={this.getHotelLink(hotel.hotel_id)}>
                                 <h4 className="mr-md-4 my-2">{hotel.name}</h4>
                               </a>
-                              {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hid)}>View hotel</Button> */}
+                              {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hotel_id)}>View hotel</Button> */}
                             </Row>
                           </Card.Header>
                           {/* <hr /> */}
                           <Card.Body>
                             {
                               request.map((r, idx) => {
-                                const user = userService.getUser(r.uid);
+                                const user = userService.getUser(r.user_id);
                                 return (
                                   <>
                                     {idx > 0 ? <hr /> : ""}
                                     <Row className="align-items-center justify-content-center my-3">
                                       <Col xs={10} md={4}>
-                                        <a className="text-dark" href={this.getProfileLink(user.uid)}>
+                                        <a className="text-dark" href={this.getProfileLink(user.user_id)}>
                                           <Row className="align-items-center">
                                             <div className="d-inline-block circle-avatar w-25" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
-                                            <Col>{this.state.currentUser && "" + this.state.currentUser.uid === "" + user.uid ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
+                                            <Col>{this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
                                           </Row>
                                         </a>
                                       </Col>
                                       <Col xs={4} md={2} className="my-3">
-                                        <Button variant="success" onClick={() => requestService.acceptRequest(r.rid, r.hid, r.uid)}>Accept</Button>
+                                        <Button variant="success" onClick={() => requestService.acceptRequest(r.request_id, r.hotel_id, r.user_id)}>Accept</Button>
                                       </Col>
                                       <Col xs={4} md={2} className="my-3">
-                                        <Button variant="danger" onClick={() => requestService.rejectRequest(r.rid)}>Reject</Button>
+                                        <Button variant="danger" onClick={() => requestService.rejectRequest(r.request_id)}>Reject</Button>
                                       </Col>
                                     </Row>
                                   </>

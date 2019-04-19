@@ -28,7 +28,7 @@ export default class HotelManageCard extends Component {
   getHotelLink = () => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hid: this.props.hotel.hid
+      hotel_id: this.props.hotel.hotel_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -36,7 +36,7 @@ export default class HotelManageCard extends Component {
   getHotelReservationLink = () => {
     const pathname = "/hotel/reservation";
     const search = qs.stringify({
-      hid: this.props.hotel.hid
+      hotel_id: this.props.hotel.hotel_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -54,7 +54,7 @@ export default class HotelManageCard extends Component {
             <Col xs={4} className="text-center">
               {this.getRatingStar(hotel.rating)}
               <br />
-              {hotel.review} reviews
+              {hotel.total_reviews} reviews
             </Col>
           </Row>
         </Card.Header>

@@ -71,7 +71,7 @@ export default class CustomNavBar extends Component {
   getProfileLink = () => {
     const pathname = "/profile";
     const search = qs.stringify({
-      uid: this.state.currentUser.uid
+      user_id: this.state.currentUser.user_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -79,7 +79,7 @@ export default class CustomNavBar extends Component {
   getHotelLink = () => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hid: this.state.search.hid,
+      hotel_id: this.state.search.hotel_id,
       checkin: this.state.search.checkin,
       checkout: this.state.search.checkout
     }, { addQueryPrefix: true });
@@ -89,7 +89,7 @@ export default class CustomNavBar extends Component {
   getHotelEditLink = () => {
     const pathname = "/hotel/edit";
     const search = qs.stringify({
-      hid: this.state.search.hid
+      hotel_id: this.state.search.hotel_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -97,15 +97,15 @@ export default class CustomNavBar extends Component {
   getHotelReservationLink = () => {
     const pathname = "/hotel/reservation";
     const search = qs.stringify({
-      hid: this.state.search.hid
+      hotel_id: this.state.search.hotel_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
 
   requestPermission = () => {
     const request = {
-      hid: this.state.search.hid,
-      uid: this.state.currentUser.uid
+      hotel_id: this.state.search.hotel_id,
+      user_id: this.state.currentUser.user_id
     }
     if (requestService.createRequest(request)) {
       window.history.go();
@@ -113,14 +113,14 @@ export default class CustomNavBar extends Component {
   }
 
   cancelMaagement = () => {
-    if (hotelService.cancelManagement(this.state.search.hid, this.state.currentUser.uid)) {
+    if (hotelService.cancelManagement(this.state.search.hotel_id, this.state.currentUser.user_id)) {
       window.location.href = "/myhotel";
     }
   }
 
   isUserOwn = () => {
-    const hotel = hotelService.getHotel(this.state.search.hid);
-    return hotel && hotel.managers.includes(this.state.currentUser.uid);
+    const hotel = hotelService.getHotel(this.state.search.hotel_id);
+    return hotel && hotel.managers.includes(this.state.currentUser.user_id);
   }
 
   loadPrice = (s) => {
@@ -295,8 +295,8 @@ export default class CustomNavBar extends Component {
     } else if (this.state.pathname === "/hotel/edit"
       && this.state.currentUser
       && this.state.currentUser.user_type === "hotel_manager"
-      && hotelService.getHotel(this.state.search.hid)
-      && hotelService.getHotel(this.state.search.hid).managers.includes(this.state.currentUser.uid)) {
+      && hotelService.getHotel(this.state.search.hotel_id)
+      && hotelService.getHotel(this.state.search.hotel_id).managers.includes(this.state.currentUser.user_id)) {
       return (
         <div className="text-center">
           <div className="d-xs-sm-none d-sm-md-none">
@@ -395,7 +395,7 @@ export default class CustomNavBar extends Component {
 
   getUserActions = () => {
     const currentUser = this.state.currentUser;
-    const requests = currentUser ? requestService.getRequestOf(currentUser.uid) : "";
+    const requests = currentUser ? requestService.getRequestOf(currentUser.user_id) : "";
     if (!currentUser) {
       return (
         <Nav className="">
@@ -725,7 +725,7 @@ export default class CustomNavBar extends Component {
                   <hr className="mx-0 my-3 d-md-none" />
                   <div className="text-center">
                     {
-                      requestService.isRequestPending(this.state.search.hid, this.state.currentUser.uid) ?
+                      requestService.isRequestPending(this.state.search.hotel_id, this.state.currentUser.user_id) ?
                         <Button disabled variant="link" className="text-dark">
                           <h5 className="my-0"><strong><i className="fas fa-paper-plane" /> Request is pending</strong></h5>
                         </Button>

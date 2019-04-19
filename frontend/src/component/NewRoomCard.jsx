@@ -5,36 +5,28 @@ import { hotelService } from '../service/hotelService';
 export default class NewRoomCard extends Component {
   componentWillMount() {
     this.upimgs = [];
-    this.setState({
-      focus: null,
-      room: {
-        name: "",
-        imgs: [],
-        beds: 1,
-        maxPerson: 1,
-        price: 0,
-        availableRoom: 1,
-        totalRoom: 1,
-        amenities: []
-      }
-    });
+    this.resetRoom();
   }
 
   componentWillReceiveProps() {
     if (this.state.room) {
-      this.setState({
-        room: {
-          name: "",
-          imgs: [],
-          beds: 1,
-          maxPerson: 1,
-          price: 0,
-          availableRoom: 1,
-          totalRoom: 1,
-          amenities: []
-        }
-      })
+      this.resetRoom();
     }
+  }
+
+  resetRoom = () => {
+    this.setState({
+      room: {
+        name: "",
+        imgs: [],
+        beds: 1,
+        max_person: 1,
+        price: 0,
+        available_rooms: 1,
+        total_rooms: 1,
+        amenities: []
+      }
+    });
   }
 
   onChange = (room) => {
@@ -204,20 +196,20 @@ export default class NewRoomCard extends Component {
                       <div className="my-2">
                         <h6><i className="fas fa-user-friends"></i></h6>
                         {
-                          this.state.focus === "maxPerson" ?
+                          this.state.focus === "max_person" ?
                             <Form.Control
                               type="number"
                               min={1}
-                              onChange={(e) => this.onChange({ ...room, maxPerson: Math.max(e.currentTarget.value, 1) })}
+                              onChange={(e) => this.onChange({ ...room, max_person: Math.max(e.currentTarget.value, 1) })}
                               onBlur={() => this.setState({ focus: null })}
                               placeholder="People"
-                              defaultValue={room.maxPerson}
+                              defaultValue={room.max_person}
                               autoFocus
                               required />
                             :
                             <>
-                              <h6>{room.maxPerson} People</h6>
-                              <Button variant="link" className="text-light px-0 py-0 fs-14" onClick={() => this.setState({ focus: "maxPerson" })}>
+                              <h6>{room.max_person} People</h6>
+                              <Button variant="link" className="text-light px-0 py-0 fs-14" onClick={() => this.setState({ focus: "max_person" })}>
                                 edit&nbsp;<i className="fas fa-edit" />
                               </Button>
                             </>
@@ -289,25 +281,25 @@ export default class NewRoomCard extends Component {
             </Col>
             <Col xs={12} md={5} className="my-2">
               {
-                this.state.focus === "totalRoom" ?
+                this.state.focus === "total_rooms" ?
                   <Form.Group as={Row}>
                     <Form.Label column><h5 className="text-right">Total room: </h5></Form.Label>
                     <Col>
                       <Form.Control
                         type="number"
                         min={1}
-                        onChange={(e) => this.onChange({ ...room, totalRoom: Math.max(e.currentTarget.value, 1), availableRoom: Math.max(e.currentTarget.value, 1) })}
+                        onChange={(e) => this.onChange({ ...room, total_rooms: Math.max(e.currentTarget.value, 1), available_rooms: Math.max(e.currentTarget.value, 1) })}
                         onBlur={() => this.setState({ focus: null })}
                         placeholder="Total room"
-                        defaultValue={room.totalRoom}
+                        defaultValue={room.total_rooms}
                         autoFocus
                         required />
                     </Col>
                   </Form.Group>
                   :
                   <>
-                    <h5>Total room: <strong>{room.totalRoom} room{room.totalRoom > 1 ? "s" : ""}</strong></h5>
-                    <Button variant="link" className="text-dark px-0 py-0 fs-14" onClick={() => this.setState({ focus: "totalRoom" })}>
+                    <h5>Total room: <strong>{room.total_rooms} room{room.total_rooms > 1 ? "s" : ""}</strong></h5>
+                    <Button variant="link" className="text-dark px-0 py-0 fs-14" onClick={() => this.setState({ focus: "total_rooms" })}>
                       edit&nbsp;<i className="fas fa-edit" />
                     </Button>
                   </>

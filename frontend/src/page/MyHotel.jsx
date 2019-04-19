@@ -4,7 +4,6 @@ import { Col, Row } from 'react-bootstrap';
 import HotelManageCard from '../component/HotelManageCard';
 import '../css/MyHotel.css';
 import { hotelService } from '../service/hotelService';
-import { reviewService } from '../service/reviewService';
 import { userService } from '../service/userService';
 
 export default class MyHotel extends Component {
@@ -19,14 +18,7 @@ export default class MyHotel extends Component {
       validUser: currentUser && currentUser.user_type === "hotel_manager"
     });
     
-    let hotels = currentUser ? hotelService.getHotelOf(currentUser.uid) : [];
-    hotels = hotels.map(hotel => {
-      const reviews = reviewService.getHotelReviews(hotel.hid);
-      hotel.review = reviews.length;
-      hotel.rating = reviews.length <= 0 ? 0 :
-        (reviews.map(review => review.rating).reduce((a, b) => a + b, 0)) / reviews.length;
-      return hotel
-    })
+    const hotels = currentUser ? hotelService.getHotelOf(currentUser.user_id) : [];
 
     this.setState({
       hotels: hotels
@@ -49,7 +41,7 @@ export default class MyHotel extends Component {
           {
             this.state.hotels.map(hotel => {
               return (
-                <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hid}>
+                <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hotel_id}>
                   <HotelManageCard hotel={hotel} />
                 </Col>
               )

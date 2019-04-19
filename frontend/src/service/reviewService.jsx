@@ -3,30 +3,30 @@ export class reviewService {
     return JSON.parse(localStorage.getItem("reviews"));
   }
 
-  static getReviewsOf = (uid) => {
+  static getReviewsOf = (user_id) => {
     let reviews = this.getReviews();
-    reviews = reviews.filter(review => { return "" + review.uid === "" + uid });
+    reviews = reviews.filter(review => { return "" + review.user_id === "" + user_id });
     return reviews;
   }
 
-  static getHotelReviews = (hid) => {
+  static getHotelReviews = (hotel_id) => {
     let reviews = this.getReviews();
-    reviews = reviews.filter(review => { return "" + review.hid === "" + hid });
+    reviews = reviews.filter(review => { return "" + review.hotel_id === "" + hotel_id });
     return reviews;
   }
 
   static createReview = (review) => {
     let reviews = this.getReviews();
-    review.rid = reviews.length + 1;
+    review.review_id = reviews.length + 1;
     reviews.push(review);
     localStorage.setItem("reviews", JSON.stringify(reviews));
     return true;
   }
 
-  static editReview = (rid, editedReview) => {
+  static editReview = (review_id, editedReview) => {
     let reviews = this.getReviews();
     for (let i = 0; i < reviews.length; i++) {
-      if ("" + rid === "" + reviews[i].rid) {
+      if ("" + review_id === "" + reviews[i].review_id) {
         reviews[i] = {
           ...reviews[i],
           ...editedReview
@@ -38,18 +38,18 @@ export class reviewService {
     return false;
   }
 
-  static deleteReview = (rid) => {
+  static deleteReview = (review_id) => {
     let reviews = this.getReviews();
-    reviews = reviews.filter(review => { return "" + review.rid !== "" + rid });
+    reviews = reviews.filter(review => { return "" + review.review_id !== "" + review_id });
     localStorage.setItem("reviews", JSON.stringify(reviews));
     return true;
   }
 
-  static getOldReview = (uid, hid) => {
+  static getOldReview = (user_id, hotel_id) => {
     const reviews = this.getReviews();
     for (let i = 0; i < reviews.length; i++) {
       const review = reviews[i];
-      if ("" + uid === "" + review.uid && "" + hid === "" + review.hid) {
+      if ("" + user_id === "" + review.user_id && "" + hotel_id === "" + review.hotel_id) {
         return review;
       }
     }

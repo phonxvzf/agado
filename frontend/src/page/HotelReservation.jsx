@@ -10,12 +10,12 @@ export default class HotelReservation extends Component {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
-    const hotel = hotelService.getHotel(search.hid);
+    const hotel = hotelService.getHotel(search.hotel_id);
 
     let reservations = [];
     if (currentUser) {
-      reservations = reservationService.getReservationOfHotel(search.hid).reduce((r, reservation) => {
-        r[reservation.rid] = (r[reservation.rid] || []).concat(reservation);
+      reservations = reservationService.getReservationOfHotel(search.hotel_id).reduce((r, reservation) => {
+        r[reservation.reservation_id] = (r[reservation.reservation_id] || []).concat(reservation);
         return r;
       }, []);
     }
@@ -30,10 +30,10 @@ export default class HotelReservation extends Component {
     });
   }
 
-  getProfileLink = (uid) => {
+  getProfileLink = (user_id) => {
     const pathname = "/profile";
     const search = qs.stringify({
-      uid: uid
+      user_id: user_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -59,7 +59,7 @@ export default class HotelReservation extends Component {
           <h1>This page is not exist</h1>
         </div>
       )
-    } else if (!this.state.hotel.managers.includes(this.state.currentUser.uid)) {
+    } else if (!this.state.hotel.managers.includes(this.state.currentUser.user_id)) {
       return (
         <div className="hotel-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
@@ -81,8 +81,8 @@ export default class HotelReservation extends Component {
             <>
               {
                 reservations.map(reservation => {
-                  if (!reservation) return;
-                  const room = hotel.rooms[reservation[0].rid];
+                  if (!reservation) return <></>;
+                  const room = hotel.rooms[reservation[0].reservation_id];
                   return (
                     <div className="px-content scroll-snap-child mb-5">
                       <div className="px-content">
@@ -90,23 +90,23 @@ export default class HotelReservation extends Component {
                           <Card.Header>
                             <Row className="align-items-center text-center justify-content-center">
                               <h4 className="text-dark mr-md-4 my-2">{room.name}</h4>
-                              {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hid)}>View hotel</Button> */}
+                              {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hotel_id)}>View hotel</Button> */}
                             </Row>
                           </Card.Header>
                           {/* <hr /> */}
                           <Card.Body>
                             {
                               reservation.map((r, idx) => {
-                                const user = userService.getUser(r.uid);
+                                const user = userService.getUser(r.user_id);
                                 return (
                                   <>
                                     {idx > 0 ? <hr /> : ""}
                                     <Row className="align-items-center justify-content-center my-3">
                                       <Col xs={10} md={4}>
-                                        <a className="text-dark" href={this.getProfileLink(user.uid)}>
+                                        <a className="text-dark" href={this.getProfileLink(user.user_id)}>
                                           <Row className="align-items-center">
                                             <div className="d-inline-block circle-avatar w-25" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
-                                            <Col>{this.state.currentUser && "" + this.state.currentUser.uid === "" + user.uid ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
+                                            <Col>{this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
                                           </Row>
                                         </a>
                                       </Col>

@@ -16,67 +16,36 @@ export default class HotelInfo extends Component {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
-    let oldReview = null;
-    if (currentUser) {
-      oldReview = reviewService.getOldReview(currentUser.uid, search.hid);
-    }
     this.setState({
       pathname: pathname,
       search: search,
-      currentUser: currentUser,
-      oldReview: oldReview
+      currentUser: currentUser
     });
 
-    let hotel = {
-      hid: 1,
-      name: "New York Skyline Hotel",
-      city: "New York",
-      address: "1/3 Moo 6, Thanarat Road, Moo Si, Pakchong, Khao Yai National Park, Khao Yai, Thailand, 30130",
-      desc: "Take a look at New York view, the best way to see this city. You will find all the classic buildings, sights and more plus. Bootstrap includes a few general use CSS transitions that can be applied to a number of components. Add a collapse toggle animation to an element or component.",
-      rating: 2.7,
-      review: 134,
-      price: 75,
-      roomLeft: 26,
-      reviews: [84, 32, 2, 11, 5],
-      imgs: ['/image/hotel2-1.jpg',
-        '/image/hotel2-2.jpg',
-        '/image/hotel2-3.jpg',
-        '/image/hotel2-4.jpg',
-        '/image/hotel2-5.jpg',
-        '/image/hotel1.jpg'],
-      managers: [1, 2, 4]
-    };
-
-    const r = reviewService.getHotelReviews(search.hid);
-    let h = hotelService.getHotel(search.hid);
-    if (h) {
-      h.rating = r.length > 0 ? (r.map(review => review.rating).reduce((a, b) => a + b, 0)) / r.length : 0;
-      h.review = r.length;
-      h.reviews = [0, 0, 0, 0, 0]
-      r.forEach(review => h.reviews[5 - review.rating] = h.reviews[5 - review.rating] + 1);
-      h.price = h.rooms.map(room => room.price).reduce((a, b) => Math.min(a, b), 0);
-      h.roomLeft = h.rooms.map(room => room.availableRoom).reduce((a, b) => a + b, 0);
-      hotel = h;
+    let oldReview = null;
+    if (currentUser) {
+      oldReview = reviewService.getOldReview(currentUser.user_id, search.hotel_id);
     }
+    const hotel = hotelService.getHotel(search.hotel_id);
 
     this.setState({
       hotel: hotel,
-      reviews: r
+      oldReview: oldReview
     });
   }
 
-  getProfileLink = (uid) => {
+  getProfileLink = (user_id) => {
     const pathname = "/profile";
     const search = qs.stringify({
-      uid: uid
+      user_id: user_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
 
   requestPermission = () => {
     const request = {
-      hid: this.state.search.hid,
-      uid: this.state.currentUser.uid
+      hotel_id: this.state.search.hotel_id,
+      user_id: this.state.currentUser.user_id
     }
     if (requestService.createRequest(request)) {
       window.history.go();
@@ -84,16 +53,23 @@ export default class HotelInfo extends Component {
   }
 
   isUserOwn = () => {
-    return this.state.currentUser && this.state.currentUser.user_type === "hotel_manager" && this.state.hotel.managers.includes(this.state.currentUser.uid);
+    return this.state.currentUser && this.state.currentUser.user_type === "hotel_manager" && this.state.hotel.managers.includes(this.state.currentUser.user_id);
   }
 
   render() {
+    if (!this.state.hotel) {
+      return (
+        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+          <h1>This page is not exist</h1>
+        </div>
+      )
+    }
     return (
       <>
         <div className="hotel-bg px-auto hotel-info">
           {
             this.props.mode === "edit" && this.isUserOwn() ?
-              <CreateHotel />
+              <CreateHotel pathname={this.state.pathname} search={this.state.search} currentUser={this.state.currentUser} hotel={this.state.hotel} />
               :
               <>
                 {this.getImageSection()}
@@ -101,7 +77,7 @@ export default class HotelInfo extends Component {
                   {this.getInfoSection()}
                 </div>
                 <div id="hotel_rooms">
-                  <RoomSelection />
+                  <RoomSelection search={this.state.search} currentUser={this.state.currentUser} rooms={this.state.hotel.rooms} />
                 </div>
               </>
           }
@@ -113,7 +89,7 @@ export default class HotelInfo extends Component {
           </div>
         </div>
         <ReviewModal
-          hid={this.state.search.hid}
+          hotel_id={this.state.search.hotel_id}
           oldReview={this.state.oldReview}
           showModal={this.state.showModal === "review"}
           closeModal={() => this.setState({ showModal: null })} />
@@ -208,7 +184,7 @@ export default class HotelInfo extends Component {
               <Row className="align-items-center mb-4" noGutters>
                 <Col className="text-center">
                   {
-                    requestService.isRequestPending(this.state.search.hid, this.state.currentUser.uid) ?
+                    requestService.isRequestPending(this.state.search.hotel_id, this.state.currentUser.user_id) ?
                       <Button disabled variant="dark" className="bg-requestpx-4">
                         <i className="fas fa-paper-plane" /> Request is pending
                           </Button>
@@ -228,6 +204,7 @@ export default class HotelInfo extends Component {
 
   getReviewsSection = () => {
     const hotel = this.state.hotel;
+    console.log(hotel)
     return (
       <>
         <Row className="align-items-center mt-5 scroll-snap-child" noGutters>
@@ -240,7 +217,7 @@ export default class HotelInfo extends Component {
             out of 5
             </Col>
           <Col>
-            {hotel.reviews.map((review, idx) => this.getProgressComponent(review, idx))}
+            {hotel.num_rating.map((review, idx) => this.getProgressComponent(review, idx))}
           </Col>
           <Col lg={1} className="d-xs-none" />
         </Row>
@@ -264,7 +241,7 @@ export default class HotelInfo extends Component {
           {this.getStarComponent(idx)}
         </Col>
         <Col>
-          <ProgressBar variant="dark" className="progress-star" now={review * 100 / this.state.hotel.review} />
+          <ProgressBar variant="dark" className="progress-star" now={review * 100 / this.state.hotel.total_reviews} />
         </Col>
       </Row>
     )
@@ -280,18 +257,18 @@ export default class HotelInfo extends Component {
   }
 
   getReviewsComponent = () => {
-    return this.state.reviews.map(review => {
-      const user = userService.getUser(review.uid);
+    return this.state.hotel.reviews.map(review => {
+      const user = userService.getUser(review.user_id);
       return (
         <>
           <hr className="my-2" />
           <Row className="align-items-center scroll-snap-child">
             <Col xs={12} sm={4} md={3} lg={2} className="text-center">
-              <a className="text-dark" href={this.getProfileLink(user.uid)}>
+              <a className="text-dark" href={this.getProfileLink(user.user_id)}>
                 <div className="w-xs-25 w-sm-50">
                   <div className="circle-avatar w-100 my-2" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
                 </div>
-                {this.state.currentUser && "" + this.state.currentUser.uid === "" + user.uid ? <strong>Me</strong> : user.first_name + " " + user.last_name}
+                {this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}
               </a>
             </Col>
             <Col xs={12} sm={8} md={9} lg={10}>
@@ -336,14 +313,14 @@ export default class HotelInfo extends Component {
         </Row>
         <Row>
           {
-            hotel.managers.map(uid => {
-              const user = userService.getUser(uid);
+            hotel.managers.map(user_id => {
+              const user = userService.getUser(user_id);
               return (
                 <Col xs={12} sm={6} md={4} lg={4} className="my-3">
-                  <a className="text-dark" href={this.getProfileLink(user.uid)}>
+                  <a className="text-dark" href={this.getProfileLink(user.user_id)}>
                     <Row className="align-items-center">
                       <div className="d-inline-block circle-avatar w-25" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
-                      <Col>{this.state.currentUser && "" + this.state.currentUser.uid === "" + user.uid ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
+                      <Col>{this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
                     </Row>
                   </a>
                 </Col>

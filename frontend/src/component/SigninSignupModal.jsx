@@ -77,7 +77,7 @@ export default class SigninSignupModal extends Component {
           noFooter noCloseButton />
         <CustomModal
           showModal={this.state.showModal === "signup_completed"}
-          closeModal={() => { this.setState({ showModal: null }); this.props.closeModal(); }}
+          closeModal={() => window.history.go()}
           title="Sign up completed"
           body="Thank you for joining us. This account will be signed in automatically." />
         <CustomModal

@@ -10,27 +10,19 @@ import { userService } from '../service/userService';
 
 export default class CreateHotel extends Component {
   componentWillMount() {
-    const pathname = window.location.pathname;
-    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-    const currentUser = userService.getCurrentUser();
-    this.setState({
-      pathname: pathname,
-      search: search,
-      currentUser: currentUser
-    });
-
-    if (pathname === "/hotel") {
-      const hotel = hotelService.getHotel(search.hid);
-      if (hotel && hotel.managers.includes(currentUser.uid)) {
+    if (window.location.pathname === "/hotel") {
+      const hotel = this.props.hotel;
+      if (hotel && hotel.managers.includes(this.props.currentUser.user_id)) {
         this.setState({
           validUser: true,
-          hotel,
+          hotel: hotel,
           action: "edit"
         });
       } else {
         this.setState({ validUser: false });
       }
-    } else if (pathname === "/hotel/create") {
+    } else if (window.location.pathname === "/hotel/create") {
+      const currentUser = userService.getCurrentUser();
       this.setState({
         validUser: currentUser && currentUser.user_type === "hotel_manager",
         hotel: {
@@ -42,7 +34,8 @@ export default class CreateHotel extends Component {
           rooms: [],
           managers: []
         },
-        action: "create"
+        action: "create",
+        currentUser: currentUser
       });
     }
   }
@@ -86,7 +79,7 @@ export default class CreateHotel extends Component {
 
   createHotel = () => {
     let hotel = this.state.hotel;
-    hotel.managers = [this.state.currentUser.uid];
+    hotel.managers = [this.state.currentUser.user_id];
     if (hotelService.createHotel(hotel)) {
       window.location.href = "/myhotel";
       // this.setState({ showModal: "create_hotel_completed" });
@@ -95,7 +88,7 @@ export default class CreateHotel extends Component {
 
   editHotel = () => {
     const hotel = this.state.hotel;
-    if (hotelService.editHotel(hotel.hid, hotel)) {
+    if (hotelService.editHotel(hotel.hotel_id, hotel)) {
       // this.setState({ showModal: "edit_hotel_completed" });
       window.location.href = this.getHotelLink()
     }
@@ -104,7 +97,7 @@ export default class CreateHotel extends Component {
   getHotelLink = () => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hid: this.state.search.hid
+      hotel_id: this.props.search.hotel_id
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -121,7 +114,7 @@ export default class CreateHotel extends Component {
     }
     return (
       <>
-        <div className={this.state.pathname === "/hotel/create" ? "hotel-bg px-auto hotel-info" : ""}>
+        <div className={window.location.pathname === "/hotel/create" ? "hotel-bg px-auto hotel-info" : ""}>
           <Row className="shadow scroll-snap-child" noGutters>
             <Col xs={12} sm={6}>
               <div className="ratio4-3">

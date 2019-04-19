@@ -1,28 +1,22 @@
 
 import React, { Component } from 'react';
-import { Switch, BrowserRouter as Router, Route } from 'react-router-dom';
-
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import CustomNavBar from './component/CustomNavBar';
 import Footer from './component/Footer';
-
-import Home from './page/Home';
-import Tutorial from './page/Tutorial';
-import SearchResult from './page/SearchResult';
-import HotelInfo from './page/HotelInfo';
-import Profile from './page/Profile';
 import CreateHotel from './page/CreateHotel';
-import MyHotel from './page/MyHotel';
-import Request from './page/Request';
-import Payment from './page/Payment';
-import Reservation from './page/Reservation';
+import Home from './page/Home';
+import HotelInfo from './page/HotelInfo';
 import HotelReservation from './page/HotelReservation';
+import MyHotel from './page/MyHotel';
+import Payment from './page/Payment';
+import Profile from './page/Profile';
+import Request from './page/Request';
+import Reservation from './page/Reservation';
+import SearchResult from './page/SearchResult';
+import Tutorial from './page/Tutorial';
 
 class App extends Component {
   componentWillMount() {
-    if (!localStorage.getItem("user")) {
-      localStorage.setItem("user", JSON.stringify({}));
-    }
-
     if (!localStorage.getItem("users")) {
       localStorage.setItem("users", JSON.stringify([]));
     }

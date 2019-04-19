@@ -1,18 +1,16 @@
 export class userService {
   static getCurrentUser = () => {
-    const user = localStorage.getItem("user");
-    return user === "{}" ? null : JSON.parse(user);
+    return JSON.parse(localStorage.getItem("user"));
   }
 
   static getUsers = () => {
-    const users = localStorage.getItem("users");
-    return users === "[]" ? null : JSON.parse(users);
+    return JSON.parse(localStorage.getItem("users"));
   }
 
-  static getUser = (uid) => {
+  static getUser = (user_id) => {
     const users = this.getUsers();
     for (let i = 0; i < users.length; ++i) {
-      if ("" + uid === "" + users[i].uid) {
+      if ("" + user_id === "" + users[i].user_id) {
         return users[i];
       }
     }
@@ -26,7 +24,7 @@ export class userService {
         return false;
       }
     }
-    user.uid = users.length + 1;
+    user.user_id = users.length + 1;
     users.push(user);
     localStorage.setItem("users", JSON.stringify(users));
     localStorage.setItem("user", JSON.stringify(user));
@@ -45,14 +43,14 @@ export class userService {
   }
 
   static signout = () => {
-    localStorage.setItem("user", JSON.stringify({}));
+    localStorage.setItem("user", null);
     window.location.href = "/";
   }
 
   static editUserInfo = (editedUser) => {
     let users = this.getUsers();
     for (let i = 0; i < users.length; ++i) {
-      if ("" + editedUser.uid === "" + users[i].uid) {
+      if ("" + editedUser.user_id === "" + users[i].user_id) {
         users[i] = {
           ...users[i],
           ...editedUser
@@ -65,9 +63,9 @@ export class userService {
     return false;
   }
 
-  static deleteUser = (uid) => {
+  static deleteUser = (user_id) => {
     let users = this.getUsers();
-    users = users.filter(user => { return "" + user.uid !== "" + uid });
+    users = users.filter(user => { return "" + user.user_id !== "" + user_id });
     localStorage.setItem("users", JSON.stringify(users));
     return true;
   }

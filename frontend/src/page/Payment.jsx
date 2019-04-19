@@ -32,7 +32,7 @@ export default class Payment extends Component {
       search: search,
       currentUser: currentUser,
       step: 0,
-      validUser: search.hid && search.checkin && search.checkout && search.rid && search.rid && search.num && currentUser && currentUser.user_type === "traveler"
+      validUser: search.hotel_id && search.checkin && search.checkout && search.room_id && search.room_id && search.num && currentUser && currentUser.user_type === "traveler"
     });
   }
 
@@ -40,19 +40,19 @@ export default class Payment extends Component {
     const checkin = this.state.search.checkin;
     const checkout = this.state.search.checkout;
     const interval = Math.max(0, (new Date(checkout) - new Date(checkin)) / 24 / 60 / 60 / 1000);
-    const hotel = hotelService.getHotel(this.state.search.hid)
-    return interval * hotel.rooms[Number(this.state.search.rid)].price * Number(this.state.search.num);
+    const hotel = hotelService.getHotel(this.state.search.hotel_id)
+    return interval * hotel.rooms[Number(this.state.search.room_id)].price * Number(this.state.search.num);
   }
 
   bookNow = (e) => {
     e.preventDefault();
     const search = this.state.search;
     const reservation = {
-      uid: this.state.currentUser.uid,
-      hid: search.hid,
+      user_id: this.state.currentUser.user_id,
+      hotel_id: search.hotel_id,
       checkin: search.checkin,
       checkout: search.checkout,
-      rid: search.rid,
+      room_id: search.room_id,
       num: search.num
     }
     if (reservationService.createReservation(reservation)) {
@@ -106,7 +106,7 @@ export default class Payment extends Component {
 
   getInfoComponent = () => {
     const currentUser = this.state.currentUser;
-    const hotel = hotelService.getHotel(this.state.search.hid);
+    const hotel = hotelService.getHotel(this.state.search.hotel_id);
     return (
       <>
         <div className="px-payment">
@@ -122,7 +122,7 @@ export default class Payment extends Component {
           <div className="ml-3 ml-md-5">
             <h6>Date: {new Date(this.state.search.checkin).toLocaleDateString() + " - " + new Date(this.state.search.checkout).toLocaleDateString()}</h6>
             <h6>Hotel: {hotel.name}</h6>
-            <h6>Room: {hotel.rooms[Number(this.state.search.rid)].name}</h6>
+            <h6>Room: {hotel.rooms[Number(this.state.search.room_id)].name}</h6>
             <h6>Number of room: {this.state.search.num}</h6>
             <h6>Price: ฿ {this.getPrice()}</h6>
           </div>

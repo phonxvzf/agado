@@ -12,7 +12,7 @@ export default class Reservation extends Component {
     const currentUser = userService.getCurrentUser();
     let reservations = []
     if (currentUser && currentUser.user_type === "traveler") {
-      reservations = reservationService.getReservationOf(currentUser.uid);
+      reservations = reservationService.getReservationOf(currentUser.user_id);
     }
 
     this.setState({

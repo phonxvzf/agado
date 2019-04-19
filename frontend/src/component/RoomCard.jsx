@@ -3,17 +3,10 @@ import React, { Component } from 'react';
 import { Alert, Badge, Button, Card, Carousel, Col, Collapse, Form, Image, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import '../css/RoomCard.css';
 import { hotelService } from '../service/hotelService';
-import { userService } from '../service/userService';
 
 export default class RoomCard extends Component {
   componentWillMount() {
-    const pathname = window.location.pathname;
-    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-    const currentUser = userService.getCurrentUser();
     this.setState({
-      pathname: pathname,
-      search: search,
-      currentUser: currentUser,
       collapse: window.innerWidth <= 576,
       num: ""
     });
@@ -29,10 +22,10 @@ export default class RoomCard extends Component {
   getPaymentLink = () => {
     const pathname = "/payment";
     const search = qs.stringify({
-      hid: this.state.search.hid,
-      checkin: this.state.search.checkin,
-      checkout: this.state.search.checkout,
-      rid: this.props.rid,
+      hotel_id: this.props.search.hotel_id,
+      checkin: this.props.search.checkin,
+      checkout: this.props.search.checkout,
+      room_id: this.props.room_id,
       num: this.state.num
     }, { addQueryPrefix: true });
     return pathname + search;
@@ -45,7 +38,7 @@ export default class RoomCard extends Component {
 
   render() {
     const room = this.props.room;
-    const currentUser = this.state.currentUser;
+    const currentUser = this.props.currentUser;
     return (
       <Card className="shadow w-100">
         <Card.Body>
@@ -99,7 +92,7 @@ export default class RoomCard extends Component {
                     <Badge variant="dark" className="room-card-property">
                       <div className="my-2">
                         <h6><i className="fas fa-user-friends"></i></h6>
-                        <h6>{room.maxPerson} People</h6>
+                        <h6>{room.max_person} People</h6>
                       </div>
                     </Badge>
                   </Col>
@@ -132,11 +125,11 @@ export default class RoomCard extends Component {
               :
               <Row className="align-items-center text-center">
                 <Col xs={12} md={4} className="my-2">
-                  <h5>Price per room: <strong>฿ {room.price * this.props.interval}</strong></h5>
-                  <h6>(for {this.props.interval} days)</h6>
+                  <h5>Price per room: <strong>฿ {room.price * Math.max(1, this.props.interval)}</strong></h5>
+                  <h6>(for {Math.max(1, this.props.interval)} days)</h6>
                 </Col>
                 <Col xs={12} md={5} className="my-2">
-                  <Form id={"reservation" + this.props.rid} onSubmit={this.reserveRoom}>
+                  <Form id={"reservation" + this.props.room_id} onSubmit={this.reserveRoom}>
                     <InputGroup>
                       <InputGroup.Prepend>
                         <InputGroup.Text className="bg-dark border-dark text-white">Rooms</InputGroup.Text>
@@ -147,12 +140,12 @@ export default class RoomCard extends Component {
                         onChange={this._onChange}
                         placeholder="Number"
                         min={0}
-                        max={room.availableRoom}
+                        max={room.available_rooms}
                         value={this.state.num}
                         required />
                       <InputGroup.Append>
                         <InputGroup.Text className="bg-dark border-dark text-white">
-                          Total Price: {room.price * this.props.interval * Math.max(this.state.num, 0)}
+                          Total Price: ฿ {room.price * Math.max(1, this.props.interval) * Math.max(this.state.num, 0)}
                         </InputGroup.Text>
                       </InputGroup.Append>
                     </InputGroup>
@@ -161,7 +154,7 @@ export default class RoomCard extends Component {
                 <Col xs={12} md={3} className="my-2">
                   {
                     currentUser && currentUser.user_type === "traveler" ?
-                      <Button type="submit" form={"reservation" + this.props.rid} variant="success" className="py-3 px-4">
+                      <Button type="submit" form={"reservation" + this.props.room_id} variant="success" className="py-3 px-4">
                         <span className="h6">Reserve now</span>
                       </Button>
                       :
