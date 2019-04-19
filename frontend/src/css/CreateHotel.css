@@ -1,0 +1,82 @@
+.create-hotel-bg {
+  background-color: #e7e7e7;
+  /* background-image: linear-gradient( rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) ), url('../image/tutorial-bg.jpg'); */
+  background-size: cover;
+  min-height: 100%;
+  min-height: 100vh;
+}
+
+@media (max-width: 768px) {
+  .create-hotel-bg{
+    padding: 70px 0% 10px 0%;
+  }
+}
+
+@media (min-width: 768px) {
+  .create-hotel-bg {
+    padding: 140px 0% 10px 0%;
+  }
+}
+
+.abs-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+}
+
+.abs-center.btn {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.abs-top-right {
+  position: absolute;
+  top: 0%;
+  left: 100%;
+  transform: translate(-100%, 0%);
+  z-index: 100;
+}
+
+.abs-top-right.btn {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.abs-br {
+  position: absolute;
+  top: 100%;
+  left: 100%;
+  transform: translate(-100%, -100%);
+}
+
+.text-none {
+  color: transparent;
+}
+
+.bg-fade{
+  background-color: transparent;
+}
+
+.bg-fade:hover {
+  background-color: #00000080;
+}
+
+.border-none {
+  border: none;
+}
+
+.form-control:focus {
+  box-shadow: none;
+}
+
+.carousel-control-next, .carousel-control-prev {
+  top: 40px;
+  bottom: 40px;
+}
+
+.border-rad-none {
+  border-radius: 0;
+}

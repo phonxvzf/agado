@@ -1,0 +1,86 @@
+.bg-none{
+  background-color: transparent !important;
+}
+
+@media (max-width: 575.98px) {
+  .d-xs-sm-none {
+    display: none;
+    max-width: 0px;
+  }
+}
+
+@media (min-width: 576px) and (max-width: 767.98px) {
+  .d-sm-md-none {
+    display: none;
+    max-width: 0px;
+  }
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.color-dark {
+  color: #fff;
+}
+
+.right-0 {
+  right: 0;
+  left: auto;
+}
+
+.scroll-indicator {
+  height: 4px;
+}
+
+.btn-link:focus {
+  text-decoration: none;
+}
+
+:root {
+  --popover-color: var(--light);
+  --price-color: var(--dark);
+}
+
+.popover {
+  width: 300px;
+  padding: 10px;
+  background-color: var(--popover-color);
+  border: none;
+  box-shadow: 0px 2px 10px 2px rgba(0, 0, 0, 0.15);
+}
+
+.bs-popover-auto[x-placement^=bottom]>.arrow::before, .bs-popover-bottom>.arrow::before {
+  border-bottom: none;
+  /* box-shadow: 0 0 10px 0 #aaa; */
+}
+
+.bs-popover-auto[x-placement^=bottom]>.arrow::after, .bs-popover-bottom>.arrow::after {
+  border-top: none;
+  border-bottom-color: var(--popover-color);
+}
+
+.input-range__label--value {
+  display: none;
+}
+
+.input-range__label {
+  display: none;
+}
+
+.input-range__slider, .input-range__track--active {
+  background: var(--price-color) !important;
+  border: none !important;
+}
+
+.fs-12 {
+  font-size: 12px;
+}
+
+.fs-10 {
+  font-size: 10px;
+}
+
+.flip {
+  transform: scale(-1, 1);
+}

@@ -1,0 +1,49 @@
+@media (max-width: 576px) {
+  .show-only-mobile {
+    display: inherit;
+  }
+}
+
+@media (min-width: 576px) {
+  .show-only-mobile {
+    display: none;
+  }
+}
+
+@media (max-width: 992px) {
+  .room-card-property {
+    height: 100%;
+    width: 80%;
+  }
+}
+
+@media (min-width: 992px) {
+  .room-card-property {
+    height: 100%;
+    width: 40%;
+  }
+}
+
+.room-card-amenity {
+  font-size: 15px;
+}
+
+.bg-brown,
+.bg-brown:hover,
+.bg-brown:focus,
+.bg-brown:active,
+.bg-brown.active {
+  background-color: var(--brown);
+  border: none;
+  color: white;
+}
+
+.border-brown,
+.border-brown:hover,
+.border-brown:focus,
+.border-brown:active,
+.border-brown.active {
+  border-color: var(--brown);
+  background-color: transparent;
+  color: var(--brown);
+}
