@@ -17,7 +17,7 @@ export default class MyHotel extends Component {
       currentUser: currentUser,
       validUser: currentUser && currentUser.user_type === "hotel_manager"
     });
-    
+
     const hotels = currentUser ? hotelService.getHotelOf(currentUser.user_id) : [];
 
     this.setState({
@@ -31,6 +31,13 @@ export default class MyHotel extends Component {
         <div className="hotel-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
           <h4>You have to be a Hotel manager to access this page.</h4>
+        </div>
+      )
+    } else if (this.state.hotels.length === 0) {
+      return (
+        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+          <h1>Hotel management</h1>
+          <h4>You have no permission to manage any hotel at this time.</h4>
         </div>
       )
     }

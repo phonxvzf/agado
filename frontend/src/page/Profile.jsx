@@ -350,6 +350,9 @@ export default class Profile extends Component {
 
   getHotelsManaged = () => {
     let hotels = hotelService.getHotelOf(this.state.user.user_id);
+    if (hotels.length === 0) {
+      return <></>;
+    }
     return (
       <div className="px-content">
         <Row className="align-items-center mt-5 scroll-snap-child" noGutters>
