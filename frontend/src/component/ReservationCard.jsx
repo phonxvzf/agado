@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { hotelService } from '../service/hotelService';
-import { Card, Button, Row, Col, Badge } from 'react-bootstrap';
 import qs from 'qs';
+import React, { Component } from 'react';
+import { Button, Card, Col, Row } from 'react-bootstrap';
+import { hotelService } from '../service/hotelService';
 import { reservationService } from '../service/reservationService';
 import { reviewService } from '../service/reviewService';
 import CustomModal from './CustomModal';

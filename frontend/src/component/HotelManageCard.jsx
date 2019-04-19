@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import { Card, Button, Row, Col, Badge } from 'react-bootstrap';
 import qs from 'qs';
+import React, { Component } from 'react';
+import { Button, Card, Col, Row } from 'react-bootstrap';
 
 export default class HotelManageCard extends Component {
   getRatingStar = (rating) => {

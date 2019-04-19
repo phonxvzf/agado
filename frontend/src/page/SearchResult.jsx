@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
-import { Row, Col } from 'react-bootstrap';
 import qs from 'qs';
-
+import React, { Component } from 'react';
+import { Col, Row } from 'react-bootstrap';
 import HotelCard from '../component/HotelCard';
-
 import '../css/SearchResult.css';
 import { hotelService } from '../service/hotelService';
 import { reviewService } from '../service/reviewService';

@@ -1,16 +1,14 @@
-import React, { Component } from 'react';
-import { Col, Row, Image, Button, ProgressBar } from 'react-bootstrap';
 import qs from 'qs';
-import '../css/HotelInfo.css';
-
+import React, { Component } from 'react';
+import { Button, Col, Image, ProgressBar, Row } from 'react-bootstrap';
+import CustomModal from '../component/CustomModal';
 import ReviewModal from '../component/ReviewModal';
 import RoomSelection from '../component/RoomSelection';
-import CustomModal from '../component/CustomModal';
-
-import { userService } from '../service/userService';
-import { reviewService } from '../service/reviewService';
+import '../css/HotelInfo.css';
 import { hotelService } from '../service/hotelService';
 import { requestService } from '../service/requestService';
+import { reviewService } from '../service/reviewService';
+import { userService } from '../service/userService';
 import CreateHotel from './CreateHotel';
 
 export default class HotelInfo extends Component {
@@ -201,7 +199,7 @@ export default class HotelInfo extends Component {
           <div className="fs-18"><i className="fas fa-map-marker-alt" /> {hotel.address}</div>
         </Row>
         <Row className="align-items-center mt-3" noGutters>
-          <div className="fs-18"><i className="fas fa-file-alt" /> {hotel.desc}</div>
+          <div className="fs-18 break-all-word"><i className="fas fa-file-alt" /> {hotel.desc}</div>
         </Row>
         {
           !this.state.currentUser || this.state.currentUser.user_type === "traveler" || this.isUserOwn() ? "" :

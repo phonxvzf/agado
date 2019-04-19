@@ -1,16 +1,12 @@
-import React, { Component } from 'react';
-import { Row, Col, Button, Form } from 'react-bootstrap';
 import qs from 'qs';
-
+import React, { Component } from 'react';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import CustomModal from '../component/CustomModal';
-
-import { userService } from '../service/userService';
-
-import '../css/Profile.css';
-import { reviewService } from '../service/reviewService';
-import { hotelService } from '../service/hotelService';
-import HotelManageCard from '../component/HotelManageCard';
 import HotelCard from '../component/HotelCard';
+import '../css/Profile.css';
+import { hotelService } from '../service/hotelService';
+import { reviewService } from '../service/reviewService';
+import { userService } from '../service/userService';
 
 export default class Profile extends Component {
   state = {
@@ -178,7 +174,7 @@ export default class Profile extends Component {
             <Col as="h6">{user.phone_num}</Col>
           </Row>
           {
-            "" + currentUser.uid !== "" + this.state.search.uid ? "" :
+            !currentUser || "" + currentUser.uid !== "" + this.state.search.uid ? "" :
               <>
                 <Button variant="success" className="mr-4 my-2" onClick={() => this.setState({ mode: "edit" })}>Edit profile</Button>
                 <Button variant="danger" className="my-2" onClick={() => this.setState({ showModal: "delete_confirm" })}>Delete account</Button>

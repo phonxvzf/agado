@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Row, Navbar, Button, Nav } from 'react-bootstrap';
+import React, { Component } from 'react';
+import { Button, Nav, Navbar, Row } from 'react-bootstrap';
 
 export default class Footer extends Component {
   render() {

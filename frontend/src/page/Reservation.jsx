@@ -1,9 +1,9 @@
-import React, { Component } from 'react'
-import { userService } from '../service/userService';
-import { reservationService } from '../service/reservationService';
-import ReservationCard from '../component/ReservationCard';
-import {  Row, Col } from 'react-bootstrap';
 import qs from 'qs';
+import React, { Component } from 'react';
+import { Col, Row } from 'react-bootstrap';
+import ReservationCard from '../component/ReservationCard';
+import { reservationService } from '../service/reservationService';
+import { userService } from '../service/userService';
 
 export default class Reservation extends Component {
   componentWillMount() {

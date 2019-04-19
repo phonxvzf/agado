@@ -1,10 +1,8 @@
 import React, { Component } from 'react';
-import { Button, Form, Row, Col, Modal } from 'react-bootstrap';
-
-import CustomModal from './CustomModal';
-
-import { userService } from '../service/userService';
+import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { reviewService } from '../service/reviewService';
+import { userService } from '../service/userService';
+import CustomModal from './CustomModal';
 
 export default class ReviewModal extends Component {
   componentWillMount() {

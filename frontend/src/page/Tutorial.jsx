@@ -1,7 +1,6 @@
+import qs from 'qs';
 import React, { Component } from 'react';
 import { Jumbotron } from 'react-bootstrap';
-import qs from 'qs';
-
 import '../css/Tutorial.css';
 
 export default class Tutorial extends Component {

@@ -1,18 +1,15 @@
-import React, { Component } from 'react';
-import { Navbar, Nav, Button, Row, Col, Form, InputGroup, Image, Dropdown, DropdownButton, ProgressBar, Badge, OverlayTrigger, Popover } from 'react-bootstrap';
 import qs from 'qs';
-
-import SigninSignupModal from './SigninSignupModal';
-
-import { userService } from '../service/userService';
-
-import agadoLogo from '../image/agado-logo.png';
-import '../css/CustomNavBar.css'
-import CustomModal from './CustomModal';
-import { hotelService } from '../service/hotelService';
-import { requestService } from '../service/requestService';
+import React, { Component } from 'react';
+import { Badge, Button, Col, Dropdown, Form, Image, InputGroup, Nav, Navbar, OverlayTrigger, Popover, ProgressBar, Row } from 'react-bootstrap';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
+import '../css/CustomNavBar.css';
+import agadoLogo from '../image/agado-logo.png';
+import { hotelService } from '../service/hotelService';
+import { requestService } from '../service/requestService';
+import { userService } from '../service/userService';
+import CustomModal from './CustomModal';
+import SigninSignupModal from './SigninSignupModal';
 
 export default class CustomNavBar extends Component {
   componentWillMount() {
@@ -410,7 +407,7 @@ export default class CustomNavBar extends Component {
     } else if (currentUser.user_type === "traveler") {
       return (
         <>
-          <Navbar.Text>signed in as:</Navbar.Text>
+          <Navbar.Text>signed in as Traveler:</Navbar.Text>
           <Dropdown className="mr-md-4 d-xs-sm-none d-sm-md-none">
             <Dropdown.Toggle bsPrefix="none" variant="link" className="text-dark bold">
               <Row className="align-items-center">
@@ -439,7 +436,7 @@ export default class CustomNavBar extends Component {
     } else if (currentUser.user_type === "hotel_manager") {
       return (
         <>
-          <Navbar.Text>signed in as:</Navbar.Text>
+          <Navbar.Text>signed in as Hotel Manager:</Navbar.Text>
           <Dropdown className="mr-md-4 d-xs-sm-none d-sm-md-none">
             <Dropdown.Toggle bsPrefix="none" variant="link" className="text-dark bold">
               <Row className="align-items-center">

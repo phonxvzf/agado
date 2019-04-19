@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import { Container, Row, Col, Button, Form } from 'react-bootstrap';
 import qs from 'qs';
-
-import '../css/Home.css'
+import React, { Component } from 'react';
+import { Button, Col, Container, Form, Row } from 'react-bootstrap';
+import '../css/Home.css';
 
 export default class Home extends Component {
   componentWillMount() {

@@ -1,8 +1,7 @@
-import React, { Component } from 'react';
-import { Card, Button, Row, Col, Badge } from 'react-bootstrap';
 import qs from 'qs';
-
-import '../css/HotelCard.css'
+import React, { Component } from 'react';
+import { Badge, Button, Card, Col, Row } from 'react-bootstrap';
+import '../css/HotelCard.css';
 
 export default class HotelCard extends Component {
   componentWillMount() {

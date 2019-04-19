@@ -1,11 +1,8 @@
 import React, { Component } from 'react';
-import { Row, Col, Form, Button } from 'react-bootstrap';
-
-import CustomModal from './CustomModal';
-
-import { userService } from '../service/userService';
-
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import '../css/SigninSignupModal.css';
+import { userService } from '../service/userService';
+import CustomModal from './CustomModal';
 
 export default class SigninSignupModal extends Component {
   state = {

@@ -1,16 +1,14 @@
-import React, { Component } from 'react';
-import { userService } from '../service/userService';
-import qs from 'qs';
-import '../css/Payment.css';
-
-import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-
+import Stepper from '@material-ui/core/Stepper';
+import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import qs from 'qs';
+import React, { Component } from 'react';
+import { Button, Col, Form, Row } from 'react-bootstrap';
+import '../css/Payment.css';
 import { hotelService } from '../service/hotelService';
-import { Row, Col, Button, Form } from 'react-bootstrap';
 import { reservationService } from '../service/reservationService';
+import { userService } from '../service/userService';
 
 const theme = createMuiTheme({
   palette: {

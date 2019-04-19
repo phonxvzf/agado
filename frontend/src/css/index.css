@@ -15,7 +15,6 @@ code {
 
 html {
   scroll-behavior: smooth;
-  word-break: break-all;
 }
 
 .form-control {
@@ -28,4 +27,8 @@ html {
 
 .btn:focus {
   box-shadow: none;
+}
+
+.break-all-word {
+  word-break: break-all;
 }

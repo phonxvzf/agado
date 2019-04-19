@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
-import { Card, Row, Col, Image, InputGroup, Form, Button, Badge, Collapse, Carousel, Alert, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import qs from 'qs';
-
+import React, { Component } from 'react';
+import { Alert, Badge, Button, Card, Carousel, Col, Collapse, Form, Image, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import '../css/RoomCard.css';
 import { hotelService } from '../service/hotelService';
 import { userService } from '../service/userService';

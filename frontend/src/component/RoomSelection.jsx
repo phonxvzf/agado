@@ -1,11 +1,10 @@
+import qs from 'qs';
 import React, { Component } from 'react';
 import { Row } from 'react-bootstrap';
 import ItemsCarousel from 'react-items-carousel';
-import qs from 'qs';
-
-import RoomCard from './RoomCard';
 import '../css/RoomSelection.css';
 import { hotelService } from '../service/hotelService';
+import RoomCard from './RoomCard';
 
 export default class RoomSelection extends Component {
   componentWillMount() {

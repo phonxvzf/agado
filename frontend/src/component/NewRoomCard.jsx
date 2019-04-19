@@ -1,5 +1,5 @@
-import React, { Component } from 'react'
-import { Card, Row, Col, Image, InputGroup, Form, Button, Badge, Collapse, Carousel, Alert } from 'react-bootstrap';
+import React, { Component } from 'react';
+import { Badge, Button, Card, Carousel, Col, Collapse, Form, Image, Row } from 'react-bootstrap';
 import { hotelService } from '../service/hotelService';
 
 export default class NewRoomCard extends Component {

@@ -1,14 +1,12 @@
-import React, { Component } from 'react';
-import { Col, Row, Image, Button, Form } from 'react-bootstrap';
 import qs from 'qs';
-import '../css/CreateHotel.css';
+import React, { Component } from 'react';
+import { Button, Col, Form, Image, Row } from 'react-bootstrap';
 import ItemsCarousel from 'react-items-carousel';
-
-import NewRoomCard from '../component/NewRoomCard';
 import CustomModal from '../component/CustomModal';
-
-import { userService } from '../service/userService';
+import NewRoomCard from '../component/NewRoomCard';
+import '../css/CreateHotel.css';
 import { hotelService } from '../service/hotelService';
+import { userService } from '../service/userService';
 
 export default class CreateHotel extends Component {
   componentWillMount() {
@@ -232,7 +230,7 @@ export default class CreateHotel extends Component {
                   autoFocus
                   required /> : ""}
               <br />
-              <span className="fs-18">
+              <span className="fs-18 break-all-word">
                 <i className="fas fa-file-alt" />&nbsp;
                     {hotel.desc ? hotel.desc : "Description"}
                 <strike className="px-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strike>
