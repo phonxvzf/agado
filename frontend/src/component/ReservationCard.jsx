@@ -61,7 +61,6 @@ export default class ReservationCard extends Component {
   render() {
     const reservation = this.props.reservation;
     const hotel = this.state.hotel;
-    console.log(reservation)
     return (
       <>
         <Card className="shadow">

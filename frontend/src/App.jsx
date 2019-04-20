@@ -78,7 +78,6 @@ class App extends Component {
               <Route path="/hotel/reservation" render={() => <HotelReservation />} />
               <Route path="/hotel/create" render={() => <CreateHotel />} />
               <Route path="/hotel" render={() => <HotelInfo mode={this.state.mode} />} />
-              
             </Switch>
           </Router>
           <Footer />

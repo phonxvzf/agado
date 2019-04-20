@@ -204,7 +204,6 @@ export default class HotelInfo extends Component {
 
   getReviewsSection = () => {
     const hotel = this.state.hotel;
-    console.log(hotel)
     return (
       <>
         <Row className="align-items-center mt-5 scroll-snap-child" noGutters>

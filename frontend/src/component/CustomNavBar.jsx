@@ -19,15 +19,12 @@ export default class CustomNavBar extends Component {
     this.setState({
       pathname: pathname,
       search: search,
-      currentUser: currentUser,
-      price: {
-        min: search.min_price ? Number(search.min_price) : null,
-        max: search.max_price ? Number(search.max_price) : null
-      },
-      rating: []
+      currentUser: currentUser
     });
 
-    this.loadRating(search);
+    this.loadPrice();
+    this.loadRating();
+    this.loadAmenities();
   }
 
   componentDidMount() {
@@ -38,6 +35,10 @@ export default class CustomNavBar extends Component {
     window.removeEventListener('scroll', this.handleScroll, true);
   }
 
+  componentWillReceiveProps(nextProps) {
+    this.loadPrice(nextProps.priceRange);
+  }
+
   handleScroll = (e) => {
     const winScroll = e.target.scrollTop;
     const height = e.target.scrollHeight - e.target.clientHeight;
@@ -45,14 +46,14 @@ export default class CustomNavBar extends Component {
     this.setState({ scrolled: scrolled });
   }
 
-  getRatingQs = () => {
-    let rating = [];
-    for (let i = 0; i < this.state.rating.length; i++) {
-      if (this.state.rating[i]) {
-        rating.push(i);
+  getAmenitiesQs = () => {
+    let amenities = [];
+    for (let i = 0; i < this.state.amenities.length; i++) {
+      if (this.state.amenities[i]) {
+        amenities.push(i);
       }
     }
-    return rating;
+    return amenities;
   }
 
   getSearchLink = () => {
@@ -63,8 +64,9 @@ export default class CustomNavBar extends Component {
       checkout: this.state.search.checkout,
       min_price: this.state.price.min,
       max_price: this.state.price.max,
-      rating: this.getRatingQs()
-    }, { addQueryPrefix: true });
+      rating: this.state.rating,
+      amenities: this.getAmenitiesQs()
+    }, { addQueryPrefix: true, indices: false });
     return pathname + search;
   }
 
@@ -123,37 +125,67 @@ export default class CustomNavBar extends Component {
     return hotel && hotel.managers.includes(this.state.currentUser.user_id);
   }
 
-  loadPrice = (s) => {
-    const search = s ? s : this.state.search;
+  loadPrice = (priceRange) => {
+    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+    priceRange = priceRange ? priceRange : this.props.priceRange;
     this.setState({
       price: {
-        min: search.min_price ? Number(search.min_price) : null,
-        max: search.max_price ? Number(search.max_price) : null
+        min: search.min_price ? Number(search.min_price) : priceRange.min,
+        max: search.max_price ? Number(search.max_price) : priceRange.max
       }
     });
   }
 
-  loadRating = (s) => {
-    const search = s ? s : this.state.search;
-    if (!search.rating) {
-      return;
-    }
-
-    let rating = []
-    for (let i = 0; i < search.rating.length; i++) {
-      rating[Number(search.rating[i])] = true;
-    }
+  loadRating = () => {
+    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     this.setState({
-      rating: rating
+      rating: search.rating ? Number(search.rating) : 0,
+      showRating: search.rating ? Number(search.rating) : 0
     });
   }
 
-  toggleRatingFilter = (idx) => {
-    let rating = this.state.rating;
-    rating[idx] = !rating[idx];
+  loadAmenities = () => {
+    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+    if (!search.amenities) {
+      this.setState({
+        amenities: []
+      });
+      return;
+    }
+
+    let amenities = []
+    for (let i = 0; i < search.amenities.length; i++) {
+      amenities[Number(search.amenities[i])] = true;
+    }
     this.setState({
-      rating: rating
+      amenities: amenities
     });
+  }
+
+  toggleAmenitiesFilter = (idx) => {
+    let amenities = this.state.amenities;
+    amenities[idx] = !amenities[idx];
+    this.setState({
+      amenities: amenities
+    })
+  }
+
+  closeAllFilters = () => {
+    this.setState({
+      showFilter: false
+    })
+    this.filterPrice.hide();
+    this.filterRating.hide();
+    this.filterAmenities.hide();
+  }
+
+  isAnyAmenitesChanged = () => {
+    for (let i = 0; i < hotelService.amenities.length; i++) {
+      if (this.state.amenities[i]) {
+        return true;
+      }
+    }
+    return false;
   }
 
   render() {
@@ -187,6 +219,8 @@ export default class CustomNavBar extends Component {
             </Col>
           </Row>
         </Navbar>
+        <div className={"filter-control scroll-snap-child" + (this.state.showFilter ? "" : " d-none")} onClick={this.closeAllFilters} />
+        <div className={"filter-bg scroll-snap-child" + (this.state.showFilter ? "" : " d-none")} />
         <SigninSignupModal
           type={this.state.type}
           showModal={this.state.showModal === "signin_signup"}
@@ -526,119 +560,128 @@ export default class CustomNavBar extends Component {
                 </Button>
               </div>
           }
+          <hr className="mx-0 my-3" />
           <Navbar.Text>filter:</Navbar.Text>
-          <OverlayTrigger trigger="focus" onExited={this.loadPrice} placement="bottom" overlay={
-            <Popover tabIndex={-1}>
-              <h6><strong>Price per night</strong></h6>
+          <div className="ml-2 my-2">
+            <OverlayTrigger ref={ref => this.filterPrice = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
+              <Popover className="text-dark">
+                <h6><strong>Price per night</strong></h6>
+                <br />
+                <div className="mx-2">
+                  <InputRange
+                    minValue={this.props.priceRange.min}
+                    maxValue={this.props.priceRange.max}
+                    value={{
+                      min: this.state.price.min,
+                      max: this.state.price.max
+                    }}
+                    step={(this.props.priceRange.max - this.props.priceRange.min) / 10}
+                    onChange={val => this.setState({ price: val })} />
+                </div>
+                <br />
+                <Row>
+                  <Col>MIN: ฿ {this.state.price.min}</Col>
+                  <Col>MAX: ฿ {this.state.price.max}</Col>
+                </Row>
+                <br />
+                <Button className="w-100" variant="dark" onClick={() => this.setState({ price: { min: this.props.priceRange.min, max: this.props.priceRange.max } })}><div className="fs-12">Clear</div></Button>
+              </Popover>
+            }>
+              {
+                this.state.price.min !== this.props.priceRange.min || this.state.price.max !== this.props.priceRange.max ?
+                  <Button variant="dark" className="bold mx-2" onClick={() => { this.filterPrice.show(); this.setState({ showFilter: true }); }}>
+                    <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ price: { min: this.props.priceRange.min, max: this.props.priceRange.max } })} />
+                  </Button>
+                  :
+                  <Button variant="light" className="bold mx-2" onClick={() => { this.filterPrice.show(); this.setState({ showFilter: true }); }}>
+                    <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-caret-down" />
+                  </Button>
+              }
+            </OverlayTrigger>
+          </div>
+          <div className="ml-2 my-2">
+          <OverlayTrigger ref={ref => this.filterRating = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
+            <Popover className="text-dark">
+              <h6><strong>Review rating</strong></h6>
+              <div>At least:</div>
+              <h4>
+                <i className={(this.state.showRating >= 1 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                  onClick={() => this.setState({ rating: this.state.showRating })}
+                  onMouseEnter={() => this.setState({ showRating: 1 })}
+                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+                <i className={(this.state.showRating >= 2 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                  onClick={() => this.setState({ rating: this.state.showRating })}
+                  onMouseEnter={() => this.setState({ showRating: 2 })}
+                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+                <i className={(this.state.showRating >= 3 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                  onClick={() => this.setState({ rating: this.state.showRating })}
+                  onMouseEnter={() => this.setState({ showRating: 3 })}
+                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+                <i className={(this.state.showRating >= 4 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                  onClick={() => this.setState({ rating: this.state.showRating })}
+                  onMouseEnter={() => this.setState({ showRating: 4 })}
+                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+                <i className={(this.state.showRating >= 5 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                  onClick={() => this.setState({ rating: this.state.showRating })}
+                  onMouseEnter={() => this.setState({ showRating: 5 })}
+                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+              </h4>
               <br />
-              <div className="mx-2">
-                <InputRange
-                  minValue={this.props.priceRange.min}
-                  maxValue={this.props.priceRange.max}
-                  value={{
-                    min: this.state.price.min ? this.state.price.min : this.props.priceRange.min,
-                    max: this.state.price.max ? this.state.price.max : this.props.priceRange.max,
-                  }}
-                  step={(this.props.priceRange.max - this.props.priceRange.min) / 10}
-                  onChange={val => this.setState({ price: val })} />
-              </div>
-              <br />
-              <Row>
-                <Col>MIN: ฿ {this.state.price.min ? this.state.price.min : this.props.priceRange.min}</Col>
-                <Col>MAX: ฿ {this.state.price.max ? this.state.price.max : this.props.priceRange.max}</Col>
-              </Row>
-              <br />
-              <Button className="w-100" variant="dark" onClick={() => window.location.href = this.getSearchLink()}><div className="fs-12">Apply</div></Button>
+              <Button className="w-100" variant="dark" onClick={() => this.setState({ rating: 0, showRating: 0 })}><div className="fs-12">Clear</div></Button>
             </Popover>
           }>
             {
-              this.state.search.min_price || this.state.search.max_price ?
-                <Button variant="dark" className="bold mx-2">
-                  <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ price: { min: null, max: null } })} />
+              this.state.rating !== 0 ?
+                <Button variant="dark" className="bold mx-2" onClick={() => { this.filterRating.show(); this.setState({ showFilter: true }); }}>
+                  <i className="fas fa-star text-light" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ rating: 0, showRating: 0 })} />
                 </Button>
                 :
-                <Button variant="light" className="bold mx-2">
-                  <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-caret-down" />
-                </Button>
-            }
-          </OverlayTrigger>
-          <OverlayTrigger trigger="focus" onExited={this.loadRating} placement="bottom" overlay={
-            <Popover>
-              <h6><strong>Star rating</strong></h6>
-              <Form.Check
-                tabIndex={-1}
-                label={<><i className="fas fa-star text-dark ml-2 mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /></>}
-                checked={this.state.rating[5]}
-                onChange={() => this.toggleRatingFilter(5)} />
-              <Form.Check
-                tabIndex={-1}
-                label={<><i className="fas fa-star text-dark ml-2 mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /></>}
-                checked={this.state.rating[4]}
-                onChange={() => this.toggleRatingFilter(4)} />
-              <Form.Check
-                label={<><i className="fas fa-star text-dark ml-2 mr-1" /><i className="fas fa-star text-dark mr-1" /><i className="fas fa-star text-dark mr-1" /></>}
-                checked={this.state.rating[3]}
-                onChange={() => this.toggleRatingFilter(3)} />
-              <Form.Check
-                label={<><i className="fas fa-star text-dark ml-2 mr-1" /><i className="fas fa-star text-dark mr-1" /></>}
-                checked={this.state.rating[2]}
-                onChange={() => this.toggleRatingFilter(2)} />
-              <Form.Check
-                label={<><i className="fas fa-star text-dark ml-2 mr-1" /></>}
-                checked={this.state.rating[1]}
-                onChange={() => this.toggleRatingFilter(1)} />
-              <Form.Check
-                label="No rating"
-                checked={this.state.rating[0]}
-                onChange={() => this.toggleRatingFilter(0)} />
-              <br />
-              <Button className="w-100" variant="dark" onClick={() => window.location.href = this.getSearchLink()}><div className="fs-12">Apply</div></Button>
-            </Popover>
-          }>
-            {
-              this.state.search.rating ?
-                <Button variant="dark" className="bold mx-2">
-                  <i className="fas fa-star text-light" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ rating: [] })} />
-                </Button>
-                :
-                <Button variant="light" className="bold mx-2">
+                <Button variant="light" className="bold mx-2" onClick={() => { this.filterRating.show(); this.setState({ showFilter: true }); }}>
                   <i className="fas fa-star text-dark" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-caret-down" />
                 </Button>
             }
           </OverlayTrigger>
-          <OverlayTrigger trigger="focus" onExit={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
-            <Popover>
-              <h6><strong>Price per night</strong></h6>
-              <br />
-              <div className="mx-2">
-                <InputRange
-                  minValue={this.props.priceRange.min}
-                  maxValue={this.props.priceRange.max}
-                  value={{
-                    min: this.state.price.min ? this.state.price.min : this.props.priceRange.min,
-                    max: this.state.price.max ? this.state.price.max : this.props.priceRange.max,
-                  }}
-                  step={(this.props.priceRange.max - this.props.priceRange.min) / 10}
-                  onChange={val => this.setState({ price: val })} />
-              </div>
-              <br />
-              <Row>
-                <Col>MIN: ฿ {this.state.price.min ? this.state.price.min : this.props.priceRange.min}</Col>
-                <Col>MAX: ฿ {this.state.price.max ? this.state.price.max : this.props.priceRange.max}</Col>
+          </div>
+          <div className="ml-2 my-2">
+          <OverlayTrigger ref={ref => this.filterAmenities = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
+            <Popover className="text-dark">
+              <h6><strong>Property amenities</strong></h6>
+              <Row noGutters>
+                <Col xs={4}
+                  className="text-center my-2 bold"
+                  onClick={() => this.toggleAmenitiesFilter(0)}>
+                  <p dangerouslySetInnerHTML={{ __html: this.state.amenities[0] ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
+                  {this.state.amenities[0] ? hotelService.amenities[0].name : hotelService.amenities[1].name}
+                </Col>
+                {
+                  hotelService.amenities.slice(2, 13).map((amenity, idx) => {
+                    return (
+                      <Col xs={4}
+                        className={"text-center my-2 " + (this.state.amenities[idx + 1] ? "text-dark bold" : "text-lightgray")}
+                        onClick={() => this.toggleAmenitiesFilter(idx + 1)}>
+                        <p dangerouslySetInnerHTML={{ __html: amenity.tag }} />
+                        {amenity.name}
+                      </Col>
+                    )
+                  })
+                }
               </Row>
+              <br />
+              <Button className="w-100" variant="dark" onClick={() => this.setState({ amenities: [] })}><div className="fs-12">Clear</div></Button>
             </Popover>
           }>
             {
-              this.state.price.min || this.state.price.max ?
-                <Button variant="dark" className="bold mx-2">
-                  <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ price: { min: null, max: null } })} />
+              this.isAnyAmenitesChanged() ?
+                <Button variant="dark" className="bold mx-2" onClick={() => { this.filterAmenities.show(); this.setState({ showFilter: true }); }}>
+                  <i className="fas fa-concierge-bell text-light" />&nbsp;&nbsp;Amenities&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ amenities: [] })} />
                 </Button>
                 :
-                <Button variant="light" className="bold mx-2">
-                  <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-caret-down" />
+                <Button variant="light" className="bold mx-2" onClick={() => { this.filterAmenities.show(); this.setState({ showFilter: true }); }}>
+                  <i className="fas fa-concierge-bell text-dark" />&nbsp;&nbsp;Amenities&nbsp;&nbsp;<i className="fas fa-caret-down" />
                 </Button>
             }
           </OverlayTrigger>
+          </div>
         </>
       );
     } else if (this.state.pathname === "/hotel") {

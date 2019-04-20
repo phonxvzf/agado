@@ -10,6 +10,7 @@
     "ion-rangeslider": "^2.3.0",
     "jquery": "^3.4.0",
     "octicons": "^8.5.0",
+    "qs": "^6.7.0",
     "react": "^16.8.6",
     "react-alice-carousel": "^1.13.11",
     "react-awesome-modal": "^2.0.5",
