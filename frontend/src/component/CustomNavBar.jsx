@@ -450,9 +450,9 @@ export default class CustomNavBar extends Component {
               </Row>
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu-right">
-              <Dropdown.Item className="text-right" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
               <Dropdown.Item className="text-right" href="/reservation"><i className="fas fa-calendar-check" /> Reservation</Dropdown.Item>
               <Dropdown.Divider />
+              <Dropdown.Item className="text-right" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
               <Dropdown.Item className="text-right" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Dropdown.Item>
               <Dropdown.Item className="text-right" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Dropdown.Item>
             </Dropdown.Menu>
@@ -460,8 +460,8 @@ export default class CustomNavBar extends Component {
 
           <strong className="d-md-none">{" " + currentUser.username}</strong>
           <Nav className="d-md-none">
-            <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/reservation"><i className="fas fa-calendar-check" /> Reservation</Nav.Link>
+            <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Nav.Link>
           </Nav>
@@ -482,7 +482,6 @@ export default class CustomNavBar extends Component {
               </Row>
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu-right">
-              <Dropdown.Item className="text-right bold" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
               <Dropdown.Item className="text-right bold" href="/myhotel"><i className="fas fa-hotel" /> My hotel</Dropdown.Item>
               <Dropdown.Item className="text-right bold" href="/hotel/create"><i className="fas fa-plus-square" /> Create hotel</Dropdown.Item>
               <Dropdown.Item className="text-right bold" href="/request">
@@ -491,6 +490,7 @@ export default class CustomNavBar extends Component {
                 </div>
               </Dropdown.Item>
               <Dropdown.Divider />
+              <Dropdown.Item className="text-right bold" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
               <Dropdown.Item className="text-right bold" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Dropdown.Item>
               <Dropdown.Item className="text-right bold" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Dropdown.Item>
             </Dropdown.Menu>
@@ -498,7 +498,6 @@ export default class CustomNavBar extends Component {
 
           <strong className="d-md-none">{" " + currentUser.username}</strong>
           <Nav className="d-md-none">
-            <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/myhotel"><i className="fas fa-hotel" /> My hotel</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/hotel/create"><i className="fas fa-plus-square" /> Create hotel</Nav.Link>
             <Nav.Link className="text-dark bold" href="/request">
@@ -506,6 +505,7 @@ export default class CustomNavBar extends Component {
                 <i className="fas fa-file-import" />&nbsp;Request&nbsp;{requests.length ? <Badge variant="danger">{requests.length}</Badge> : ""}
               </div>
             </Nav.Link>
+            <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Nav.Link>
           </Nav>
@@ -600,87 +600,87 @@ export default class CustomNavBar extends Component {
             </OverlayTrigger>
           </div>
           <div className="ml-2 my-2">
-          <OverlayTrigger ref={ref => this.filterRating = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
-            <Popover className="text-dark">
-              <h6><strong>Review rating</strong></h6>
-              <div>At least:</div>
-              <h4>
-                <i className={(this.state.showRating >= 1 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                  onClick={() => this.setState({ rating: this.state.showRating })}
-                  onMouseEnter={() => this.setState({ showRating: 1 })}
-                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
-                <i className={(this.state.showRating >= 2 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                  onClick={() => this.setState({ rating: this.state.showRating })}
-                  onMouseEnter={() => this.setState({ showRating: 2 })}
-                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
-                <i className={(this.state.showRating >= 3 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                  onClick={() => this.setState({ rating: this.state.showRating })}
-                  onMouseEnter={() => this.setState({ showRating: 3 })}
-                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
-                <i className={(this.state.showRating >= 4 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                  onClick={() => this.setState({ rating: this.state.showRating })}
-                  onMouseEnter={() => this.setState({ showRating: 4 })}
-                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
-                <i className={(this.state.showRating >= 5 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                  onClick={() => this.setState({ rating: this.state.showRating })}
-                  onMouseEnter={() => this.setState({ showRating: 5 })}
-                  onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
-              </h4>
-              <br />
-              <Button className="w-100" variant="dark" onClick={() => this.setState({ rating: 0, showRating: 0 })}><div className="fs-12">Clear</div></Button>
-            </Popover>
-          }>
-            {
-              this.state.rating !== 0 ?
-                <Button variant="dark" className="bold mx-2" onClick={() => { this.filterRating.show(); this.setState({ showFilter: true }); }}>
-                  <i className="fas fa-star text-light" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ rating: 0, showRating: 0 })} />
-                </Button>
-                :
-                <Button variant="light" className="bold mx-2" onClick={() => { this.filterRating.show(); this.setState({ showFilter: true }); }}>
-                  <i className="fas fa-star text-dark" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-caret-down" />
-                </Button>
-            }
-          </OverlayTrigger>
+            <OverlayTrigger ref={ref => this.filterRating = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
+              <Popover className="text-dark">
+                <h6><strong>Review rating</strong></h6>
+                <div>At least:</div>
+                <h4>
+                  <i className={(this.state.showRating >= 1 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onMouseEnter={() => this.setState({ showRating: 1 })}
+                    onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+                  <i className={(this.state.showRating >= 2 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onMouseEnter={() => this.setState({ showRating: 2 })}
+                    onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+                  <i className={(this.state.showRating >= 3 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onMouseEnter={() => this.setState({ showRating: 3 })}
+                    onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+                  <i className={(this.state.showRating >= 4 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onMouseEnter={() => this.setState({ showRating: 4 })}
+                    onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+                  <i className={(this.state.showRating >= 5 ? "fas fa-star" : "far fa-star") + " text-dark"}
+                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onMouseEnter={() => this.setState({ showRating: 5 })}
+                    onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
+                </h4>
+                <br />
+                <Button className="w-100" variant="dark" onClick={() => this.setState({ rating: 0, showRating: 0 })}><div className="fs-12">Clear</div></Button>
+              </Popover>
+            }>
+              {
+                this.state.rating !== 0 ?
+                  <Button variant="dark" className="bold mx-2" onClick={() => { this.filterRating.show(); this.setState({ showFilter: true }); }}>
+                    <i className="fas fa-star text-light" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ rating: 0, showRating: 0 })} />
+                  </Button>
+                  :
+                  <Button variant="light" className="bold mx-2" onClick={() => { this.filterRating.show(); this.setState({ showFilter: true }); }}>
+                    <i className="fas fa-star text-dark" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-caret-down" />
+                  </Button>
+              }
+            </OverlayTrigger>
           </div>
           <div className="ml-2 my-2">
-          <OverlayTrigger ref={ref => this.filterAmenities = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
-            <Popover className="text-dark">
-              <h6><strong>Property amenities</strong></h6>
-              <Row noGutters>
-                <Col xs={4}
-                  className="text-center my-2 bold"
-                  onClick={() => this.toggleAmenitiesFilter(0)}>
-                  <p dangerouslySetInnerHTML={{ __html: this.state.amenities[0] ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
-                  {this.state.amenities[0] ? hotelService.amenities[0].name : hotelService.amenities[1].name}
-                </Col>
-                {
-                  hotelService.amenities.slice(2, 13).map((amenity, idx) => {
-                    return (
-                      <Col xs={4}
-                        className={"text-center my-2 " + (this.state.amenities[idx + 1] ? "text-dark bold" : "text-lightgray")}
-                        onClick={() => this.toggleAmenitiesFilter(idx + 1)}>
-                        <p dangerouslySetInnerHTML={{ __html: amenity.tag }} />
-                        {amenity.name}
-                      </Col>
-                    )
-                  })
-                }
-              </Row>
-              <br />
-              <Button className="w-100" variant="dark" onClick={() => this.setState({ amenities: [] })}><div className="fs-12">Clear</div></Button>
-            </Popover>
-          }>
-            {
-              this.isAnyAmenitesChanged() ?
-                <Button variant="dark" className="bold mx-2" onClick={() => { this.filterAmenities.show(); this.setState({ showFilter: true }); }}>
-                  <i className="fas fa-concierge-bell text-light" />&nbsp;&nbsp;Amenities&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ amenities: [] })} />
-                </Button>
-                :
-                <Button variant="light" className="bold mx-2" onClick={() => { this.filterAmenities.show(); this.setState({ showFilter: true }); }}>
-                  <i className="fas fa-concierge-bell text-dark" />&nbsp;&nbsp;Amenities&nbsp;&nbsp;<i className="fas fa-caret-down" />
-                </Button>
-            }
-          </OverlayTrigger>
+            <OverlayTrigger ref={ref => this.filterAmenities = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
+              <Popover className="text-dark">
+                <h6><strong>Property amenities</strong></h6>
+                <Row noGutters>
+                  <Col xs={4}
+                    className="text-center my-2 bold"
+                    onClick={() => this.toggleAmenitiesFilter(0)}>
+                    <p dangerouslySetInnerHTML={{ __html: this.state.amenities[0] ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
+                    {this.state.amenities[0] ? hotelService.amenities[0].name : hotelService.amenities[1].name}
+                  </Col>
+                  {
+                    hotelService.amenities.slice(2, 13).map((amenity, idx) => {
+                      return (
+                        <Col xs={4}
+                          className={"text-center my-2 " + (this.state.amenities[idx + 1] ? "text-dark bold" : "text-lightgray")}
+                          onClick={() => this.toggleAmenitiesFilter(idx + 1)}>
+                          <p dangerouslySetInnerHTML={{ __html: amenity.tag }} />
+                          {amenity.name}
+                        </Col>
+                      )
+                    })
+                  }
+                </Row>
+                <br />
+                <Button className="w-100" variant="dark" onClick={() => this.setState({ amenities: [] })}><div className="fs-12">Clear</div></Button>
+              </Popover>
+            }>
+              {
+                this.isAnyAmenitesChanged() ?
+                  <Button variant="dark" className="bold mx-2" onClick={() => { this.filterAmenities.show(); this.setState({ showFilter: true }); }}>
+                    <i className="fas fa-concierge-bell text-light" />&nbsp;&nbsp;Amenities&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ amenities: [] })} />
+                  </Button>
+                  :
+                  <Button variant="light" className="bold mx-2" onClick={() => { this.filterAmenities.show(); this.setState({ showFilter: true }); }}>
+                    <i className="fas fa-concierge-bell text-dark" />&nbsp;&nbsp;Amenities&nbsp;&nbsp;<i className="fas fa-caret-down" />
+                  </Button>
+              }
+            </OverlayTrigger>
           </div>
         </>
       );
