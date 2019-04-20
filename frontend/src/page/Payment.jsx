@@ -65,7 +65,7 @@ export default class Payment extends Component {
   render() {
     if (!this.state.validUser) {
       return (
-        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
           <h4>You have to be a Traveler to access this page.</h4>
         </div>

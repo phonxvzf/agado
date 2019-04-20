@@ -1,4 +1,4 @@
-.profile-bg {
+.profile-bg, .error-bg, .error-two-rows-bg {
   background-color: #e7e7e7;
   /* background-image: linear-gradient( rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.1) ), url('../image/tutorial-bg.jpg'); */
   background-size: cover;
@@ -6,15 +6,31 @@
   min-height: 100vh;
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .profile-bg {
-    padding: 120px 5% 10px 5%;
+    padding: 90px 5% 10px 5%;
+  }
+
+  .error-bg {
+    padding: 90px 5% 10px 5%;
+  }
+
+  .error-two-rows-bg {
+    padding: 90px 5% 10px 5%;
   }
 }
 
-@media (min-width: 576px) {
+@media (min-width: 768px) {
   .profile-bg {
     padding: 120px 10% 10px 10%;
+  }
+
+  .error-bg {
+    padding: 120px 10% 10px 10%;
+  }
+
+  .error-two-rows-bg {
+    padding: 160px 10% 10px 10%;
   }
 }
 
@@ -69,6 +85,10 @@
   background-size: cover;
 }
 
+:root {
+  --lightgray: #aaa;
+}
+
 .text-lightgray {
-  color: #aaa;
+  color: var(--lightgray);
 }

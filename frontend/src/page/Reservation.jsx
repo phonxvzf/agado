@@ -2,6 +2,7 @@ import qs from 'qs';
 import React, { Component } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import ReservationCard from '../component/ReservationCard';
+import '../css/Reservation.css';
 import { reservationService } from '../service/reservationService';
 import { userService } from '../service/userService';
 
@@ -27,14 +28,14 @@ export default class Reservation extends Component {
   render() {
     if (!this.state.validUser) {
       return (
-        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
           <h4>You have to be a Traveler to access this page.</h4>
         </div>
       )
     }
     return (
-      <div className="search-result-bg">
+      <div className="reservation-bg">
         <div className="scroll-snap-child" />
         <Row>
           {

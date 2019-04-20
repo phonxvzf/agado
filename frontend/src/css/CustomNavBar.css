@@ -110,3 +110,25 @@
   left: 0;
   z-index: 1030;
 }
+
+.react-bootstrap-daterangepicker-container {
+  display: inherit !important;
+}
+
+.daterangepicker td.active, .daterangepicker td.active:hover {
+  background-color: var(--dark) !important;
+}
+
+.daterangepicker td.in-range {
+  background-color: #eee;
+}
+
+.daterangepicker, .card {
+  background-color: var(--popover-color);
+  border: none;
+  box-shadow: 0px 2px 10px 2px rgba(0, 0, 0, 0.2);
+}
+
+.highlight {
+  box-shadow: 0px 2px 10px 2px rgba(0, 0, 0, 0.2);
+}

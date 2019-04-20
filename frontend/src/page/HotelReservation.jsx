@@ -15,7 +15,7 @@ export default class HotelReservation extends Component {
     let reservations = [];
     if (currentUser) {
       reservations = reservationService.getReservationOfHotel(search.hotel_id).reduce((r, reservation) => {
-        r[reservation.reservation_id] = (r[reservation.reservation_id] || []).concat(reservation);
+        r[reservation.room_id] = (r[reservation.room_id] || []).concat(reservation);
         return r;
       }, []);
     }
@@ -48,20 +48,20 @@ export default class HotelReservation extends Component {
   render() {
     if (!this.state.validUser) {
       return (
-        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
           <h4>You have to be a Hotel manager to access this page.</h4>
         </div>
       )
     } else if (!this.state.hotel) {
       return (
-        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>This page is not exist</h1>
         </div>
       )
     } else if (!this.state.hotel.managers.includes(this.state.currentUser.user_id)) {
       return (
-        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
           <h4>You do not have a permission to manage this hotel yet.</h4>
         </div>
@@ -70,66 +70,62 @@ export default class HotelReservation extends Component {
     const reservations = this.state.reservations;
     const hotel = this.state.hotel;
     return (
-      <div className="hotel-bg px-auto hotel-info">
-        {
-          reservations.length === 0 ?
-            <div className="scroll-snap-child">
-              <h1>Reservation</h1>
-              <h4>This hotel have no reservations at this time.</h4>
-            </div>
-            :
-            <>
-              {
-                reservations.map(reservation => {
-                  if (!reservation) return <></>;
-                  const room = hotel.rooms[reservation[0].reservation_id];
-                  return (
-                    <div className="px-content scroll-snap-child mb-5">
-                      <div className="px-content">
-                        <Card>
-                          <Card.Header>
-                            <Row className="align-items-center text-center justify-content-center">
-                              <h4 className="text-dark mr-md-4 my-2">{room.name}</h4>
-                              {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hotel_id)}>View hotel</Button> */}
-                            </Row>
-                          </Card.Header>
-                          {/* <hr /> */}
-                          <Card.Body>
-                            {
-                              reservation.map((r, idx) => {
-                                const user = userService.getUser(r.user_id);
-                                return (
-                                  <>
-                                    {idx > 0 ? <hr /> : ""}
-                                    <Row className="align-items-center justify-content-center my-3">
-                                      <Col xs={10} md={4}>
-                                        <a className="text-dark" href={this.getProfileLink(user.user_id)}>
-                                          <Row className="align-items-center">
-                                            <div className="d-inline-block circle-avatar w-25" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
-                                            <Col>{this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
-                                          </Row>
-                                        </a>
-                                      </Col>
-                                      <Col xs={10} md={4} className="my-3">
-                                        <h6>Date: {new Date(r.checkin).toLocaleDateString() + " - " + new Date(r.checkout).toLocaleDateString()}</h6>
-                                        <h6>Number of room: {r.num}</h6>
-                                        <h6>Price: ฿ {this.getPrice(r, room)}</h6>
-                                      </Col>
-                                    </Row>
-                                  </>
-                                )
-                              })
-                            }
-                          </Card.Body>
-                        </Card>
-                      </div>
-                    </div>
-                  )
-                })
-              }
-            </>
-        }
-      </div>
+      reservations.length === 0 ?
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
+          <h1>Reservation</h1>
+          <h4>This hotel have no reservations at this time.</h4>
+        </div>
+        :
+        <div className="hotel-bg px-auto hotel-info">
+          {
+            reservations.map(reservation => {
+              if (!reservation) return <></>;
+              const room = hotel.rooms[Number(reservation[0].room_id)];
+              return (
+                <div className="px-content scroll-snap-child mb-5">
+                  <div className="px-content">
+                    <Card>
+                      <Card.Header>
+                        <Row className="align-items-center text-center justify-content-center">
+                          <h4 className="text-dark mr-md-4 my-2">{room.name}</h4>
+                          {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hotel_id)}>View hotel</Button> */}
+                        </Row>
+                      </Card.Header>
+                      {/* <hr /> */}
+                      <Card.Body>
+                        {
+                          reservation.map((r, idx) => {
+                            const user = userService.getUser(r.user_id);
+                            return (
+                              <>
+                                {idx > 0 ? <hr /> : ""}
+                                <Row className="align-items-center justify-content-center my-3">
+                                  <Col xs={10} md={4}>
+                                    <a className="text-dark" href={this.getProfileLink(user.user_id)}>
+                                      <Row className="align-items-center">
+                                        <div className="d-inline-block circle-avatar w-25" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
+                                        <Col>{this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
+                                      </Row>
+                                    </a>
+                                  </Col>
+                                  <Col xs={10} md={4} className="my-3">
+                                    <h6>Date: {new Date(r.checkin).toLocaleDateString() + " - " + new Date(r.checkout).toLocaleDateString()}</h6>
+                                    <h6>Number of room: {r.num}</h6>
+                                    <h6>Price: ฿ {this.getPrice(r, room)}</h6>
+                                  </Col>
+                                </Row>
+                              </>
+                            )
+                          })
+                        }
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div >
     )
   }
 }

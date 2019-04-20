@@ -59,7 +59,7 @@ export default class HotelInfo extends Component {
   render() {
     if (!this.state.hotel) {
       return (
-        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>This page is not exist</h1>
         </div>
       )

@@ -47,7 +47,7 @@ export default class Request extends Component {
   render() {
     if (!this.state.validUser) {
       return (
-        <div className="hotel-bg px-auto hotel-info scroll-snap-child">
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
           <h4>You have to be a Hotel manager to access this page.</h4>
         </div>
@@ -55,69 +55,65 @@ export default class Request extends Component {
     }
     const requests = this.state.requests;
     return (
-      <div className="hotel-bg px-auto hotel-info">
-        {
-          requests.length === 0 ?
-            <div className="scroll-snap-child">
-              <h1>Request</h1>
-              <h4>You have no requests at this time.</h4>
-            </div>
-            :
-            <>
-              {
-                requests.map(request => {
-                  if (!request) return <></>;
-                  const hotel = hotelService.getHotel(request[0].hotel_id);
-                  return (
-                    <div className="px-content scroll-snap-child mb-5">
-                      <div className="px-content">
-                        <Card>
-                          <Card.Header>
-                            <Row className="align-items-center text-center justify-content-center">
-                              <a className="text-dark" href={this.getHotelLink(hotel.hotel_id)}>
-                                <h4 className="mr-md-4 my-2">{hotel.name}</h4>
-                              </a>
-                              {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hotel_id)}>View hotel</Button> */}
-                            </Row>
-                          </Card.Header>
-                          {/* <hr /> */}
-                          <Card.Body>
-                            {
-                              request.map((r, idx) => {
-                                const user = userService.getUser(r.user_id);
-                                return (
-                                  <>
-                                    {idx > 0 ? <hr /> : ""}
-                                    <Row className="align-items-center justify-content-center my-3">
-                                      <Col xs={10} md={4}>
-                                        <a className="text-dark" href={this.getProfileLink(user.user_id)}>
-                                          <Row className="align-items-center">
-                                            <div className="d-inline-block circle-avatar w-25" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
-                                            <Col>{this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
-                                          </Row>
-                                        </a>
-                                      </Col>
-                                      <Col xs={4} md={2} className="my-3">
-                                        <Button variant="success" onClick={() => requestService.acceptRequest(r.request_id, r.hotel_id, r.user_id)}>Accept</Button>
-                                      </Col>
-                                      <Col xs={4} md={2} className="my-3">
-                                        <Button variant="danger" onClick={() => requestService.rejectRequest(r.request_id)}>Reject</Button>
-                                      </Col>
-                                    </Row>
-                                  </>
-                                )
-                              })
-                            }
-                          </Card.Body>
-                        </Card>
-                      </div>
-                    </div>
-                  )
-                })
-              }
-            </>
-        }
-      </div>
+      requests.length === 0 ?
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
+          <h1>Request</h1>
+          <h4>You have no requests at this time.</h4>
+        </div>
+        :
+        <div className="hotel-bg px-auto hotel-info">
+          {
+            requests.map(request => {
+              if (!request) return <></>;
+              const hotel = hotelService.getHotel(request[0].hotel_id);
+              return (
+                <div className="px-content scroll-snap-child mb-5">
+                  <div className="px-content">
+                    <Card>
+                      <Card.Header>
+                        <Row className="align-items-center text-center justify-content-center">
+                          <a className="text-dark" href={this.getHotelLink(hotel.hotel_id)}>
+                            <h4 className="mr-md-4 my-2">{hotel.name}</h4>
+                          </a>
+                          {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hotel_id)}>View hotel</Button> */}
+                        </Row>
+                      </Card.Header>
+                      {/* <hr /> */}
+                      <Card.Body>
+                        {
+                          request.map((r, idx) => {
+                            const user = userService.getUser(r.user_id);
+                            return (
+                              <>
+                                {idx > 0 ? <hr /> : ""}
+                                <Row className="align-items-center justify-content-center my-3">
+                                  <Col xs={10} md={4}>
+                                    <a className="text-dark" href={this.getProfileLink(user.user_id)}>
+                                      <Row className="align-items-center">
+                                        <div className="d-inline-block circle-avatar w-25" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
+                                        <Col>{this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
+                                      </Row>
+                                    </a>
+                                  </Col>
+                                  <Col xs={4} md={2} className="my-3">
+                                    <Button variant="success" onClick={() => requestService.acceptRequest(r.request_id, r.hotel_id, r.user_id)}>Accept</Button>
+                                  </Col>
+                                  <Col xs={4} md={2} className="my-3">
+                                    <Button variant="danger" onClick={() => requestService.rejectRequest(r.request_id)}>Reject</Button>
+                                  </Col>
+                                </Row>
+                              </>
+                            )
+                          })
+                        }
+                      </Card.Body>
+                    </Card>
+                  </div>
+                </div>
+              )
+            })
+          }
+        </div>
     )
   }
 }

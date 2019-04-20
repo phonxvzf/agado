@@ -35,7 +35,7 @@ export default class ReservationCard extends Component {
     const checkout = this.props.reservation.checkout;
     const interval = Math.max(0, (new Date(checkout) - new Date(checkin)) / 24 / 60 / 60 / 1000);
     const hotel = hotelService.getHotel(this.props.reservation.hotel_id);
-    const room = hotel.rooms[Number(this.props.reservation.reservation_id)];
+    const room = hotel.rooms[Number(this.props.reservation.room_id)];
     return interval * (room ? room.price : 0) * Number(this.props.reservation.num);
   }
 
@@ -52,8 +52,8 @@ export default class ReservationCard extends Component {
   }
 
   cancelReservation = () => {
-    const res_id = this.props.reservation.res_id;
-    if (reservationService.deleteReservation(res_id)) {
+    const reservation_id = this.props.reservation.reservation_id;
+    if (reservationService.deleteReservation(reservation_id)) {
       window.history.go();
     }
   }
@@ -83,7 +83,7 @@ export default class ReservationCard extends Component {
             }
           </div>
           <Card.Body>
-            <Card.Text>Room: {hotel.rooms[Number(reservation.reservation_id)] ? hotel.rooms[Number(reservation.reservation_id)].name : ""}</Card.Text>
+            <Card.Text>Room: {hotel.rooms[Number(reservation.room_id)] ? hotel.rooms[Number(reservation.room_id)].name : ""}</Card.Text>
             <Card.Text>Number of room: {reservation.num}</Card.Text>
             <Card.Text>Price: ฿ {this.getPrice()}</Card.Text>
           </Card.Body>

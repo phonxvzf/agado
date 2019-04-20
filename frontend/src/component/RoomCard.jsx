@@ -1,6 +1,8 @@
+import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { Alert, Badge, Button, Card, Carousel, Col, Collapse, Form, Image, InputGroup, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
+import DateRangePicker from 'react-bootstrap-daterangepicker';
 import '../css/RoomCard.css';
 import { hotelService } from '../service/hotelService';
 
@@ -19,6 +21,16 @@ export default class RoomCard extends Component {
     });
   }
 
+  getHotelLink = () => {
+    const pathname = "/hotel";
+    const search = qs.stringify({
+      hotel_id: this.props.search.hotel_id,
+      checkin: this.props.search.checkin,
+      checkout: this.props.search.checkout
+    }, { addQueryPrefix: true });
+    return pathname + search;
+  }
+
   getPaymentLink = () => {
     const pathname = "/payment";
     const search = qs.stringify({
@@ -34,6 +46,15 @@ export default class RoomCard extends Component {
   reserveRoom = (e) => {
     e.preventDefault();
     window.location.href = this.getPaymentLink();
+  }
+
+  getDateString = () => {
+    const checkin = this.props.search.checkin ? new moment(this.props.search.checkin).format('D MMM YYYY') : "...";
+    const checkout = this.props.search.checkout ? new moment(this.props.search.checkout).format('D MMM YYYY') : "...";
+    if (checkin === "..." && checkout === "...") {
+      return "Check-in & Check-out date";
+    }
+    return checkin + " - " + checkout;
   }
 
   render() {
@@ -121,7 +142,33 @@ export default class RoomCard extends Component {
           <hr />
           {
             this.props.interval <= 0 && (!currentUser || currentUser.user_type !== "hotel_manager") ?
-              <Alert variant="danger">Please enter dates to see prices.</Alert>
+              <>
+                <Alert variant="danger">Please enter dates to see prices.</Alert>
+                <div className="d-md-none">
+                  <DateRangePicker
+                    startDate={new moment(this.props.search.checkin)}
+                    endDate={new moment(this.props.search.checkout)}
+                    drops="up"
+                    autoApply
+                    onApply={(e, picker) => {
+                      e.preventDefault();
+                      this.props.search.checkin = new moment(picker.startDate).format('YYYY-MM-DD');
+                      this.props.search.checkout = new moment(picker.endDate).format('YYYY-MM-DD');
+                      window.location.href = this.getHotelLink();
+                    }}>
+                    <Form>
+                      <InputGroup>
+                        <Form.Control
+                          type="text"
+                          value={this.getDateString()} />
+                        <InputGroup.Append>
+                          <Button variant="dark"><i className="fas fa-calendar-week" /></Button>
+                        </InputGroup.Append>
+                      </InputGroup>
+                    </Form>
+                  </DateRangePicker>
+                </div>
+              </>
               :
               <Row className="align-items-center text-center">
                 <Col xs={12} md={4} className="my-2">

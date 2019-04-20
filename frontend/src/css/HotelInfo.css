@@ -7,7 +7,7 @@
 }
 
 .hotel-info {
-  color: #444;
+  color: var(--dark);
 }
 
 @media (max-width: 768px) {
