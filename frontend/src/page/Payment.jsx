@@ -129,7 +129,9 @@ export default class Payment extends Component {
         </div>
         <br />
         <Row className="justify-content-center">
-          <Col />
+          <Col className="text-right">
+            <Button variant="dark" className="mx-4 px-3" onClick={() => window.history.go(-1)}>Back</Button>
+          </Col>
           <Col>
             <Button variant="dark" className="mx-5 px-3" onClick={() => this.setState({ step: 1 })}>Next</Button>
           </Col>
