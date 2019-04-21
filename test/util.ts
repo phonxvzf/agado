@@ -38,6 +38,7 @@ const util = {
       phone_num: crypto.randomBytes(10).toString('base64'),
       date_of_birth:
         (new Date(Math.floor(1e12 + Math.random() * 1e12))).toISOString().substr(0, 10),
+      img: crypto.randomBytes(10).toString('base64'),
     };
   },
 

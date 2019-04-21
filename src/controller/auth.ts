@@ -66,6 +66,10 @@ const ctrl = {
   login: async (ctx: koa.Context, next: () => Promise<any>) => {
     validator.validateUndefined(ctx.request.body['username'], 'invalid username or password');
     validator.validateUndefined(ctx.request.body['password'], 'invalid username or password');
+    const userType = validator.validateUserType(
+      ctx.request.body['user_type'],
+      'invalid user type',
+    );
 
     const [userInfo] = await userRepo.getUserByName(ctx.request.body['username']);
     if (userInfo == null) {
@@ -76,6 +80,10 @@ const ctrl = {
       await bcrypt.compare(ctx.request.body['password'], userInfo.password);
     if (!passwordCorrect) {
       throw new ApiError('incorrect username or password', codes.UNAUTHORIZED, 401);
+    }
+
+    if (userInfo.user_type !== userType) {
+      throw new ApiError('unmatched user type', codes.UNAUTHORIZED, 401);
     }
 
     const token = generateToken(userInfo['id']);
@@ -145,14 +153,15 @@ const ctrl = {
       phone_num: phoneNum,
       user_type: userType,
       date_of_birth: dateOfBirth,
+      img: null,
     };
 
     try {
       const [userId] = await userRepo.createUser(userData);
-      ctx.response.body = { id: userId };
+      ctx.response.body = { user_id: userId };
       ctx.response.status = httpStatus.CREATED.code;
     } catch (e) {
-      throw new ApiError('user already exists', codes.DUPLICATE_USER, 400);
+      throw new ApiError('user already exists', codes.DUPLICATE_USER, httpStatus.CONFLICT.code);
     }
     return next();
   },
@@ -160,7 +169,7 @@ const ctrl = {
   updateUser: async (ctx: koa.Context, next: () => Promise<any>) => {
     const rawPassword: string = ctx.request.body['password'];
     const invalidMessage = 'specify username, (password,) first_name, '
-      + 'last_name, gender, email, user_type, phone_num, date_of_birth';
+      + 'last_name, gender, email, user_type, phone_num, date_of_birth, img';
     const username = validator.validateUndefined(ctx.request.body['username'], invalidMessage);
     const firstName = validator.validateUndefined(ctx.request.body['first_name'], invalidMessage);
     const lastName = validator.validateUndefined(ctx.request.body['last_name'], invalidMessage);
@@ -170,11 +179,13 @@ const ctrl = {
     const userType = validator.validateUndefined(ctx.request.body['user_type'], invalidMessage);
     const dateOfBirth =
       validator.validateUndefined(ctx.request.body['date_of_birth'], invalidMessage);
+    const img = validator.validateNullable(ctx.request.body['img'], invalidMessage);
 
     const userData: User = {
       username,
       email,
       gender,
+      img,
       password: rawPassword,
       first_name: firstName,
       last_name: lastName,

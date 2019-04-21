@@ -1,10 +1,5 @@
 import database from './database';
-
-interface HotelManager {
-  uid: number;
-  hid: number;
-  permitted: string;
-}
+import HotelManager from './entity/HotelManager';
 
 const hotelManagerRepo = {
   createHotelManager: async (hotelManagerData: HotelManager) => {

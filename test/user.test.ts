@@ -1,11 +1,11 @@
 import supertest from 'supertest';
 import index from '../src/index';
 import database from '../src/model/database';
+import { validUserType } from '../src/common/validator';
 import util from './util';
 
 const request = supertest;
 const server = index;
-const db = database;
 const defaultUserData = util.generateUserData();
 
 beforeEach(async (done) => {
@@ -45,7 +45,7 @@ describe('Create user', () => {
     let res = await request(server).post('/user').send(user);
     expect(res.status).toEqual(201);
     res = await request(server).post('/login').send(user);
-    const { id, token } = res.body;
+    const { token } = res.body;
     res = await request(server).get('/user').set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
     expect(res.body.email).toEqual(user.email);
@@ -59,7 +59,7 @@ describe('Modify user', () => {
     let res = await request(server).put('/user').send({});
     expect(res.status).toEqual(401);
     res = await request(server).post('/login').send(defaultUserData);
-    const { id, token } = res.body;
+    const { token } = res.body;
     res = await request(server).put('/user').set('Authorization', `Bearer ${token}`).send({});
     expect(res.status).toEqual(400);
   });
@@ -92,7 +92,11 @@ describe('Modify user', () => {
 describe('Delete user', () => {
   it('[DELETE /user] should fail', async () => {
     let res = await request(server).post('/login')
-      .send({ username: defaultUserData.username, password: defaultUserData.password });
+      .send({
+        username: defaultUserData.username,
+        password: defaultUserData.password,
+        user_type: defaultUserData.user_type,
+      });
     expect(res.status).toEqual(200);
     res = await request(server).del('/user').set('Authorization', `Bearer ${res.body['token']}bad`);
     expect(res.status).toEqual(401);
@@ -100,7 +104,11 @@ describe('Delete user', () => {
 
   it('[DELETE /user] should succeed', async () => {
     let res = await request(server).post('/login')
-      .send({ username: defaultUserData.username, password: defaultUserData.password });
+      .send({
+        username: defaultUserData.username,
+        password: defaultUserData.password,
+        user_type: defaultUserData.user_type,
+      });
     expect(res.status).toEqual(200);
     res = await request(server).del('/user').set('Authorization', `Bearer ${res.body['token']}`);
     expect(res.status).toEqual(204);
@@ -109,16 +117,50 @@ describe('Delete user', () => {
 
 describe('Login', () => {
   it('[POST /login] should fail', async () => {
-    const res = await request(server).post('/login').send({});
+    // empty body
+    let res = await request(server).post('/login').send({});
     expect(res.status).toEqual(400);
+
+    // invalid user type
+    res = await request(server).post('/login')
+      .send({
+        username: defaultUserData.username,
+        password: defaultUserData.password,
+        user_type: 'BAD USER TYPE',
+      });
+    expect(res.status).toEqual(400);
+
+    // unmatched user type
+    const unmatchedUserTypeSet = new Set(validUserType);
+    unmatchedUserTypeSet.delete(defaultUserData.user_type);
+    const unmatchedUserTypes = Array.from(unmatchedUserTypeSet);
+    for (let i = 0; i < unmatchedUserTypes.length; i += 1) {
+      res = await request(server).post('/login')
+        .send({
+          username: defaultUserData.username,
+          password: defaultUserData.password,
+          user_type: unmatchedUserTypes[i],
+        });
+      expect(res.status).toEqual(401);
+    }
+
+    // incorrect password
+    res = await request(server).post('/login')
+      .send({
+        username: defaultUserData.username,
+        password: 'DEFINITELY INCORRECT PASSWORD',
+        user_type: defaultUserData.user_type,
+      });
+    expect(res.status).toEqual(401);
   });
 
   it('[POST /login] should succeed', async () => {
     let res = await request(server).post('/login')
-      .send({ username: defaultUserData.username, password: 'DEFINITELY INCORRECT PASSWORD' });
-    expect(res.status).toEqual(401);
-    res = await request(server).post('/login')
-      .send({ username: defaultUserData.username, password: defaultUserData.password });
+      .send({
+        username: defaultUserData.username,
+        password: defaultUserData.password,
+        user_type: defaultUserData.user_type,
+      });
     expect(res.status).toEqual(200);
     expect(res.body).toHaveProperty('id');
     expect(res.body).toHaveProperty('token');
@@ -131,10 +173,18 @@ describe('Login', () => {
     expect(res.status).toEqual(200);
     const [newData] = await database.select('*').from('user');
     res = await request(server).post('/login')
-      .send({ username: modifiedUser.username, password: defaultUserData.password });
+      .send({
+        username: modifiedUser.username,
+        password: defaultUserData.password,
+        user_type: defaultUserData.user_type,
+      });
     expect(res.status).toEqual(401);
     res = await request(server).post('/login')
-      .send({ username: modifiedUser.username, password: modifiedUser.password });
+      .send({
+        username: modifiedUser.username,
+        password: modifiedUser.password,
+        user_type: modifiedUser.user_type,
+      });
     expect(res.status).toEqual(200);
   });
 });
@@ -149,7 +199,11 @@ describe('Logout', () => {
 
   it('[POST /logout] should succeed', async () => {
     let res = await request(server).post('/login')
-      .send({ username: defaultUserData.username, password: defaultUserData.password });
+      .send({
+        username: defaultUserData.username,
+        password: defaultUserData.password,
+        user_type: defaultUserData.user_type,
+      });
     expect(res.status).toEqual(200);
     const token = res.body.token;
     res = await request(server)

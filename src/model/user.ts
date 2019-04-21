@@ -1,17 +1,6 @@
 import bcrypt from 'bcrypt';
 import database from './database';
-
-interface User {
-  username: string;
-  password: string;
-  first_name: string;
-  last_name: string;
-  gender: string;
-  email: string;
-  phone_num: string;
-  user_type: string;
-  date_of_birth: string | number;
-}
+import User from './entity/User';
 
 const userRepo = {
   createUser: async (userData: User): Promise<number[]> => {
@@ -46,7 +35,7 @@ const userRepo = {
     return database('user').update(encrypted).returning('id').where('id', '=', id);
   },
 
-  updateToken: async (userId, newToken: string) => {
+  updateToken: async (userId: number, newToken: string) => {
     return database('user').update({ token: newToken }).where('id', '=', userId);
   },
 
