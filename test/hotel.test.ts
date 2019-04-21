@@ -1,12 +1,10 @@
 import supertest from 'supertest';
 import index from '../src/index';
-import database from '../src/model/database';
 import util from './util';
 import httpStatus from '../src/common/http-status';
 
 const request = supertest;
 const server = index;
-const db = database;
 
 const defaultTravelerData = util.generateUserData();
 defaultTravelerData.user_type = 'traveler';
@@ -59,22 +57,22 @@ describe('Get hotel information', () => {
 
   it('[GET /hotel] should succeed (traveler access)', async () => {
     const res = await request(server)
-      .get(`/hotel?id=${hotelId}`)
+      .get(`/hotel?hotel_id=${hotelId}`)
       .set('Authorization', `Bearer ${travelerToken}`);
-    expect(res.body['id']).toEqual(hotelId);
+    expect(res.body['hotel_id']).toEqual(hotelId);
     expect(res.status).toEqual(httpStatus.OK.code);
   });
 
   it('[GET /hotel] should succeed (hotel manager access)', async () => {
     const res = await request(server)
-      .get(`/hotel?id=${hotelId}`)
+      .get(`/hotel?hotel_id=${hotelId}`)
       .set('Authorization', `Bearer ${hotelManagerToken}`);
     expect(res.status).toEqual(httpStatus.OK.code);
   });
 
   it('[GET /hotel] should fail (hotel not exists)', async () => {
     const res = await request(server)
-      .get('/hotel?id=2000000')
+      .get('/hotel?hotel_id=2000000')
       .set('Authorization', `Bearer ${hotelManagerToken}`);
     expect(res.status).toEqual(httpStatus.NOT_FOUND.code);
   });

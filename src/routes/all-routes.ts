@@ -12,7 +12,7 @@ router.get('/ping', general.ping);
 router.post('/ping', general.ping);
 
 // User
-router.get('/user', auth.requireAuth, auth.getUser);
+router.get('/user', auth.getUser);
 router.post('/user', auth.createUser);
 router.post('/login', auth.login);
 router.post('/logout', auth.requireAuth, auth.logout);

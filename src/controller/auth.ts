@@ -86,11 +86,12 @@ const ctrl = {
       throw new ApiError('unmatched user type', codes.UNAUTHORIZED, 401);
     }
 
-    const token = generateToken(userInfo['id']);
-    userInfo['token'] = token;
+    const token = generateToken(userInfo.user_id);
+    await userRepo.updateToken(userInfo.user_id, token);
 
-    await userRepo.updateToken(userInfo['id'], userInfo['token']);
-    delete userInfo.password;
+    userInfo.token = token;
+    delete userInfo.password; // remove password from returning field
+
     ctx.response.body = userInfo;
     ctx.response.status = httpStatus.OK.code;
     return next();
@@ -108,7 +109,8 @@ const ctrl = {
   },
 
   getUser: async (ctx: koa.Context, next: () => Promise<any>) => {
-    const [userInfo] = await userRepo.getUser(ctx.request.body['user_id']);
+    const userId = validator.validateId(ctx.request.query['user_id'], 'specify user_id');
+    const [userInfo] = await userRepo.getUser(userId);
     if (userInfo == null) {
       throw new ApiError('user not found', codes.USER_NOT_FOUND, 404);
     }
@@ -153,6 +155,8 @@ const ctrl = {
       phone_num: phoneNum,
       user_type: userType,
       date_of_birth: dateOfBirth,
+      user_id: undefined,
+      token: undefined,
       img: null,
     };
 
@@ -192,13 +196,15 @@ const ctrl = {
       phone_num: phoneNum,
       user_type: userType,
       date_of_birth: dateOfBirth,
+      user_id: undefined,
+      token: undefined,
     };
 
     // If password is not specified, don't update it.
     if (rawPassword == null) delete userData.password;
 
     const [userId] = await userRepo.updateUser(ctx.request.body['user_id'], userData);
-    ctx.response.body = { id: userId };
+    ctx.response.body = { userId };
     ctx.response.status = httpStatus.OK.code;
     return next();
   },

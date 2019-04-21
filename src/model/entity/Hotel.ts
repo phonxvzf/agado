@@ -1,4 +1,5 @@
 interface Hotel {
+  hotel_id: number;
   name: string;
   desc: string;
   addr: string;

@@ -21,16 +21,18 @@ afterEach(async (done) => {
 
 describe('Get user information', () => {
   it('[GET /user] should fail', async () => {
-    const res = await request(server).get('/user?id=100');
-    expect(res.status).toEqual(401);
+    const res = await request(server).get('/user?id=abc');
+    expect(res.status).toEqual(400);
   });
 
   it('[GET /user] should succeed', async () => {
-    let res = await request(server).post('/login').send(defaultUserData);
-    const { id, token } = res.body;
-    res = await request(server).get('/user').set('Authorization', `Bearer ${token}`);
+    const [{ user_id }] = await database('user').select('user_id')
+      .where('username', '=', defaultUserData.username);
+    const res = await request(server).get(`/user?user_id=${user_id}`);
     expect(res.status).toEqual(200);
-    expect(res.body.id).toEqual(id);
+    expect(res.body.password).toBeUndefined();
+    expect(res.body.token).toBeUndefined();
+    expect(res.body.user_id).toEqual(user_id);
   });
 });
 
@@ -44,9 +46,13 @@ describe('Create user', () => {
     const user = util.generateUserData();
     let res = await request(server).post('/user').send(user);
     expect(res.status).toEqual(201);
-    res = await request(server).post('/login').send(user);
-    const { token } = res.body;
-    res = await request(server).get('/user').set('Authorization', `Bearer ${token}`);
+    res = await request(server).post('/login').send({
+      username: user.username,
+      password: user.password,
+      user_type: user.user_type,
+    });
+    const { user_id } = res.body; // discard unused token
+    res = await request(server).get(`/user?user_id=${user_id}`);
     expect(res.status).toEqual(200);
     expect(res.body.email).toEqual(user.email);
     expect(res.body.username).toEqual(user.username);
@@ -66,25 +72,26 @@ describe('Modify user', () => {
 
   it('[PUT /user] should succeed', async () => {
     let res = await request(server).post('/login').send(defaultUserData);
-    const { id, token } = res.body;
+    const { user_id, token } = res.body;
     const modifiedUser = util.generateUserData();
     res = await request(server).put('/user').send(modifiedUser)
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
 
-    res = await request(server).get('/user').set('Authorization', `Bearer ${token}`);
+    res = await request(server).get(`/user?user_id=${user_id}`)
+      .set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
     expect(res.body.email).toEqual(modifiedUser.email);
     expect(res.body.username).toEqual(modifiedUser.username);
     expect(res.body.date_of_birth.substr(0, 10)).toEqual(modifiedUser.date_of_birth);
 
-    const [oldPassword] = await database('user').select('password').where('id', '=', id);
+    const [oldPassword] = await database('user').select('password').where('user_id', '=', user_id);
 
     delete modifiedUser.password;
     res = await request(server).put('/user').set('Authorization', `Bearer ${token}`)
       .send(modifiedUser);
     expect(res.status).toEqual(200);
-    const [newPassword] = await database('user').select('password').where('id', '=', id);
+    const [newPassword] = await database('user').select('password').where('user_id', '=', user_id);
     expect(newPassword).toEqual(oldPassword);
   });
 });
@@ -110,7 +117,8 @@ describe('Delete user', () => {
         user_type: defaultUserData.user_type,
       });
     expect(res.status).toEqual(200);
-    res = await request(server).del('/user').set('Authorization', `Bearer ${res.body['token']}`);
+    res = await request(server).del('/user?user_id=-23')
+      .set('Authorization', `Bearer ${res.body['token']}`);
     expect(res.status).toEqual(204);
   });
 });
@@ -162,7 +170,8 @@ describe('Login', () => {
         user_type: defaultUserData.user_type,
       });
     expect(res.status).toEqual(200);
-    expect(res.body).toHaveProperty('id');
+    expect(res.body.password).toBeUndefined();
+    expect(res.body).toHaveProperty('user_id');
     expect(res.body).toHaveProperty('token');
     const { token } = res.body;
 
@@ -210,8 +219,7 @@ describe('Logout', () => {
       .post('/logout')
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(204);
-    res = await request(server)
-      .get('/user?id=10')
+    res = await request(server).del('/user?user_id=10')
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(401);
   });
