@@ -24,9 +24,9 @@ export default class HotelInfo extends Component {
 
     let oldReview = null;
     if (currentUser) {
-      oldReview = reviewService.getOldReview(currentUser.user_id, search.hotel_id);
+      oldReview = reviewService.getOldReview(currentUser.user_id, Number(search.hotel_id));
     }
-    const hotel = hotelService.getHotel(search.hotel_id);
+    const hotel = hotelService.getHotel(Number(search.hotel_id));
 
     this.setState({
       hotel: hotel,
@@ -44,7 +44,7 @@ export default class HotelInfo extends Component {
 
   requestPermission = () => {
     const request = {
-      hotel_id: this.state.search.hotel_id,
+      hotel_id: Number(this.state.search.hotel_id),
       user_id: this.state.currentUser.user_id
     }
     if (requestService.createRequest(request)) {
@@ -89,7 +89,7 @@ export default class HotelInfo extends Component {
           </div>
         </div>
         <ReviewModal
-          hotel_id={this.state.search.hotel_id}
+          hotel_id={Number(this.state.search.hotel_id)}
           oldReview={this.state.oldReview}
           showModal={this.state.showModal === "review"}
           closeModal={() => this.setState({ showModal: null })} />
@@ -184,7 +184,7 @@ export default class HotelInfo extends Component {
               <Row className="align-items-center mb-4" noGutters>
                 <Col className="text-center">
                   {
-                    requestService.isRequestPending(this.state.search.hotel_id, this.state.currentUser.user_id) ?
+                    requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
                       <Button disabled variant="dark" className="bg-requestpx-4">
                         <i className="fas fa-paper-plane" /> Request is pending
                           </Button>
@@ -216,7 +216,11 @@ export default class HotelInfo extends Component {
             out of 5
             </Col>
           <Col>
-            {hotel.num_rating.map((review, idx) => this.getProgressComponent(review, idx))}
+            {this.getProgressComponent(hotel.num_rating5, 5)}
+            {this.getProgressComponent(hotel.num_rating4, 4)}
+            {this.getProgressComponent(hotel.num_rating3, 3)}
+            {this.getProgressComponent(hotel.num_rating2, 2)}
+            {this.getProgressComponent(hotel.num_rating1, 1)}
           </Col>
           <Col lg={1} className="d-xs-none" />
         </Row>
@@ -233,22 +237,22 @@ export default class HotelInfo extends Component {
     )
   }
 
-  getProgressComponent = (review, idx) => {
+  getProgressComponent = (num_rating, rating) => {
     return (
-      <Row className="align-items-center" noGutters key={idx}>
+      <Row className="align-items-center" noGutters key={rating}>
         <Col xs={4} sm={3} xl={2} className="text-right fs-stars mr-md-3">
-          {this.getStarComponent(idx)}
+          {this.getStarComponent(rating)}
         </Col>
         <Col>
-          <ProgressBar variant="dark" className="progress-star" now={review * 100 / this.state.hotel.total_reviews} />
+          <ProgressBar variant="dark" className="progress-star" now={num_rating * 100 / this.state.hotel.total_review} />
         </Col>
       </Row>
     )
   }
 
-  getStarComponent = (idx) => {
+  getStarComponent = (rating) => {
     let stars = [];
-    for (let i = 0; i < 5 - idx; ++i) {
+    for (let i = 0; i < rating; ++i) {
       const star = <i className="fas fa-star mr-1" key={i} />;
       stars.push(star);
     }

@@ -21,7 +21,7 @@ export default class Profile extends Component {
       search: search
     });
 
-    const user = userService.getUser(search.user_id);
+    const user = userService.getUser(Number(search.user_id));
     const currentUser = userService.getCurrentUser();
 
     this.setState({
@@ -42,6 +42,9 @@ export default class Profile extends Component {
 
   uploadImg = (e) => {
     const img = e.currentTarget.files[0];
+    if (!img) {
+      return;
+    }
     this.setState({ imgName: img.name });
     this.getImgUrl(img).then(imgUrl => {
       this.setState({ editedUser: { ...this.state.editedUser, img: imgUrl } });
@@ -174,7 +177,7 @@ export default class Profile extends Component {
             <Col as="h6">{user.phone_num}</Col>
           </Row>
           {
-            !currentUser || "" + currentUser.user_id !== "" + this.state.search.user_id ? "" :
+            !currentUser || "" + currentUser.user_id !== "" + Number(this.state.search.user_id) ? "" :
               <>
                 <Button variant="success" className="mr-4 my-2" onClick={() => this.setState({ mode: "edit" })}>Edit profile</Button>
                 <Button variant="danger" className="my-2" onClick={() => this.setState({ showModal: "delete_confirm" })}>Delete account</Button>
@@ -272,7 +275,7 @@ export default class Profile extends Component {
               </Col>
             </Row>
             {
-              "" + editedUser.user_id !== "" + this.state.search.user_id ? "" :
+              "" + editedUser.user_id !== "" + Number(this.state.search.user_id) ? "" :
                 <>
                   <Button type="submit" variant="success" className="mr-4 my-2">Save changes</Button>
                   <Button variant="secondary" className="my-2" onClick={() => this.setState({ mode: "" })}>Cancel</Button>
@@ -300,7 +303,6 @@ export default class Profile extends Component {
             const hotel = hotelService.getHotel(review.hotel_id);
             return (
               <>
-                <hr className="my-2" />
                 <Row className="align-items-center scroll-snap-child">
                   <Col xs={12} sm={4} md={3} lg={2} className="text-center">
                     <a className="text-dark" href={this.getProfileLink(user.user_id)}>
@@ -317,11 +319,11 @@ export default class Profile extends Component {
                     {review.comment}
                   </Col>
                 </Row>
+                <hr className="my-2" />
               </>
             )
           })
         }
-        <hr className="mb-5" />
       </div>
     )
   }

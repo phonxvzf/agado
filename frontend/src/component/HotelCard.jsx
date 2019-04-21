@@ -49,7 +49,7 @@ export default class HotelCard extends Component {
             <Col xs={4} className="text-center">
               {this.getRatingStar(hotel.rating)}
               <br />
-              {hotel.total_reviews} reviews
+              {hotel.total_review} reviews
             </Col>
           </Row>
         </Card.Header>

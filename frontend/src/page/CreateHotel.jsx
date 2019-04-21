@@ -51,6 +51,9 @@ export default class CreateHotel extends Component {
 
   uploadImg = (e, idx) => {
     const img = e.currentTarget.files[0];
+    if (!img) {
+      return;
+    }
     this.getImgUrl(img).then(imgUrl => {
       let imgs = this.state.hotel.imgs;
       imgs[idx - 1] = imgUrl;
@@ -97,7 +100,7 @@ export default class CreateHotel extends Component {
   getHotelLink = () => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hotel_id: this.props.search.hotel_id
+      hotel_id: Number(this.props.search.hotel_id)
     }, { addQueryPrefix: true });
     return pathname + search;
   }

@@ -35,7 +35,7 @@
 .bg-brown.active {
   background-color: var(--brown);
   border: none;
-  color: white;
+  color: var(--light);
 }
 
 .border-brown,

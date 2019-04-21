@@ -10,11 +10,11 @@ export default class HotelReservation extends Component {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
-    const hotel = hotelService.getHotel(search.hotel_id);
+    const hotel = hotelService.getHotel(Number(search.hotel_id));
 
     let reservations = [];
     if (currentUser) {
-      reservations = reservationService.getReservationOfHotel(search.hotel_id).reduce((r, reservation) => {
+      reservations = reservationService.getReservationOfHotel(Number(search.hotel_id)).reduce((r, reservation) => {
         r[reservation.room_id] = (r[reservation.room_id] || []).concat(reservation);
         return r;
       }, []);
@@ -80,7 +80,7 @@ export default class HotelReservation extends Component {
           {
             reservations.map(reservation => {
               if (!reservation) return <></>;
-              const room = hotel.rooms[Number(reservation[0].room_id)];
+              const room = hotel.room[Number(reservation[0].room_id)];
               return (
                 <div className="px-content scroll-snap-child mb-5">
                   <div className="px-content">

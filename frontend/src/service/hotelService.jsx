@@ -9,12 +9,15 @@ export class hotelService {
 
       hotel.reviews = reviews;
       hotel.rating = reviews.length > 0 ? (reviews.map(review => review.rating).reduce((a, b) => a + b, 0)) / reviews.length : 0;
-      hotel.total_reviews = reviews.length;
-      hotel.num_rating = [0, 0, 0, 0, 0];
-      reviews.forEach(review => hotel.num_rating[5 - review.rating] = hotel.num_rating[5 - review.rating] + 1 );
+      hotel.total_review = reviews.length;
+      hotel.num_rating5 = (reviews.filter(review => review.rating === 5)).length;
+      hotel.num_rating4 = (reviews.filter(review => review.rating === 4)).length;
+      hotel.num_rating3 = (reviews.filter(review => review.rating === 3)).length;
+      hotel.num_rating2 = (reviews.filter(review => review.rating === 2)).length;
+      hotel.num_rating1 = (reviews.filter(review => review.rating === 1)).length;
       hotel.start_price = hotel.rooms.map(room => room.price).reduce((a, b) => Math.min(a, b), Infinity);
       hotel.start_price = hotel.start_price === Infinity ? 0 : hotel.start_price;
-      hotel.room_left = hotel.rooms.map(room => room.available_rooms).reduce((a, b) => a + b, 0);
+      hotel.room_left = hotel.rooms.map(room => room.available_room).reduce((a, b) => a + b, 0);
 
       hotels[i] = hotel;
     }

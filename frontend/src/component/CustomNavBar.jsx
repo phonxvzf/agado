@@ -86,7 +86,7 @@ export default class CustomNavBar extends Component {
   getHotelLink = () => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hotel_id: this.state.search.hotel_id,
+      hotel_id: Number(this.state.search.hotel_id),
       checkin: this.state.search.checkin,
       checkout: this.state.search.checkout
     }, { addQueryPrefix: true });
@@ -96,7 +96,7 @@ export default class CustomNavBar extends Component {
   getHotelEditLink = () => {
     const pathname = "/hotel/edit";
     const search = qs.stringify({
-      hotel_id: this.state.search.hotel_id
+      hotel_id: Number(this.state.search.hotel_id)
     }, { addQueryPrefix: true });
     return pathname + search;
   }
@@ -104,14 +104,14 @@ export default class CustomNavBar extends Component {
   getHotelReservationLink = () => {
     const pathname = "/hotel/reservation";
     const search = qs.stringify({
-      hotel_id: this.state.search.hotel_id
+      hotel_id: Number(this.state.search.hotel_id)
     }, { addQueryPrefix: true });
     return pathname + search;
   }
 
   requestPermission = () => {
     const request = {
-      hotel_id: this.state.search.hotel_id,
+      hotel_id: Number(this.state.search.hotel_id),
       user_id: this.state.currentUser.user_id
     }
     if (requestService.createRequest(request)) {
@@ -120,13 +120,13 @@ export default class CustomNavBar extends Component {
   }
 
   cancelMaagement = () => {
-    if (hotelService.cancelManagement(this.state.search.hotel_id, this.state.currentUser.user_id)) {
+    if (hotelService.cancelManagement(Number(this.state.search.hotel_id), this.state.currentUser.user_id)) {
       window.location.href = "/myhotel";
     }
   }
 
   isUserOwn = () => {
-    const hotel = hotelService.getHotel(this.state.search.hotel_id);
+    const hotel = hotelService.getHotel(Number(this.state.search.hotel_id));
     return hotel && hotel.managers.includes(this.state.currentUser.user_id);
   }
 
@@ -380,8 +380,8 @@ export default class CustomNavBar extends Component {
     } else if (this.state.pathname === "/hotel/edit"
       && this.state.currentUser
       && this.state.currentUser.user_type === "hotel_manager"
-      && hotelService.getHotel(this.state.search.hotel_id)
-      && hotelService.getHotel(this.state.search.hotel_id).managers.includes(this.state.currentUser.user_id)) {
+      && hotelService.getHotel(Number(this.state.search.hotel_id))
+      && hotelService.getHotel(Number(this.state.search.hotel_id)).manager.includes(this.state.currentUser.user_id)) {
       return (
         <div className="text-center">
           <div className="d-xs-sm-none d-sm-md-none">
@@ -786,7 +786,7 @@ export default class CustomNavBar extends Component {
         </>
       );
     } else if (this.state.pathname === "/hotel") {
-      if (!hotelService.getHotel(this.state.search.hotel_id)) {
+      if (!hotelService.getHotel(Number(this.state.search.hotel_id))) {
         return <></>;
       }
       return (
@@ -863,7 +863,7 @@ export default class CustomNavBar extends Component {
                     <hr className="mx-0 my-3 d-md-none" />
                     <div className="text-center">
                       {
-                        requestService.isRequestPending(this.state.search.hotel_id, this.state.currentUser.user_id) ?
+                        requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
                           <Button disabled variant="link" className="text-dark">
                             <h5 className="my-0"><strong><i className="fas fa-paper-plane" /> Request is pending</strong></h5>
                           </Button>
@@ -923,7 +923,7 @@ export default class CustomNavBar extends Component {
                   :
                   <Col className="d-inline text-center">
                     {
-                      requestService.isRequestPending(this.state.search.hotel_id, this.state.currentUser.user_id) ?
+                      requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
                         <Button disabled variant="link" className="text-dark">
                           <h5 className="my-0"><strong><i className="fas fa-paper-plane" /> Request is pending</strong></h5>
                         </Button>

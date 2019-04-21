@@ -16,7 +16,7 @@ export default class Tutorial extends Component {
   render() {
     return (
       <div className="profile-bg scroll-snap-child">
-        <Jumbotron className="h-80 shadow bg-white">
+        <Jumbotron className="h-80 shadow bg-light">
           <h1>Tutorial</h1>
           <iframe title="tutorial" className="video-size" src="https://www.youtube.com/embed/9zmPTNgBZlo" frameBorder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe>
         </Jumbotron>;

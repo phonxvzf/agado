@@ -24,7 +24,7 @@ export default class RoomCard extends Component {
   getHotelLink = () => {
     const pathname = "/hotel";
     const search = qs.stringify({
-      hotel_id: this.props.search.hotel_id,
+      hotel_id: Number(this.props.search.hotel_id),
       checkin: this.props.search.checkin,
       checkout: this.props.search.checkout
     }, { addQueryPrefix: true });
@@ -34,7 +34,7 @@ export default class RoomCard extends Component {
   getPaymentLink = () => {
     const pathname = "/payment";
     const search = qs.stringify({
-      hotel_id: this.props.search.hotel_id,
+      hotel_id: Number(this.props.search.hotel_id),
       checkin: this.props.search.checkin,
       checkout: this.props.search.checkout,
       room_id: this.props.room_id,
@@ -63,7 +63,7 @@ export default class RoomCard extends Component {
     return (
       <Card className="shadow w-100">
         <Card.Body>
-          <Card.Title className="bg-white py-2 mx-4"><h4>{room.name}</h4></Card.Title>
+          <Card.Title className="bg-light py-2 mx-4"><h4>{room.name}</h4></Card.Title>
           <Row className="align-items-center">
             <Col xs={12} sm={5} md={6} lg={5} className="text-center">
               {
@@ -105,7 +105,7 @@ export default class RoomCard extends Component {
                     <Badge variant="dark" className="room-card-property">
                       <div className="my-2">
                         <h6><i className="fas fa-bed"></i></h6>
-                        <h6>{room.beds} Beds</h6>
+                        <h6>{room.num_bed} Beds</h6>
                       </div>
                     </Badge>
                   </Col>
@@ -179,7 +179,7 @@ export default class RoomCard extends Component {
                   <Form id={"reservation" + this.props.room_id} onSubmit={this.reserveRoom}>
                     <InputGroup>
                       <InputGroup.Prepend>
-                        <InputGroup.Text className="bg-dark border-dark text-white">Rooms</InputGroup.Text>
+                        <InputGroup.Text className="bg-dark border-dark text-light">Rooms</InputGroup.Text>
                       </InputGroup.Prepend>
                       <Form.Control
                         className="border-dark"
@@ -187,11 +187,11 @@ export default class RoomCard extends Component {
                         onChange={this._onChange}
                         placeholder="Number"
                         min={0}
-                        max={room.available_rooms}
+                        max={room.available_room}
                         value={this.state.num}
                         required />
                       <InputGroup.Append>
-                        <InputGroup.Text className="bg-dark border-dark text-white">
+                        <InputGroup.Text className="bg-dark border-dark text-light">
                           Total Price: ฿ {room.price * Math.max(1, this.props.interval) * Math.max(this.state.num, 0)}
                         </InputGroup.Text>
                       </InputGroup.Append>
