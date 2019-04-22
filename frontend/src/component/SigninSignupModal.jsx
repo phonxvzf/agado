@@ -10,7 +10,7 @@ export default class SigninSignupModal extends Component {
     showModal: null
   }
 
-  signin = (e) => {
+  signin = async (e) => {
     e.preventDefault();
     const signin = this.state.signin;
     const user = {
@@ -18,14 +18,14 @@ export default class SigninSignupModal extends Component {
       password: signin.password,
       user_type: this.props.type === "Traveler" ? "traveler" : "hotel_manager"
     };
-    if (userService.signin(user)) {
+    if (await userService.signin(user)) {
       window.history.go();
     } else {
       this.setState({ showModal: "signin_failed" });
     }
   }
 
-  signup = (e) => {
+  signup = async (e) => {
     e.preventDefault();
     const signup = this.state.signup;
     const user = {
@@ -33,13 +33,13 @@ export default class SigninSignupModal extends Component {
       password: signup.password,
       first_name: signup.first_name,
       last_name: signup.last_name,
-      gender: signup.gender,
+      gender: signup.gender ? signup.gender : "Not specified",
       date_of_birth: signup.date_of_birth,
       email: signup.email,
       phone_num: signup.phone_num,
       user_type: this.props.type === "Traveler" ? "traveler" : "hotel_manager"
     };
-    if (userService.signup(user)) {
+    if (await userService.signup(user)) {
       this.setState({ showModal: "signup_completed" });
     } else {
       this.setState({ showModal: "signup_failed" });

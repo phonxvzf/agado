@@ -47,10 +47,10 @@ class App extends Component {
   }
 
   componentDidMount() {
-    const pathname = window.location.pathname;
-    window.onbeforeunload = function(e) {
-      return pathname === "/payment" || pathname === "/hotel/create";
-    };
+    // const pathname = window.location.pathname;
+    // window.onbeforeunload = function(e) {
+    //   return pathname === "/payment" || pathname === "/hotel/create";
+    // };
   }
 
   toggleMode = () => {

@@ -6,17 +6,19 @@ import { requestService } from '../service/requestService';
 import { userService } from '../service/userService';
 
 export default class Request extends Component {
-  componentWillMount() {
+  async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
 
     let requests = [];
     if (currentUser) {
-      requests = requestService.getRequestOf(currentUser.user_id).reduce((r, request) => {
+      requests = await requestService.getRequestOf(currentUser.user_id).reduce(async (prev, request) => {
+        let r = await prev;
+        request.user = await userService.getUser(request.user_id);
         r[request.hotel_id] = (r[request.hotel_id] || []).concat(request);
         return r;
-      }, []);
+      }, Promise.resolve([]));
     }
 
     this.setState({
@@ -45,7 +47,9 @@ export default class Request extends Component {
   }
 
   render() {
-    if (!this.state.validUser) {
+    if (!this.state) {
+      return <div className="error-bg scroll-snap-child" />
+    } else if (!this.state.validUser) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
@@ -78,11 +82,10 @@ export default class Request extends Component {
                           {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hotel_id)}>View hotel</Button> */}
                         </Row>
                       </Card.Header>
-                      {/* <hr /> */}
                       <Card.Body>
                         {
                           request.map((r, idx) => {
-                            const user = userService.getUser(r.user_id);
+                            const user = r.user;
                             return (
                               <>
                                 {idx > 0 ? <hr /> : ""}

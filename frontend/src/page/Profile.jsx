@@ -1,3 +1,4 @@
+import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
@@ -9,25 +10,18 @@ import { reviewService } from '../service/reviewService';
 import { userService } from '../service/userService';
 
 export default class Profile extends Component {
-  state = {
-    mode: ""
-  }
-
-  componentWillMount() {
+  async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+    const user = await userService.getUser(Number(search.user_id));
+    const currentUser = userService.getCurrentUser();
     this.setState({
       pathname: pathname,
-      search: search
-    });
-
-    const user = userService.getUser(Number(search.user_id));
-    const currentUser = userService.getCurrentUser();
-
-    this.setState({
+      search: search,
       user: user,
       currentUser: currentUser,
-      editedUser: currentUser
+      editedUser: currentUser,
+      mode: ""
     });
   }
 
@@ -51,7 +45,7 @@ export default class Profile extends Component {
     });
   }
 
-  editUserInfo = (e) => {
+  editUserInfo = async (e) => {
     e.preventDefault();
     const editedUser = this.state.editedUser;
     const user = {
@@ -64,7 +58,7 @@ export default class Profile extends Component {
       date_of_birth: editedUser.date_of_birth,
       img: editedUser.img
     };
-    if (userService.editUserInfo(user)) {
+    if (await userService.editUserInfo(editedUser, editedUser.token)) {
       this.setState({
         user: user,
         showModal: "save_completed",
@@ -75,9 +69,9 @@ export default class Profile extends Component {
     }
   }
 
-  deleteAccount = (e) => {
+  deleteAccount = async (e) => {
     e.preventDefault();
-    if (userService.deleteUser(this.state.currentUser.user_id)) {
+    if (await userService.deleteUser(this.state.currentUser.token)) {
       // this.setState({ showModal: "delete_completed" });
       userService.signout()
     }
@@ -100,12 +94,17 @@ export default class Profile extends Component {
   }
 
   render() {
-    if (!this.state.user) {
+    if (!this.state) {
+      return <div className="error-bg scroll-snap-child" />
+    }
+    const user = this.state.user;
+    console.log(user)
+    if (!user) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>This page is not exist</h1>
         </div>
-      )
+      );
     }
     return (
       <>
@@ -116,7 +115,7 @@ export default class Profile extends Component {
           }
           <hr />
           {
-            this.state.user.user_type === "traveler" ? this.getPreviousReviews() :
+            user.user_type === "traveler" ? this.getPreviousReviews() :
               this.getHotelsManaged()
           }
         </div>
@@ -166,7 +165,7 @@ export default class Profile extends Component {
           </Row>
           <Row className="align-items-center" noGutters>
             <Col xs={4} sm={4} md={3} xl={2} as="h6"><strong>Birth date:</strong></Col>
-            <Col as="h6">{new Date(user.date_of_birth).toLocaleDateString()}</Col>
+            <Col as="h6">{new moment(user.date_of_birth).format("D MMM YYYY")}</Col>
           </Row>
           <Row className="align-items-center" noGutters>
             <Col xs={4} sm={4} md={3} xl={2} as="h6"><strong>Email:</strong></Col>
@@ -248,7 +247,7 @@ export default class Profile extends Component {
                 <Form.Control
                   type="date"
                   onChange={(e) => this.setState({ editedUser: { ...editedUser, date_of_birth: e.currentTarget.value } })}
-                  defaultValue={editedUser.date_of_birth}
+                  defaultValue={new Date(editedUser.date_of_birth)}
                   required />
               </Col>
             </Row>
@@ -315,7 +314,7 @@ export default class Profile extends Component {
                   <Col xs={12} sm={8} md={9} lg={10}>
                     <h5 className="d-inline">{review.title} </h5>
                     <a className="fs-14 text-dark" href={this.getHotelLink(hotel.hotel_id)}>@{hotel.name}</a>
-                    <div className="fs-14">{this.getRatingStar(review.rating)} {new Date(review.date).toLocaleDateString()}</div>
+                    <div className="fs-14">{this.getRatingStar(review.rating)} {new moment(review.date).format("D MMM YYYY")}</div>
                     {review.comment}
                   </Col>
                 </Row>

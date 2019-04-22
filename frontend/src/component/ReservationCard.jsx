@@ -1,3 +1,4 @@
+import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { Button, Card, Col, Row } from 'react-bootstrap';
@@ -68,7 +69,7 @@ export default class ReservationCard extends Component {
             <Row className="align-items-center" noGutters={true}>
               <Col xs={8}>
                 <Card.Title as="h6"><a className="text-dark" href={this.getHotelLink()}>{hotel.name}</a></Card.Title>
-                <Card.Subtitle as="h6">{new Date(reservation.checkin).toLocaleDateString() + " - " + new Date(reservation.checkout).toLocaleDateString()}</Card.Subtitle>
+                <Card.Subtitle as="h6">{new moment(reservation.checkin).format("D MMM YYYY") + " - " + new moment(reservation.checkout).format("D MMM YYYY")}</Card.Subtitle>
               </Col>
               <Col xs={4} className="text-center">
                 {this.getDayleft()}

@@ -1,3 +1,4 @@
+import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { Button, Col, Image, ProgressBar, Row } from 'react-bootstrap';
@@ -12,23 +13,28 @@ import { userService } from '../service/userService';
 import CreateHotel from './CreateHotel';
 
 export default class HotelInfo extends Component {
-  componentWillMount() {
+  async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
-    this.setState({
-      pathname: pathname,
-      search: search,
-      currentUser: currentUser
-    });
-
     let oldReview = null;
     if (currentUser) {
       oldReview = reviewService.getOldReview(currentUser.user_id, Number(search.hotel_id));
     }
-    const hotel = hotelService.getHotel(Number(search.hotel_id));
-
+    let hotel = hotelService.getHotel(Number(search.hotel_id));
+    if (hotel) {
+      hotel.reviews = await Promise.all(hotel.reviews.map(async review => {
+        return {
+          ...review,
+          user: await userService.getUser(review.user_id)
+        };
+      }));
+      hotel.managers = await Promise.all(hotel.managers.map(async user_id => await userService.getUser(user_id)));
+    }
     this.setState({
+      pathname: pathname,
+      search: search,
+      currentUser: currentUser,
       hotel: hotel,
       oldReview: oldReview
     });
@@ -57,7 +63,9 @@ export default class HotelInfo extends Component {
   }
 
   render() {
-    if (!this.state.hotel) {
+    if (!this.state) {
+      return <div className="error-bg scroll-snap-child" />
+    } else if (!this.state.hotel) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>This page is not exist</h1>
@@ -261,7 +269,8 @@ export default class HotelInfo extends Component {
 
   getReviewsComponent = () => {
     return this.state.hotel.reviews.map(review => {
-      const user = userService.getUser(review.user_id);
+      const user = review.user;
+      if (!user) return;
       return (
         <>
           <hr className="my-2" />
@@ -276,7 +285,7 @@ export default class HotelInfo extends Component {
             </Col>
             <Col xs={12} sm={8} md={9} lg={10}>
               <h5>{review.title}</h5>
-              <div className="fs-14">{this.getRatingStar(review.rating)} {new Date(review.date).toLocaleDateString()}</div>
+              <div className="fs-14">{this.getRatingStar(review.rating)} {new moment(review.date).format("D MMM YYYY") }</div>
               {review.comment}
             </Col>
           </Row>
@@ -316,8 +325,8 @@ export default class HotelInfo extends Component {
         </Row>
         <Row>
           {
-            hotel.managers.map(user_id => {
-              const user = userService.getUser(user_id);
+            hotel.managers.map(user => {
+              if (!user) return;
               return (
                 <Col xs={12} sm={6} md={4} lg={4} className="my-3">
                   <a className="text-dark" href={this.getProfileLink(user.user_id)}>

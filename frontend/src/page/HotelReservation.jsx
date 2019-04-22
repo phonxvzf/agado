@@ -1,3 +1,4 @@
+import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { Card, Col, Row } from 'react-bootstrap';
@@ -6,7 +7,7 @@ import { reservationService } from '../service/reservationService';
 import { userService } from '../service/userService';
 
 export default class HotelReservation extends Component {
-  componentWillMount() {
+  async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
@@ -14,10 +15,12 @@ export default class HotelReservation extends Component {
 
     let reservations = [];
     if (currentUser) {
-      reservations = reservationService.getReservationOfHotel(Number(search.hotel_id)).reduce((r, reservation) => {
+      reservations = await reservationService.getReservationOfHotel(Number(search.hotel_id)).reduce(async (prev, reservation) => {
+        let r = await prev;
+        reservation.user = await userService.getUser(reservation.user_id);
         r[reservation.room_id] = (r[reservation.room_id] || []).concat(reservation);
         return r;
-      }, []);
+      }, Promise.resolve([]));
     }
 
     this.setState({
@@ -46,7 +49,9 @@ export default class HotelReservation extends Component {
   }
 
   render() {
-    if (!this.state.validUser) {
+    if (!this.state) {
+      return <div className="error-bg scroll-snap-child" />
+    } else if (!this.state.validUser) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
@@ -95,7 +100,7 @@ export default class HotelReservation extends Component {
                       <Card.Body>
                         {
                           reservation.map((r, idx) => {
-                            const user = userService.getUser(r.user_id);
+                            const user = r.user;
                             return (
                               <>
                                 {idx > 0 ? <hr /> : ""}
@@ -109,7 +114,7 @@ export default class HotelReservation extends Component {
                                     </a>
                                   </Col>
                                   <Col xs={10} md={4} className="my-3">
-                                    <h6>Date: {new Date(r.checkin).toLocaleDateString() + " - " + new Date(r.checkout).toLocaleDateString()}</h6>
+                                    <h6>Date: {new moment(r.checkin).format("D MMM YYYY")  + " - " + new moment(r.checkout).format("D MMM YYYY") }</h6>
                                     <h6>Number of room: {r.num}</h6>
                                     <h6>Price: ฿ {this.getPrice(r, room)}</h6>
                                   </Col>

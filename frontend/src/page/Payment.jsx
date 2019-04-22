@@ -2,6 +2,7 @@ import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
@@ -120,7 +121,7 @@ export default class Payment extends Component {
           <br />
           <h4>Booking information:</h4>
           <div className="ml-3 ml-md-5">
-            <h6>Date: {new Date(this.state.search.checkin).toLocaleDateString() + " - " + new Date(this.state.search.checkout).toLocaleDateString()}</h6>
+            <h6>Date: {new moment(this.state.search.checkin).format("D MMM YYYY") + " - " + new moment(this.state.search.checkout).format("D MMM YYYY")}</h6>
             <h6>Hotel: {hotel.name}</h6>
             <h6>Room: {hotel.rooms[Number(this.state.search.room_id)].name}</h6>
             <h6>Number of room: {Number(this.state.search.num)}</h6>
