@@ -35,13 +35,15 @@
 
   .scroll-snap-container {
     scroll-padding: 145px;
+    height: 100vh;
+    overflow: auto;
+    scroll-snap-type: y proximity;
   }
 }
 
 .scroll-snap-container {
   height: 100vh;
-  overflow: auto;
-  scroll-snap-type: y proximity;
+  /* overflow: auto; */
 }
 
 .scroll-snap-child {

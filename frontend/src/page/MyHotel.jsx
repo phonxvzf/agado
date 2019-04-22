@@ -1,6 +1,6 @@
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Col, Row } from 'react-bootstrap';
+import { Button, Col, Row } from 'react-bootstrap';
 import HotelManageCard from '../component/HotelManageCard';
 import '../css/MyHotel.css';
 import { hotelService } from '../service/hotelService';
@@ -44,6 +44,11 @@ export default class MyHotel extends Component {
     return (
       <div className="my-hotel-bg">
         <div className="scroll-snap-child" />
+        <Col className="text-right">
+          <Button variant="dark py-2 px-3 my-4 text-right bold" href="/hotel/create">
+            <i className="fas fa-plus-square" />&nbsp;&nbsp;Create hotel
+          </Button>
+        </Col>
         <Row>
           {
             this.state.hotels.map(hotel => {

@@ -67,7 +67,7 @@ export default class ReviewModal extends Component {
 
   render() {
     const currentUser = userService.getCurrentUser();
-    if (!currentUser) {
+    if (!currentUser || currentUser.user_type === "hotel_manager") {
       return (
         <CustomModal showModal={this.props.showModal} closeModal={this.props.closeModal}
           title="You are not signing in yet"

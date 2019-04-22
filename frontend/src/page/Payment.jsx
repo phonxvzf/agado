@@ -41,7 +41,7 @@ export default class Payment extends Component {
     const checkout = this.state.search.checkout;
     const interval = Math.max(0, (new Date(checkout) - new Date(checkin)) / 24 / 60 / 60 / 1000);
     const hotel = hotelService.getHotel(Number(this.state.search.hotel_id))
-    return interval * hotel.room[Number(this.state.search.room_id)].price * Number(this.state.search.num);
+    return interval * hotel.rooms[Number(this.state.search.room_id)].price * Number(this.state.search.num);
   }
 
   bookNow = (e) => {
@@ -122,7 +122,7 @@ export default class Payment extends Component {
           <div className="ml-3 ml-md-5">
             <h6>Date: {new Date(this.state.search.checkin).toLocaleDateString() + " - " + new Date(this.state.search.checkout).toLocaleDateString()}</h6>
             <h6>Hotel: {hotel.name}</h6>
-            <h6>Room: {hotel.room[Number(this.state.search.room_id)].name}</h6>
+            <h6>Room: {hotel.rooms[Number(this.state.search.room_id)].name}</h6>
             <h6>Number of room: {Number(this.state.search.num)}</h6>
             <h6>Price: ฿ {this.getPrice()}</h6>
           </div>

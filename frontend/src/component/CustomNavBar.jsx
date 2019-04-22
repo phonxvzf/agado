@@ -213,6 +213,9 @@ export default class CustomNavBar extends Component {
     return (
       <>
         <Navbar className="shadow pb-0" bg="light" variant="light" fixed="top" expand="md" collapseOnSelect>
+          <h3 className="text-center-fixed bold mb-4 d-xs-sm-none d-sm-md-none">
+            {this.getTitle()}
+          </h3>
           <Row className="align-items-center">
             <Col xs={2} className="d-md-none">
               <Navbar.Toggle />
@@ -225,7 +228,7 @@ export default class CustomNavBar extends Component {
             <Col className="mr-auto">
               {this.getSearchTab()}
             </Col>
-            <Col xs={12} md={4} className="mr-lg-3">
+            <Col xs={12} md={4} lg={5} xl={4} className="mr-lg-3">
               <Navbar.Collapse className="justify-content-end">
                 {this.getUserActions()}
               </Navbar.Collapse>
@@ -264,6 +267,24 @@ export default class CustomNavBar extends Component {
           } />
       </>
     )
+  }
+
+  getTitle = () => {
+    if (this.state.pathname === "/hotel/reservation") {
+      return "Hotel's Reservation"
+    } else if (this.state.pathname === "/myhotel") {
+      return "My Hotel"
+    } else if (this.state.pathname === "/request") {
+      return "Request"
+    } else if (this.state.pathname === "/payment") {
+      return "Payment"
+    } else if (this.state.pathname === "/reservation") {
+      return "Reservation"
+    } else if (this.state.pathname === "/tutorial") {
+      return "Tutorial"
+    } else if (this.state.pathname === "/profile") {
+      return "Profile"
+    }
   }
 
   getSearchTab = () => {
@@ -418,57 +439,44 @@ export default class CustomNavBar extends Component {
       )
     } else if (this.state.pathname === "/hotel/reservation") {
       return (
-        <div className="text-center">
-          <div className="d-xs-sm-none d-sm-md-none">
-            <h3 className="my-0"><strong>Hotel's Reservation</strong></h3>
-          </div>
-          <div className="text-right d-md-none">
-            <h5 className="my-0"><strong>Hotel's Reservation</strong></h5>
-          </div>
+        <div className="text-right d-md-none">
+          <h5 className="my-0"><strong>Hotel's Reservation</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/myhotel") {
       return (
-        <div className="text-center">
-          <div className="d-xs-sm-none d-sm-md-none">
-            <h3 className="my-0"><strong>My Hotel</strong></h3>
-          </div>
-          <div className="text-right d-md-none">
-            <h5 className="my-0"><strong>My Hotel</strong></h5>
-          </div>
+        <div className="text-right d-md-none">
+          <h5 className="my-0"><strong>My Hotel</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/request") {
       return (
-        <div className="text-center">
-          <div className="d-xs-sm-none d-sm-md-none">
-            <h3 className="my-0"><strong>Request</strong></h3>
-          </div>
-          <div className="text-right d-md-none">
-            <h5 className="my-0"><strong>Request</strong></h5>
-          </div>
+        <div className="text-right d-md-none">
+          <h5 className="my-0"><strong>Request</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/payment") {
       return (
-        <div className="text-center">
-          <div className="d-xs-sm-none d-sm-md-none">
-            <h3 className="my-0"><strong>Payment</strong></h3>
-          </div>
-          <div className="text-right d-md-none">
-            <h5 className="my-0"><strong>Payment</strong></h5>
-          </div>
+        <div className="text-right d-md-none">
+          <h5 className="my-0"><strong>Payment</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/reservation") {
       return (
-        <div className="text-center">
-          <div className="d-xs-sm-none d-sm-md-none">
-            <h3 className="my-0"><strong>Reservation</strong></h3>
-          </div>
-          <div className="text-right d-md-none">
-            <h5 className="my-0"><strong>Reservation</strong></h5>
-          </div>
+        <div className="text-right d-md-none">
+          <h5 className="my-0"><strong>Reservation</strong></h5>
+        </div>
+      )
+    } else if (this.state.pathname === "/tutorial") {
+      return (
+        <div className="text-right d-md-none">
+          <h5 className="my-0"><strong>Tutorial</strong></h5>
+        </div>
+      )
+    } else if (this.state.pathname === "/profile") {
+      return (
+        <div className="text-right d-md-none">
+          <h5 className="my-0"><strong>Profile</strong></h5>
         </div>
       )
     } else if (this.state.pathname !== "/") {
@@ -585,11 +593,11 @@ export default class CustomNavBar extends Component {
               </Row>
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu-right">
-              <Dropdown.Item className="text-right" href="/reservation"><i className="fas fa-calendar-check" /> Reservation</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2" href="/reservation"><i className="fas fa-calendar-check" /> Reservation</Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item className="text-right" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
-              <Dropdown.Item className="text-right" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Dropdown.Item>
-              <Dropdown.Item className="text-right" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
 

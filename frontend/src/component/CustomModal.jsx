@@ -18,7 +18,7 @@ export default class CustomModal extends Component {
                 <Modal.Title>{this.props.title}</Modal.Title>
                 {this.props.header}
               </Modal.Header>
-              <Modal.Body>{this.props.body}</Modal.Body>
+              {this.props.body ? <Modal.Body>{this.props.body}</Modal.Body> : ""}
               {
                 this.props.noFooter ? "" :
                   <Modal.Footer>

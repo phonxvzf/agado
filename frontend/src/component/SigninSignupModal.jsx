@@ -76,6 +76,14 @@ export default class SigninSignupModal extends Component {
           }
           noFooter noCloseButton />
         <CustomModal
+          showModal={this.state.showModal === "signup_confirm"}
+          closeModal={() => this.setState({ showModal: null })}
+          title="Please confirm to signup"
+          body="Your account will be stored in our system. You will be signed in automatically."
+          footer={
+            <Button variant="success" onClick={this.signup}>Confirm</Button>
+          } />
+        <CustomModal
           showModal={this.state.showModal === "signup_completed"}
           closeModal={() => window.history.go()}
           title="Sign up completed"
@@ -123,7 +131,7 @@ export default class SigninSignupModal extends Component {
 
   getSignupForm = () => {
     return (
-      <Form onSubmit={this.signup} className="mx-2">
+      <Form onSubmit={(e) => { e.preventDefault(); this.setState({ showModal: "signup_confirm" }); }} className="mx-2">
         <Form.Row>
           <Form.Group as={Col}>
             <Form.Label>Username</Form.Label>

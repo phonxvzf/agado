@@ -80,7 +80,7 @@ export default class HotelReservation extends Component {
           {
             reservations.map(reservation => {
               if (!reservation) return <></>;
-              const room = hotel.room[Number(reservation[0].room_id)];
+              const room = hotel.rooms[Number(reservation[0].room_id)];
               return (
                 <div className="px-content scroll-snap-child mb-5">
                   <div className="px-content">

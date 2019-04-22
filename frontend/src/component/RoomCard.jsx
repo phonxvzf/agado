@@ -185,7 +185,7 @@ export default class RoomCard extends Component {
                         className="border-dark"
                         type="number"
                         onChange={this._onChange}
-                        placeholder="Number"
+                        placeholder="0"
                         min={0}
                         max={room.available_room}
                         value={this.state.num}
@@ -202,13 +202,13 @@ export default class RoomCard extends Component {
                   {
                     currentUser && currentUser.user_type === "traveler" ?
                       <Button type="submit" form={"reservation" + this.props.room_id} variant="success" className="py-3 px-4">
-                        <span className="h6">Reserve now</span>
+                        <span className="h4">Reserve now</span>
                       </Button>
                       :
                       <OverlayTrigger overlay={<Tooltip>Please sign in with traveler account</Tooltip>}>
                         <span className="d-inline-block">
                           <Button disabled variant="success" className="py-3 px-4" style={{ pointerEvents: 'none' }}>
-                            <span className="h6">Reserve now</span>
+                            <span className="h4">Reserve now</span>
                           </Button>
                         </span>
                       </OverlayTrigger>

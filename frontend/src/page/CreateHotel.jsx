@@ -173,11 +173,10 @@ export default class CreateHotel extends Component {
           </Row>
           <Form id="create-hotel" onSubmit={this.checkForm}>
             <div className="px-content mt-5 scroll-snap-child" id="hotel_info">
-              <h3 className="d-inline">{hotel.name ? hotel.name : "Hotel's name"}</h3>
+              <h3 className="d-inline" onClick={() => this.setState({ focus: "name" })}>{hotel.name ? hotel.name : "Hotel's name"}</h3>
               <span>
-                <strike className="px-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strike>
                 <Button variant="link" className="text-dark px-0" onClick={() => this.setState({ focus: "name" })}>
-                  edit&nbsp;<i className="fas fa-edit" />
+                  &nbsp;<i className="fas fa-edit" />
                 </Button>
               </span>
               {this.state.focus === "name" || this.state.check ?
@@ -190,11 +189,10 @@ export default class CreateHotel extends Component {
                   autoFocus
                   required /> : ""}
               <br />
-              <h5 className="d-inline">{hotel.city ? hotel.city : "City"}</h5>
+              <h5 className="d-inline" onClick={() => this.setState({ focus: "city" })}>{hotel.city ? hotel.city : "City"}</h5>
               <span>
-                <strike className="px-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strike>
                 <Button variant="link" className="text-dark px-0" onClick={() => this.setState({ focus: "city" })}>
-                  edit&nbsp;<i className="fas fa-edit" />
+                  &nbsp;<i className="fas fa-edit" />
                 </Button>
               </span>
               {this.state.focus === "city" || this.state.check ?
@@ -209,11 +207,12 @@ export default class CreateHotel extends Component {
               <br />
               <hr />
               <span className="fs-18">
-                <i className="fas fa-map-marker-alt" />&nbsp;
-                    {hotel.address ? hotel.address : "Address"}
-                <strike className="px-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strike>
+                <span onClick={() => this.setState({ focus: "address" })}>
+                  <i className="fas fa-map-marker-alt" />
+                  &nbsp;{hotel.address ? hotel.address : "Address"}
+                </span>
                 <Button variant="link" className="text-dark px-0" onClick={() => this.setState({ focus: "address" })}>
-                  edit&nbsp;<i className="fas fa-edit" />
+                  &nbsp;<i className="fas fa-edit" />
                 </Button>
               </span>
               {this.state.focus === "address" || this.state.check ?
@@ -227,11 +226,12 @@ export default class CreateHotel extends Component {
                   required /> : ""}
               <br />
               <span className="fs-18 break-all-word">
-                <i className="fas fa-file-alt" />&nbsp;
-                    {hotel.desc ? hotel.desc : "Description"}
-                <strike className="px-2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strike>
+                <span onClick={() => this.setState({ focus: "desc" })}>
+                  <i className="fas fa-file-alt" onClick={() => this.setState({ focus: "desc" })} />
+                  &nbsp;{hotel.desc ? hotel.desc : "Description"}
+                </span>
                 <Button variant="link" className="text-dark px-0" onClick={() => this.setState({ focus: "desc" })}>
-                  edit&nbsp;<i className="fas fa-edit" />
+                  &nbsp;<i className="fas fa-edit" />
                 </Button>
                 <br />
               </span>
