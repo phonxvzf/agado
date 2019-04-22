@@ -1,24 +1,13 @@
 import bcrypt from 'bcrypt';
 import database from './database';
-
-interface User {
-  username: string;
-  password: string;
-  first_name: string;
-  last_name: string;
-  gender: string;
-  email: string;
-  phone_num: string;
-  user_type: string;
-  date_of_birth: string | number;
-}
+import User from './entity/User';
 
 const userRepo = {
   createUser: async (userData: User): Promise<number[]> => {
     const encrypted = Object.assign({}, userData) as User;
     const bcryptSalt = await bcrypt.genSalt(Math.random());
     encrypted.password = await bcrypt.hash(userData.password, bcryptSalt);
-    return database.insert(encrypted).returning('id').into('user');
+    return database.insert(encrypted).returning('user_id').into('user');
   },
 
   getAllUsers: async (): Promise<User[]> => {
@@ -26,32 +15,32 @@ const userRepo = {
   },
 
   getUser: async (userId: number): Promise<User[]> => {
-    return database.select('*').from('user').where('id', '=', userId);
+    return database.select('*').from('user').where('user_id', '=', userId);
   },
 
   getToken: async (userId: number): Promise<any[]> => {
-    return database.select('token').from('user').where('id', '=', userId);
+    return database.select('token').from('user').where('user_id', '=', userId);
   },
 
   getUserByName: async (username: string): Promise<User[]> => {
     return database.select('*').from('user').where('username', '=', username);
   },
 
-  updateUser: async (id: number, userData: User): Promise<number[]> => {
+  updateUser: async (userId: number, userData: User): Promise<number[]> => {
     const encrypted = Object.assign({}, userData) as User;
     if (encrypted.password) {
       const bcryptSalt = await bcrypt.genSalt(Math.random());
       encrypted.password = await bcrypt.hash(userData.password, bcryptSalt);
     }
-    return database('user').update(encrypted).returning('id').where('id', '=', id);
+    return database('user').update(encrypted).returning('user_id').where('user_id', '=', userId);
   },
 
-  updateToken: async (userId, newToken: string) => {
-    return database('user').update({ token: newToken }).where('id', '=', userId);
+  updateToken: async (userId: number, newToken: string) => {
+    return database('user').update({ token: newToken }).where('user_id', '=', userId);
   },
 
   deleteUser: async (userId: number) => {
-    return database.del().from('user').where('id', '=', userId);
+    return database.del().from('user').where('user_id', '=', userId);
   },
 };
 

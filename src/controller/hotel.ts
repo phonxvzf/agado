@@ -1,17 +1,18 @@
 import koa from 'koa';
 import httpStatus from '../common/http-status';
+import Hotel from '../model/entity/Hotel';
 import { codes, ApiError } from '../common/api-error';
 import { hotelRepo } from '../model/hotel';
 import { validator } from '../common/validator';
 
 const ctrlHotel = {
   getHotel: async (ctx: koa.Context, next: () => Promise<any>) => {
-    const id = validator.validateId(ctx.request.query['id'], 'Please specify id.');
+    const id = validator.validateId(ctx.request.query['hotel_id'], 'Please specify hotel_id.');
     const [hotelInfo] = await hotelRepo.getHotel(id);
     if (hotelInfo == null) {
       throw new ApiError('hotel not found', codes.HOTEL_NOT_FOUND, 404);
     }
-    ctx.response.body = Object.assign({ id }, hotelInfo);
+    ctx.response.body = hotelInfo;
     ctx.response.status = httpStatus.OK.code;
     return next();
   },
@@ -26,7 +27,7 @@ const ctrlHotel = {
     const long = Number(validator.validateUndefined(ctx.request.body['long'], invalidMessage));
     const rating = validator.validateRating(ctx.request.body['rating'], invalidMessage);
 
-    const hotelData = {
+    const hotelData: Hotel = {
       name,
       desc,
       addr,
@@ -34,11 +35,12 @@ const ctrlHotel = {
       lat,
       long,
       rating,
+      hotel_id: undefined,
     };
 
     try {
       const [hotelId] = await hotelRepo.createHotel(hotelData);
-      ctx.response.body = { id: hotelId };
+      ctx.response.body = { hotel_id: hotelId };
       ctx.response.status = httpStatus.CREATED.code;
     } catch (e) {
       throw new ApiError('hotel already exists', codes.DUPLICATE_HOTEL, 400);
@@ -48,8 +50,9 @@ const ctrlHotel = {
   },
 
   updateHotel: async (ctx: koa.Context, next: () => Promise<any>) => {
-    const invalidMessage = 'Please specify id, name, (desc,) addr, prov, lat, long, (and rating).';
-    const id = validator.validateId(ctx.request.body['id'], invalidMessage);
+    const invalidMessage =
+      'Please specify hotel_id, name, (desc,) addr, prov, lat, long, (and rating).';
+    const hotelId = validator.validateId(ctx.request.body['hotel_id'], invalidMessage);
     const name = validator.validateUndefined(ctx.request.body['name'], invalidMessage);
     const desc = ctx.request.body['desc'];
     const addr = validator.validateUndefined(ctx.request.body['addr'], invalidMessage);
@@ -58,7 +61,7 @@ const ctrlHotel = {
     const long = validator.validateNumber(ctx.request.body['long'], invalidMessage);
     const rating = validator.validateRating(ctx.request.body['rating'], invalidMessage);
 
-    const hotelData = {
+    const hotelData: Hotel = {
       name,
       desc,
       addr,
@@ -66,11 +69,12 @@ const ctrlHotel = {
       lat,
       long,
       rating,
+      hotel_id: undefined,
     };
 
     try {
-      const [hotelId] = await hotelRepo.updateHotel(id, hotelData);
-      ctx.response.body = { id: hotelId };
+      await hotelRepo.updateHotel(hotelId, hotelData);
+      ctx.response.body = { hotel_id: hotelId };
       ctx.response.status = httpStatus.OK.code;
     } catch (e) {
       throw new ApiError('hotel not found', codes.HOTEL_NOT_FOUND, 404);
@@ -80,7 +84,7 @@ const ctrlHotel = {
   },
 
   deleteHotel: async(ctx: koa.Context, next: () => Promise<any>) => {
-    const id = validator.validateId(ctx.request.body['id'], 'Please specify id.');
+    const id = validator.validateId(ctx.request.query['hotel_id'], 'Please specify hotel_id.');
     try {
       await hotelRepo.deleteHotel(id);
       ctx.response.status = httpStatus.NO_CONTENT.code;

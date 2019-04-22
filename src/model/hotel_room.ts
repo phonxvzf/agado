@@ -1,15 +1,5 @@
 import database from './database';
-
-interface HotelRoom {
-  rno: string;
-  rname: string;
-  max_cap: number;
-  ex_bed: number;
-  ex_bed_price: number;
-  reserved: boolean;
-  rstatus: string;
-  price: number;
-}
+import HotelRoom from './entity/HotelRoom';
 
 const hotelRoomRepo = {
   createHotelRoom: async (hotelId: number, hotelRoomData: HotelRoom): Promise<number[]> => {

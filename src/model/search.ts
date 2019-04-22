@@ -1,5 +1,5 @@
 import database from './database';
-import { Hotel } from './hotel';
+import Hotel from './entity/Hotel';
 
 const searchRepo = {
   searchByHotelName: async(hotelName: string): Promise<Hotel[]> => {

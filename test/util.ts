@@ -38,6 +38,9 @@ const util = {
       phone_num: crypto.randomBytes(10).toString('base64'),
       date_of_birth:
         (new Date(Math.floor(1e12 + Math.random() * 1e12))).toISOString().substr(0, 10),
+      img: crypto.randomBytes(10).toString('base64'),
+      user_id: undefined,
+      token: undefined,
     };
   },
 
@@ -50,6 +53,7 @@ const util = {
       lat: Math.random() * 180 - 90,
       long: Math.random() * 360 - 180,
       rating: Math.random() * 5,
+      hotel_id: undefined,
     };
   },
 

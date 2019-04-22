@@ -12,6 +12,14 @@ const validator = {
     return str;
   },
 
+  validateNullable: (str: string, errorMessage: string) => {
+    if (str === null) return str;
+    if (str == null) {
+      throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
+    }
+    return str;
+  },
+
   validateId: (id: string, errorMessage: string = 'invalid id') => {
     const parse = Number.parseInt(id, 10);
     if (Number.isNaN(parse) || parse < 1) {
