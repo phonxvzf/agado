@@ -46,7 +46,7 @@ describe('Create user', () => {
     const user = util.generateUserData();
     let res = await request(server).post('/user').send(user);
     expect(res.status).toEqual(201);
-    res = await request(server).post('/login').send({
+    res = await request(server).post('/user/login').send({
       username: user.username,
       password: user.password,
       user_type: user.user_type,
@@ -64,14 +64,14 @@ describe('Modify user', () => {
   it('[PUT /user] should fail', async () => {
     let res = await request(server).put('/user').send({});
     expect(res.status).toEqual(401);
-    res = await request(server).post('/login').send(defaultUserData);
+    res = await request(server).post('/user/login').send(defaultUserData);
     const { token } = res.body;
     res = await request(server).put('/user').set('Authorization', `Bearer ${token}`).send({});
     expect(res.status).toEqual(400);
   });
 
   it('[PUT /user] should succeed', async () => {
-    let res = await request(server).post('/login').send(defaultUserData);
+    let res = await request(server).post('/user/login').send(defaultUserData);
     const { user_id, token } = res.body;
     const modifiedUser = util.generateUserData();
     res = await request(server).put('/user').send(modifiedUser)
@@ -98,7 +98,7 @@ describe('Modify user', () => {
 
 describe('Delete user', () => {
   it('[DELETE /user] should fail', async () => {
-    let res = await request(server).post('/login')
+    let res = await request(server).post('/user/login')
       .send({
         username: defaultUserData.username,
         password: defaultUserData.password,
@@ -110,7 +110,7 @@ describe('Delete user', () => {
   });
 
   it('[DELETE /user] should succeed', async () => {
-    let res = await request(server).post('/login')
+    let res = await request(server).post('/user/login')
       .send({
         username: defaultUserData.username,
         password: defaultUserData.password,
@@ -126,11 +126,11 @@ describe('Delete user', () => {
 describe('Login', () => {
   it('[POST /login] should fail', async () => {
     // empty body
-    let res = await request(server).post('/login').send({});
+    let res = await request(server).post('/user/login').send({});
     expect(res.status).toEqual(400);
 
     // invalid user type
-    res = await request(server).post('/login')
+    res = await request(server).post('/user/login')
       .send({
         username: defaultUserData.username,
         password: defaultUserData.password,
@@ -143,7 +143,7 @@ describe('Login', () => {
     unmatchedUserTypeSet.delete(defaultUserData.user_type);
     const unmatchedUserTypes = Array.from(unmatchedUserTypeSet);
     for (let i = 0; i < unmatchedUserTypes.length; i += 1) {
-      res = await request(server).post('/login')
+      res = await request(server).post('/user/login')
         .send({
           username: defaultUserData.username,
           password: defaultUserData.password,
@@ -153,7 +153,7 @@ describe('Login', () => {
     }
 
     // incorrect password
-    res = await request(server).post('/login')
+    res = await request(server).post('/user/login')
       .send({
         username: defaultUserData.username,
         password: 'DEFINITELY INCORRECT PASSWORD',
@@ -163,7 +163,7 @@ describe('Login', () => {
   });
 
   it('[POST /login] should succeed', async () => {
-    let res = await request(server).post('/login')
+    let res = await request(server).post('/user/login')
       .send({
         username: defaultUserData.username,
         password: defaultUserData.password,
@@ -181,14 +181,14 @@ describe('Login', () => {
       .send(modifiedUser).set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(200);
     const [newData] = await database.select('*').from('user');
-    res = await request(server).post('/login')
+    res = await request(server).post('/user/login')
       .send({
         username: modifiedUser.username,
         password: defaultUserData.password,
         user_type: defaultUserData.user_type,
       });
     expect(res.status).toEqual(401);
-    res = await request(server).post('/login')
+    res = await request(server).post('/user/login')
       .send({
         username: modifiedUser.username,
         password: modifiedUser.password,
@@ -200,14 +200,15 @@ describe('Login', () => {
 
 describe('Logout', () => {
   it('[POST /logout] should fail', async () => {
-    let res = await request(server).post('/login').send({});
+    let res = await request(server).post('/user/login').send({});
     expect(res.status).toEqual(400);
-    res = await request(server).post('/logout').set('Authorization', 'Bearer abcd');
+    res = await request(server).post('/user/logout')
+      .set('Authorization', 'Bearer abcd');
     expect(res.status).toEqual(401);
   });
 
   it('[POST /logout] should succeed', async () => {
-    let res = await request(server).post('/login')
+    let res = await request(server).post('/user/login')
       .send({
         username: defaultUserData.username,
         password: defaultUserData.password,
@@ -216,7 +217,7 @@ describe('Logout', () => {
     expect(res.status).toEqual(200);
     const token = res.body.token;
     res = await request(server)
-      .post('/logout')
+      .post('/user/logout')
       .set('Authorization', `Bearer ${token}`);
     expect(res.status).toEqual(204);
     res = await request(server).del('/user?user_id=10')

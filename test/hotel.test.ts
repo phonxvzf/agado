@@ -23,11 +23,11 @@ let hotelId: number;
 
 beforeAll(async (done) => {
   let resTraveler = await request(server).post('/user').send(defaultTravelerData);
-  resTraveler = await request(server).post('/login').send(defaultTravelerData);
+  resTraveler = await request(server).post('/user/login').send(defaultTravelerData);
   travelerToken = resTraveler.body.token;
 
   let resHotelManager = await request(server).post('/user').send(defaultHotelManagerData);
-  resHotelManager = await request(server).post('/login').send(defaultHotelManagerData);
+  resHotelManager = await request(server).post('/user/login').send(defaultHotelManagerData);
   hotelManagerToken = resHotelManager.body.token;
 
   done();
