@@ -17,7 +17,7 @@ import errorParser from './controller/error-parser';
 import allRoutes from './routes/all-routes';
 
 app.use(errorParser);
-app.use(allRoutes.routes());
+app.use(allRoutes);
 
 const server = app.listen(config.SERVICE_PORT, async () => {
   if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'production') {

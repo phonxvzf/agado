@@ -162,7 +162,15 @@ const ctrl = {
 
     try {
       const [userId] = await userRepo.createUser(userData);
-      ctx.response.body = { user_id: userId };
+      const token = generateToken(userId);
+      await userRepo.updateToken(userId, token);
+
+      userData.user_id = userId;
+      userData.token = token;
+
+      delete userData.password;
+
+      ctx.response.body = userData;
       ctx.response.status = httpStatus.CREATED.code;
     } catch (e) {
       throw new ApiError('user already exists', codes.DUPLICATE_USER, httpStatus.CONFLICT.code);

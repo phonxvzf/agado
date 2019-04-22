@@ -33,22 +33,22 @@ let hotelId: number;
 
 beforeAll(async (done) => {
   let resTraveler = await request(server).post('/user').send(travelerData);
-  resTraveler = await request(server).post('/login').send(travelerData);
+  resTraveler = await request(server).post('/user/login').send(travelerData);
   travelerId = resTraveler.body.user_id;
   travelerToken = resTraveler.body.token;
 
   let resPmtHotelManager = await request(server).post('/user').send(pmtHotelManagerData);
-  resPmtHotelManager = await request(server).post('/login').send(pmtHotelManagerData);
+  resPmtHotelManager = await request(server).post('/user/login').send(pmtHotelManagerData);
   pmtHotelManagerId = resPmtHotelManager.body.user_id;
   pmtHotelManagerToken = resPmtHotelManager.body.token;
 
   let resNoHotelManager = await request(server).post('/user').send(noHotelManagerData);
-  resNoHotelManager = await request(server).post('/login').send(noHotelManagerData);
+  resNoHotelManager = await request(server).post('/user/login').send(noHotelManagerData);
   noHotelManagerId = resNoHotelManager.body.user_id;
   noHotelManagerToken = resNoHotelManager.body.token;
 
   let resReqHotelManager = await request(server).post('/user').send(reqHotelManagerData);
-  resReqHotelManager = await request(server).post('/login').send(reqHotelManagerData);
+  resReqHotelManager = await request(server).post('/user/login').send(reqHotelManagerData);
   reqHotelManagerId = resReqHotelManager.body.user_id;
   reqHotelManagerToken = resReqHotelManager.body.token;
 
