@@ -58,6 +58,16 @@ describe('Create user', () => {
     expect(res.body.username).toEqual(user.username);
     expect(res.body.date_of_birth.substr(0, 10)).toEqual(user.date_of_birth);
   });
+
+  it('[POST /user] should allow single user with multiple roles', async () => {
+    const user = util.generateUserData();
+    user.user_type = 'traveler';
+    let res = await request(server).post('/user').send(user);
+    expect(res.status).toEqual(201);
+    user.user_type = 'hotel_manager';
+    res = await request(server).post('/user').send(user);
+    expect(res.status).toEqual(201);
+  });
 });
 
 describe('Modify user', () => {
