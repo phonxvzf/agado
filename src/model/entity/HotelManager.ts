@@ -1,7 +1,6 @@
 interface HotelManager {
-  uid: number;
-  hid: number;
-  permitted: string;
+  hotel_id: number;
+  user_id: number;
 }
 
 export default HotelManager;

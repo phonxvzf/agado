@@ -1,12 +1,11 @@
 interface HotelRoom {
-  rno: string;
-  rname: string;
-  max_cap: number;
-  ex_bed: number;
-  ex_bed_price: number;
-  reserved: boolean;
-  rstatus: string;
+  hotel_id: number;
+  room_id: number;
+  name: string;
+  num_bed: number;
+  max_person: number;
   price: number;
+  total_room: number;
 }
 
 export default HotelRoom;
