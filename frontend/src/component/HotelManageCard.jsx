@@ -45,26 +45,30 @@ export default class HotelManageCard extends Component {
     const hotel = this.props.hotel;
     return (
       <Card className="shadow">
-        <Card.Header className="py-4">
-          <Row className="align-items-center" noGutters={true}>
-            <Col xs={8}>
-              <Card.Title as="h6">{hotel.name}</Card.Title>
-              <Card.Subtitle as="h6">{hotel.city}</Card.Subtitle>
-            </Col>
-            <Col xs={4} className="text-center">
-              {this.getRatingStar(hotel.rating)}
-              <br />
-              {hotel.total_review} reviews
-            </Col>
-          </Row>
-        </Card.Header>
-        <div className="ratio4-3">
-          {
-            hotel.imgs[0] === "" ?
-              <div className="bg-dark abs-center border-none" />
-              : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
-          }
-        </div>
+        <a className="link-only" href={this.getHotelLink()}>
+          <Card.Header className="py-4">
+            <Row className="align-items-center" noGutters={true}>
+              <Col xs={8}>
+                <Card.Title as="h6">{hotel.name}</Card.Title>
+                <Card.Subtitle as="h6">{hotel.city}</Card.Subtitle>
+              </Col>
+              <Col xs={4} className="text-center">
+                <Button variant="link" className="link-only px-0" href={this.getHotelLink() + "#hotel_reviews"}>
+                  {this.getRatingStar(hotel.rating)}
+                  <br />
+                  {hotel.total_review} reviews
+                </Button>
+              </Col>
+            </Row>
+          </Card.Header>
+          <div className="ratio4-3">
+            {
+              hotel.imgs[0] === "" ?
+                <div className="bg-dark abs-center border-none" />
+                : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
+            }
+          </div>
+        </a>
         <Card.Body className="hotel-desc-body">
           <Card.Text>{hotel.desc.length < 120 ? hotel.desc : hotel.desc.slice(0, 120) + "..."}</Card.Text>
         </Card.Body>

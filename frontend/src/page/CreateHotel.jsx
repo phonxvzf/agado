@@ -211,25 +211,25 @@ export default class CreateHotel extends Component {
               <div className="position-relative">
                 <Form.Control
                   type="text"
-                  className="custom-form-control w-50 h1 bold"
+                  className="custom-form-control w-50 h1 bold-500"
                   onChange={(e) => this.setState({ hotel: { ...hotel, name: e.currentTarget.value } })}
                   onBlur={() => this.setState({ focus: null })}
                   placeholder=" "
                   defaultValue={hotel.name}
                   autoFocus
                   required />
-                <span className="hotel-name h1 bold">Hotel's name</span>
+                <span className="hotel-name h1">Hotel's name</span>
               </div>
               <div className="position-relative">
                 <Form.Control
                   type="text"
-                  className="custom-form-control w-50 h3 bold"
+                  className="custom-form-control w-50 h2 bold-500"
                   onChange={(e) => this.setState({ hotel: { ...hotel, city: e.currentTarget.value } })}
                   onBlur={() => this.setState({ focus: null })}
                   placeholder=" "
                   defaultValue={hotel.city}
                   required />
-                <span className="hotel-city h3 bold">City</span>
+                <span className="hotel-city h2">City</span>
               </div>
               <div className="position-relative">
                 <Form.Control

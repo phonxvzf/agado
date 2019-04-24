@@ -39,8 +39,8 @@ export default class HotelCard extends Component {
   render() {
     const hotel = this.props.hotel;
     return (
-      <a className="link-only" href={this.getHotelLink()}>
-        <Card className="shadow">
+      <Card className="shadow">
+        <a className="link-only" href={this.getHotelLink()}>
           <Card.Header className="py-4">
             <Row className="align-items-center" noGutters={true}>
               <Col xs={8}>
@@ -48,10 +48,12 @@ export default class HotelCard extends Component {
                 <Card.Subtitle as="h6">{hotel.city}</Card.Subtitle>
               </Col>
               <Col xs={4} className="text-center">
-                {this.getRatingStar(hotel.rating)}
-                <br />
-                {hotel.total_review} reviews
-            </Col>
+                <Button variant="link" className="link-only px-0" href={this.getHotelLink() + "#hotel_reviews"}>
+                  {this.getRatingStar(hotel.rating)}
+                  <br />
+                  {hotel.total_review} reviews
+                </Button>
+              </Col>
             </Row>
           </Card.Header>
           <div className="ratio4-3">
@@ -62,24 +64,24 @@ export default class HotelCard extends Component {
             }
           </div>
           <Badge variant="info" className="right-card"><div className="price mx-4 my-2">฿ {hotel.start_price}</div></Badge>
-          <Card.Body className="hotel-desc-body">
-            <Card.Text>{hotel.desc.length < 120 ? hotel.desc : hotel.desc.slice(0, 120) + "..."}</Card.Text>
-          </Card.Body>
-          <Card.Footer>
-            <Row className="align-items-center justify-content-center" noGutters={true}>
-              {/* <Col xs={5}>
+        </a>
+        <Card.Body className="hotel-desc-body">
+          <Card.Text>{hotel.desc.length < 120 ? hotel.desc : hotel.desc.slice(0, 120) + "..."}</Card.Text>
+        </Card.Body>
+        <Card.Footer>
+          <Row className="align-items-center justify-content-center" noGutters={true}>
+            {/* <Col xs={5}>
               <i className="fas fa-door-open" />
               <br />
               {hotel.room_left} rooms left
             </Col>
             <Col xs={1} /> */}
-              <Col xs={6}>
-                <Button className="w-100 py-2" variant="info" href={this.getHotelLink()}>View Hotel</Button>
-              </Col>
-            </Row>
-          </Card.Footer>
-        </Card>
-      </a>
+            <Col xs={6}>
+              <Button className="w-100 py-2" variant="info" href={this.getHotelLink()}>View Hotel</Button>
+            </Col>
+          </Row>
+        </Card.Footer>
+      </Card>
     )
   }
 }

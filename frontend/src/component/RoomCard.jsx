@@ -63,7 +63,7 @@ export default class RoomCard extends Component {
     return (
       <Card className="shadow w-100">
         <Card.Body>
-          <Card.Title className="bg-light py-2 mx-4"><h4>{room.name}</h4></Card.Title>
+          <Card.Title className="bg-light py-2 mx-4"><h3>{room.name}</h3></Card.Title>
           <Row className="align-items-center">
             <Col xs={12} sm={5} md={6} lg={5} className="text-center">
               {

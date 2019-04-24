@@ -80,8 +80,10 @@ export default class HotelInfo extends Component {
               <CreateHotel pathname={this.state.pathname} search={this.state.search} currentUser={this.state.currentUser} hotel={this.state.hotel} />
               :
               <>
-                {this.getImageSection()}
-                <div className="px-content" id="hotel_info">
+                <div id="hotel_info">
+                  {this.getImageSection()}
+                </div>
+                <div className="px-content">
                   {this.getInfoSection()}
                 </div>
                 <div id="hotel_rooms">
@@ -176,8 +178,8 @@ export default class HotelInfo extends Component {
     const hotel = this.state.hotel;
     return (
       <>
-        <h3 className="mt-5 scroll-snap-child">{hotel.name}</h3>
-        <h5>{hotel.city}</h5>
+        <h2 className="mt-5 scroll-snap-child">{hotel.name}</h2>
+        <h4 className="">{hotel.city}</h4>
         <hr />
         <Row className="align-items-center mt-3" noGutters>
           <div className="fs-18"><i className="fas fa-map-marker-alt" /> {hotel.address}</div>
@@ -193,11 +195,11 @@ export default class HotelInfo extends Component {
                 <Col className="text-center">
                   {
                     requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
-                      <Button disabled variant="dark" className="bg-requestpx-4">
+                      <Button disabled variant="secondary" className="bg-requestpx-4">
                         <i className="fas fa-paper-plane" /> Request is pending
                           </Button>
                       :
-                      <Button variant="dark" className="bg-requestpx-4" onClick={() => this.setState({ showModal: "request_confirm" })}>
+                      <Button variant="success" className="bg-requestpx-4" onClick={() => this.setState({ showModal: "request_confirm" })}>
                         <i className="fas fa-file-export" /> Request permission
                           </Button>
                   }
@@ -234,9 +236,13 @@ export default class HotelInfo extends Component {
         </Row>
         <Row className="align-items-center mt-3" noGutters>
           <Col className="text-center">
-            <Button variant="info" className="px-4" onClick={() => this.setState({ showModal: "review" })}>
-              {this.state.oldReview ? "Edit old review" : "Write a review"}
-            </Button>
+            {
+              !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
+                <Button variant="info" className="px-4" onClick={() => this.setState({ showModal: "review" })}>
+                  {this.state.oldReview ? "Edit old review" : "Write a review"}
+                </Button>
+                : ""
+            }
           </Col>
         </Row>
         {this.getReviewsComponent()}
@@ -285,7 +291,7 @@ export default class HotelInfo extends Component {
             </Col>
             <Col xs={12} sm={8} md={9} lg={10}>
               <h5>{review.title}</h5>
-              <div className="fs-14">{this.getRatingStar(review.rating)} {moment(review.date).format("D MMM YYYY") }</div>
+              <div className="fs-14">{this.getRatingStar(review.rating)} {moment(review.date).format("D MMM YYYY")}</div>
               {review.comment}
             </Col>
           </Row>

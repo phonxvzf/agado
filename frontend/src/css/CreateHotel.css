@@ -80,3 +80,7 @@
 .border-rad-none {
   border-radius: 0;
 }
+
+.bold-500 {
+  font-weight: 500;
+}

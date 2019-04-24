@@ -84,12 +84,12 @@ export default class ReservationCard extends Component {
                   : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
               }
             </div>
-            <Card.Body>
-              <Card.Text>Room: {hotel.rooms[Number(reservation.room_id)] ? hotel.rooms[Number(reservation.room_id)].name : ""}</Card.Text>
-              <Card.Text>Number of room: {reservation.num}</Card.Text>
-              <Card.Text>Price: ฿ {this.getPrice()}</Card.Text>
-            </Card.Body>
           </a>
+          <Card.Body>
+            <Card.Text>Room: {hotel.rooms[Number(reservation.room_id)] ? hotel.rooms[Number(reservation.room_id)].name : ""}</Card.Text>
+            <Card.Text>Number of room: {reservation.num}</Card.Text>
+            <Card.Text>Price: ฿ {this.getPrice()}</Card.Text>
+          </Card.Body>
           <Card.Footer className="text-center">
             <Row className="align-items-center text-center" noGutters={true}>
               <Col>

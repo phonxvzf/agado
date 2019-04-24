@@ -33,6 +33,8 @@ export default class CustomNavBar extends Component {
 
   componentDidMount() {
     window.addEventListener('scroll', this.handleScroll, true);
+
+    setInterval(this.checkScroll, 100);
   }
 
   componentWillUnmount() {
@@ -43,11 +45,26 @@ export default class CustomNavBar extends Component {
     this.loadPrice(nextProps.priceRange);
   }
 
+  checkScroll = () => {
+    if (!this.state.lastScrolledTime) {
+      return;
+    }
+    if (new Date() - this.state.lastScrolledTime >= 1000) {
+      this.setState({
+        justScrolled: false
+      });
+    }
+  }
+
   handleScroll = (e) => {
     const winScroll = e.target.scrollTop;
     const height = e.target.scrollHeight - e.target.clientHeight;
     const scrolled = (winScroll / height) * 100;
-    this.setState({ scrolled: scrolled });
+    this.setState({
+      scrolled: scrolled,
+      justScrolled: true,
+      lastScrolledTime: new Date()
+    });
   }
 
   getAmenitiesQs = () => {
@@ -212,8 +229,8 @@ export default class CustomNavBar extends Component {
   render() {
     return (
       <>
-        <Navbar className="shadow pb-0" bg="light" variant="light" fixed="top" expand="md" collapseOnSelect>
-          <h3 className="text-center-fixed bold mb-4 d-xs-sm-none d-sm-md-none">
+        <Navbar className="shadow pb-md-0 pt-md-2" bg="light" variant="light" fixed="top" expand="md" collapseOnSelect>
+          <h3 className="text-center-fixed text-dark bold mb-4 d-xs-sm-none d-sm-md-none">
             {this.getTitle()}
           </h3>
           <Row className="align-items-center">
@@ -238,11 +255,14 @@ export default class CustomNavBar extends Component {
                 {this.getSecondRowComponent()}
               </Navbar.Collapse>
             </Col>
-            <Col xs={12} className="px-0 pt-1">
-              {/* <ProgressBar className="scroll-indicator bg-none" variant="dark" now={this.state.scrolled} /> */}
-            </Col>
+            {/* <Col xs={12} className="px-0 pt-1">
+              <ProgressBar className="scroll-indicator bg-none" variant="dark" now={this.state.scrolled} />
+            </Col> */}
           </Row>
         </Navbar>
+        <div className="d-md-none">
+          {this.getFloatComponent()}
+        </div>
         <div className={"filter-control scroll-snap-child" + (this.state.showFilter ? "" : " d-none")} onClick={this.closeAllFilters} />
         <div className={"filter-bg scroll-snap-child" + (this.state.showFilter ? "" : " d-none")} />
         <SigninSignupModal
@@ -339,26 +359,84 @@ export default class CustomNavBar extends Component {
             </Col>
           </Row>
           <div className="text-right d-md-none">
-            <Button variant="link"
-              className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
-              <h5 className="my-0"><i className="fas fa-info-circle" /></h5>
-            </Button>
-            <Button variant="link"
-              className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
-              <h5 className="my-0"><i className="fas fa-door-closed" /></h5>
-            </Button>
-            <Button variant="link"
-              className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel_reviews').scrollIntoView({ behavior: 'smooth' })}>
-              <h5 className="my-0"><i className="fas fa-comment-dots" /></h5>
-            </Button>
-            <Button variant="link"
-              className="text-dark bold px-1"
-              onClick={() => document.querySelector('#hotel_managers').scrollIntoView({ behavior: 'smooth' })}>
-              <h5 className="my-0"><i className="fas fa-users" /></h5>
-            </Button>
+            <Row noGutters>
+              <Col>
+                <Form inline onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                  <InputGroup>
+                    <Form.Control
+                      className="border-dark"
+                      type="text"
+                      onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
+                      placeholder="Hotel or Destination"
+                      defaultValue={this.state.search.hotel_name}
+                      autoFocus />
+                    <InputGroup.Append>
+                      <Button type="submit" variant="dark"><i className="fas fa-search" /></Button>
+                    </InputGroup.Append>
+                  </InputGroup>
+                </Form>
+              </Col>
+              {
+                !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
+                  <div className="d-inline ml-1">
+                    <DateRangePicker
+                      minDate={moment()}
+                      startDate={moment(this.state.search.checkin)}
+                      endDate={moment(this.state.search.checkout)}
+                      autoApply
+                      onApply={(e, picker) => {
+                        e.preventDefault();
+                        this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
+                        this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
+                        window.location.href = this.getSearchLink();
+                      }}>
+                      <Button variant="dark"><i className="fas fa-calendar-week" /></Button>
+                    </DateRangePicker>
+                  </div>
+                  :
+                  <div className="d-inline ml-1">
+                    <Dropdown>
+                      <Dropdown.Toggle bsPrefix="none" variant="dark">
+                        <i className="fas fa-hotel" />
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu className="dropdown-menu-right large-dropdown">
+                        {
+                          this.isUserOwn() ?
+                            <>
+                              {
+                                this.props.mode === "view" ?
+                                  <Button variant="light" className="text-dark w-100 text-left" onClick={e => { e.preventDefault(); this.props.toggleMode(); }}>
+                                    <h6 className="my-0 bold"><i className="fas fa-edit" /> Edit Hotel</h6>
+                                  </Button>
+                                  :
+                                  <Button type="submit" form="create-hotel" variant="light" className="text-success w-100 text-left">
+                                    <h6 className="my-0 bold"><i className="fas fa-save" /> Save Changes</h6>
+                                  </Button>
+                              }
+                              <br />
+                              <Button variant="light" className="text-dark w-100 text-left" href={this.getHotelReservationLink()}>
+                                <h6 className="my-0 bold"><i className="fas fa-calendar-check" /> Reservation</h6>
+                              </Button>
+                              <br />
+                              <Button variant="light" className="text-danger w-100 text-left" onClick={() => this.setState({ showModal: "cancel_management_confirm" })}>
+                                <h6 className="my-0 bold"><i className="fas fa-window-close" /> Cancel Management</h6>
+                              </Button>
+                            </>
+                            :
+                            requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
+                              <Button disabled variant="light" className="text-secondary w-100 text-left">
+                                <h6 className="my-0 bold"><i className="fas fa-paper-plane" /> Request is pending</h6>
+                              </Button>
+                              :
+                              <Button variant="light" className="text-success w-100 text-left" onClick={() => this.setState({ showModal: "request_confirm" })}>
+                                <h6 className="my-0 bold"><i className="fas fa-file-export" /> Request permission</h6>
+                              </Button>
+                        }
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
+              }
+            </Row>
           </div>
         </>
       )
@@ -423,7 +501,7 @@ export default class CustomNavBar extends Component {
           </div>
           <div className="text-right d-md-none">
             <Button type="submit" form="create-hotel" variant="link" className="text-dark pr-2">
-              <h5 className="my-0"><strong><i className="fas fa-plus-square" /> Edit</strong></h5>
+              <h5 className="my-0"><strong><i className="fas fa-edit" /> Edit</strong></h5>
             </Button>
             <Button variant="link"
               className="text-dark bold px-1"
@@ -440,43 +518,43 @@ export default class CustomNavBar extends Component {
       )
     } else if (this.state.pathname === "/hotel/reservation") {
       return (
-        <div className="text-right d-md-none">
-          <h5 className="my-0"><strong>Hotel's Reservation</strong></h5>
+        <div className="text-right d-md-none text-dark">
+          <h5 className="my-0"><strong>Reservation</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/myhotel") {
       return (
-        <div className="text-right d-md-none">
+        <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>My Hotel</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/request") {
       return (
-        <div className="text-right d-md-none">
+        <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Request</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/payment") {
       return (
-        <div className="text-right d-md-none">
+        <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Payment</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/reservation") {
       return (
-        <div className="text-right d-md-none">
+        <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Reservation</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/tutorial") {
       return (
-        <div className="text-right d-md-none">
+        <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Tutorial</strong></h5>
         </div>
       )
     } else if (this.state.pathname === "/profile") {
       return (
-        <div className="text-right d-md-none">
+        <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Profile</strong></h5>
         </div>
       )
@@ -532,20 +610,22 @@ export default class CustomNavBar extends Component {
           </Row>
           <div className="text-right d-md-none">
             <Row noGutters>
-              <Form as={Col} inline onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
-                <InputGroup>
-                  <Form.Control
-                    className="border-dark"
-                    type="text"
-                    onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
-                    placeholder="Hotel or Destination"
-                    defaultValue={this.state.search.hotel_name}
-                    autoFocus />
-                  <InputGroup.Append>
-                    <Button type="submit" variant="dark"><i className="fas fa-search" /></Button>
-                  </InputGroup.Append>
-                </InputGroup>
-              </Form>
+              <Col>
+                <Form inline onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                  <InputGroup>
+                    <Form.Control
+                      className="border-dark"
+                      type="text"
+                      onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
+                      placeholder="Hotel or Destination"
+                      defaultValue={this.state.search.hotel_name}
+                      autoFocus />
+                    <InputGroup.Append>
+                      <Button type="submit" variant="dark"><i className="fas fa-search" /></Button>
+                    </InputGroup.Append>
+                  </InputGroup>
+                </Form>
+              </Col>
               {
                 !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
                   <div className="d-inline ml-1">
@@ -808,7 +888,7 @@ export default class CustomNavBar extends Component {
       }
       return (
         <>
-          <hr className="mx-0 my-3" />
+          {/* <hr className="mx-0 my-3" />
           <div className="d-md-none">
             <Navbar.Text>search:</Navbar.Text>
             <Col xs={10} sm={8}>
@@ -861,18 +941,18 @@ export default class CustomNavBar extends Component {
                       {
                         this.props.mode === "view" ?
                           <Button variant="link" className="text-dark" onClick={e => { e.preventDefault(); this.props.toggleMode(); }}>
-                            <h5 className="my-0"><strong><i className="fas fa-edit" /> Edit hotel</strong></h5>
+                            <h6 className="my-0 bold"><i className="fas fa-edit" /> Edit hotel</h6>
                           </Button>
                           :
                           <Button type="submit" form="create-hotel" variant="link" className="text-success">
-                            <h5 className="my-0"><strong><i className="fas fa-edit" /> Save changes</strong></h5>
+                            <h6 className="my-0 bold"><i className="fas fa-save" /> Save changes</h6>
                           </Button>
                       }
                       <Button variant="link" className="text-dark" href={this.getHotelReservationLink()}>
-                        <h5 className="my-0"><strong><i className="fas fa-calendar-check" /> See reservation</strong></h5>
+                        <h6 className="my-0 bold"><i className="fas fa-calendar-check" /> See reservation</h6>
                       </Button>
-                      <Button variant="link" className="text-dark" onClick={() => this.setState({ showModal: "cancel_management_confirm" })}>
-                        <h5 className="my-0"><strong><i className="fas fa-window-close" /> Cancel management</strong></h5>
+                      <Button variant="link" className="text-danger" onClick={() => this.setState({ showModal: "cancel_management_confirm" })}>
+                        <h6 className="my-0 bold"><i className="fas fa-window-close" /> Cancel management</h6>
                       </Button>
                     </div>
                   </div>
@@ -882,72 +962,72 @@ export default class CustomNavBar extends Component {
                     <div className="text-center">
                       {
                         requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
-                          <Button disabled variant="link" className="text-dark">
-                            <h5 className="my-0"><strong><i className="fas fa-paper-plane" /> Request is pending</strong></h5>
+                          <Button disabled variant="link" className="text-secondary">
+                            <h6 className="my-0 bold"><i className="fas fa-paper-plane" /> Request is pending</h6>
                           </Button>
                           :
-                          <Button variant="link" className="text-dark" onClick={() => this.setState({ showModal: "request_confirm" })}>
-                            <h5 className="my-0"><strong><i className="fas fa-file-export" /> Request permission</strong></h5>
+                          <Button variant="link" className="text-success" onClick={() => this.setState({ showModal: "request_confirm" })}>
+                            <h6 className="my-0 bold"><i className="fas fa-file-export" /> Request permission</h6>
                           </Button>
                       }
                     </div>
                   </div>
             }
-          </div>
-          <Row className="d-xs-sm-none d-sm-md-none w-100">
-            <div className="d-inline">
+          </div> */}
+          <Row className="d-xs-sm-none d-sm-md-none w-100 align-items-end">
+            <>
               <Button variant="link"
-                className="text-dark bold"
+                className="text-dark bold mx-xl-2"
                 onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
                 <h6 className="my-0"><i className="fas fa-info-circle" /> Info</h6>
               </Button>
               <Button variant="link"
-                className="text-dark bold"
+                className="text-dark bold mx-xl-2"
                 onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
                 <h6 className="my-0"><i className="fas fa-door-closed" /> Rooms</h6>
               </Button>
               <Button variant="link"
-                className="text-dark bold"
+                className="text-dark bold mx-xl-2"
                 onClick={() => document.querySelector('#hotel_reviews').scrollIntoView({ behavior: 'smooth' })}>
                 <h6 className="my-0"><i className="fas fa-comment-dots" /> Reviews</h6>
               </Button>
               <Button variant="link"
-                className="text-dark bold"
+                className="text-dark bold mx-xl-2"
                 onClick={() => document.querySelector('#hotel_managers').scrollIntoView({ behavior: 'smooth' })}>
                 <h6 className="my-0"><i className="fas fa-users" /> Managers</h6>
               </Button>
-            </div>
+            </>
             {
               !this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "" :
                 this.isUserOwn() ?
-                  <Col className="d-inline text-right">
+                  <Col className="text-right">
                     {
                       this.props.mode === "view" ?
                         <Button variant="link" className="text-dark" onClick={e => { e.preventDefault(); this.props.toggleMode(); }}>
-                          <h5 className="my-0"><strong><i className="fas fa-edit" /> Edit Hotel</strong></h5>
+                          <h6 className="my-0 bold"><i className="fas fa-edit" /> Edit Hotel</h6>
                         </Button>
                         :
                         <Button type="submit" form="create-hotel" variant="link" className="text-success">
-                          <h5 className="my-0"><strong><i className="fas fa-edit" /> Save Changes</strong></h5>
+                          <h6 className="my-0 bold"><i className="fas fa-save" /> Save Changes</h6>
                         </Button>
                     }
                     <Button variant="link" className="text-dark" href={this.getHotelReservationLink()}>
-                      <h5 className="my-0"><strong><i className="fas fa-calendar-check" /> Reservation</strong></h5>
+                      <h6 className="my-0 bold"><i className="fas fa-calendar-check" /> Reservation</h6>
                     </Button>
-                    <Button variant="link" className="text-dark" onClick={() => this.setState({ showModal: "cancel_management_confirm" })}>
-                      <h5 className="my-0"><strong><i className="fas fa-window-close" /> Cancel Management</strong></h5>
+                    <Button variant="link" className="text-danger" onClick={() => this.setState({ showModal: "cancel_management_confirm" })}>
+                      <h6 className="my-0 bold"><i className="fas fa-window-close" /> Cancel Management</h6>
                     </Button>
                   </Col>
                   :
-                  <Col className="d-inline text-center">
+                  <Col className="text-center">
                     {
                       requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
-                        <Button disabled variant="link" className="text-dark">
-                          <h5 className="my-0"><strong><i className="fas fa-paper-plane" /> Request is pending</strong></h5>
+                        <Button disabled variant="link" className="text-secondary">
+                          <h6 className="my-0 bold"><i className="fas fa-paper-plane" /> Request is pending</h6>
                         </Button>
                         :
-                        <Button variant="link" className="text-dark" onClick={() => this.setState({ showModal: "request_confirm" })}>
-                          <h5 className="my-0"><strong><i className="fas fa-file-export" /> Request permission</strong></h5>
+                        <Button variant="link" className="text-success" onClick={() => this.setState({ showModal: "request_confirm" })}>
+                          <h6 className="my-0 bold"><i className="fas fa-file-export" /> Request permission</h6>
                         </Button>
                     }
                   </Col>
@@ -955,6 +1035,37 @@ export default class CustomNavBar extends Component {
           </Row>
         </>
       );
+    }
+  }
+
+  getFloatComponent = () => {
+    if (this.state.pathname === "/hotel") {
+      return (
+        <div className={"float-icon" + (this.state.justScrolled ? " " : " hide")}>
+          <Button variant="dark"
+            className="bold"
+            onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
+            <i className="fas fa-info-circle" />
+          </Button>
+          <br />
+          <Button variant="dark"
+            className="bold"
+            onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
+            <i className="fas fa-door-closed" />
+          </Button>
+          <br />
+          <Button variant="dark"
+            className="bold"
+            onClick={() => document.querySelector('#hotel_reviews').scrollIntoView({ behavior: 'smooth' })}>
+            <i className="fas fa-comment-dots" />
+          </Button>
+          <br />
+          <Button variant="dark"
+            onClick={() => document.querySelector('#hotel_managers').scrollIntoView({ behavior: 'smooth' })}>
+            <i className="fas fa-users" />
+          </Button>
+        </div>
+      )
     }
   }
 }

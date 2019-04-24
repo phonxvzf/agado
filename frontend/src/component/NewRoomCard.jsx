@@ -24,7 +24,7 @@ export default class NewRoomCard extends Component {
         price: 0,
         available_room: 1,
         total_room: 1,
-        amenities: []
+        amenities: [false]
       },
       edit: true
     });
@@ -108,14 +108,14 @@ export default class NewRoomCard extends Component {
             <Card.Title className="bg-light py-2 mx-4">
               <div className="position-relative">
                 <Form.Control
-                  className="room-name custom-form-control h2 bold"
+                  className="room-name custom-form-control h2 bold-500"
                   type="text"
                   onChange={(e) => this.onChange({ ...room, name: e.currentTarget.value })}
                   onBlur={() => this.setState({ focus: null })}
                   placeholder=" "
                   value={room.name}
                   required />
-                <span className="hotel-room h2 bold">Room's name</span>
+                <span className="hotel-room h2">Room's name</span>
               </div>
               {/* {
                 this.state.focus === "name" || this.state.require === "name" ?

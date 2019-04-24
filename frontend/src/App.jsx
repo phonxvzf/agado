@@ -48,7 +48,17 @@ class App extends Component {
 
   componentDidMount() {
     const pathname = window.location.pathname;
-    window.onbeforeunload = function(e) {
+    const hash = window.location.hash;
+    window.onload = () => {
+      if (!hash) {
+        return;
+      }
+      const tag = document.querySelector(hash);
+      if (tag) {
+        tag.scrollIntoView({ behavior: 'smooth' });
+      }
+    }
+    window.onbeforeunload = () => {
       if (pathname === "/payment" || pathname === "/hotel/create")
         return true;
       return;
@@ -81,7 +91,7 @@ class App extends Component {
 
               <Route path="/payment" render={() => <Payment />} />
               <Route path="/reservation" render={() => <Reservation />} />
-              
+
               <Route path="/request" render={() => <Request />} />
               <Route path="/myhotel" render={() => <MyHotel />} />
               <Route path="/hotel/reservation" render={() => <HotelReservation />} />
