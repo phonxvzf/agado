@@ -32,28 +32,19 @@ export default class CustomNavBar extends Component {
   }
 
   componentDidMount() {
-    window.addEventListener('scroll', this.handleScroll, true);
-
-    setInterval(this.checkScroll, 100);
+    if (window.innerWidth <= 768 && this.state.pathname === "/hotel") {
+      window.addEventListener('scroll', this.handleScroll, true);
+    }
   }
 
   componentWillUnmount() {
-    window.removeEventListener('scroll', this.handleScroll, true);
+    if (window.innerWidth <= 768 && this.state.pathname === "/hotel") {
+      window.removeEventListener('scroll', this.handleScroll, true);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     this.loadPrice(nextProps.priceRange);
-  }
-
-  checkScroll = () => {
-    if (!this.state.lastScrolledTime) {
-      return;
-    }
-    if (new Date() - this.state.lastScrolledTime >= 1000) {
-      this.setState({
-        justScrolled: false
-      });
-    }
   }
 
   handleScroll = (e) => {
@@ -62,9 +53,12 @@ export default class CustomNavBar extends Component {
     const scrolled = (winScroll / height) * 100;
     this.setState({
       scrolled: scrolled,
-      justScrolled: true,
-      lastScrolledTime: new Date()
+      justScrolled: true
     });
+    clearTimeout(this.timeout);
+    this.timeout = setTimeout(() => this.setState({
+      justScrolled: false
+    }), 1000);
   }
 
   getAmenitiesQs = () => {
