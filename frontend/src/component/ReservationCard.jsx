@@ -65,29 +65,31 @@ export default class ReservationCard extends Component {
     return (
       <>
         <Card className="shadow">
-          <Card.Header className="py-4">
-            <Row className="align-items-center" noGutters={true}>
-              <Col xs={8}>
-                <Card.Title as="h6"><a className="text-dark" href={this.getHotelLink()}>{hotel.name}</a></Card.Title>
-                <Card.Subtitle as="h6">{new moment(reservation.checkin).format("D MMM YYYY") + " - " + new moment(reservation.checkout).format("D MMM YYYY")}</Card.Subtitle>
-              </Col>
-              <Col xs={4} className="text-center">
-                {this.getDayleft()}
-              </Col>
-            </Row>
-          </Card.Header>
-          <div className="ratio4-3">
-            {
-              hotel.imgs[0] === "" ?
-                <div className="bg-dark abs-center border-none" />
-                : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
-            }
-          </div>
-          <Card.Body>
-            <Card.Text>Room: {hotel.rooms[Number(reservation.room_id)] ? hotel.rooms[Number(reservation.room_id)].name : ""}</Card.Text>
-            <Card.Text>Number of room: {reservation.num}</Card.Text>
-            <Card.Text>Price: ฿ {this.getPrice()}</Card.Text>
-          </Card.Body>
+          <a className="link-only" href={this.getHotelLink()}>
+            <Card.Header className="py-4">
+              <Row className="align-items-center" noGutters={true}>
+                <Col xs={8}>
+                  <Card.Title as="h6">{hotel.name}</Card.Title>
+                  <Card.Subtitle as="h6">{moment(reservation.checkin).format("D MMM YYYY") + " - " + moment(reservation.checkout).format("D MMM YYYY")}</Card.Subtitle>
+                </Col>
+                <Col xs={4} className="text-center">
+                  {this.getDayleft()}
+                </Col>
+              </Row>
+            </Card.Header>
+            <div className="ratio4-3">
+              {
+                hotel.imgs[0] === "" ?
+                  <div className="bg-dark abs-center border-none" />
+                  : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
+              }
+            </div>
+            <Card.Body>
+              <Card.Text>Room: {hotel.rooms[Number(reservation.room_id)] ? hotel.rooms[Number(reservation.room_id)].name : ""}</Card.Text>
+              <Card.Text>Number of room: {reservation.num}</Card.Text>
+              <Card.Text>Price: ฿ {this.getPrice()}</Card.Text>
+            </Card.Body>
+          </a>
           <Card.Footer className="text-center">
             <Row className="align-items-center text-center" noGutters={true}>
               <Col>

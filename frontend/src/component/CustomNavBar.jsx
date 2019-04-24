@@ -2,7 +2,7 @@ import 'bootstrap-daterangepicker/daterangepicker.css';
 import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Badge, Button, Col, Dropdown, Form, Image, InputGroup, Nav, Navbar, OverlayTrigger, Popover, ProgressBar, Row } from 'react-bootstrap';
+import { Badge, Button, Col, Dropdown, Form, Image, InputGroup, Nav, Navbar, OverlayTrigger, Popover, Row } from 'react-bootstrap';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
@@ -201,10 +201,10 @@ export default class CustomNavBar extends Component {
   }
 
   getDateString = () => {
-    const checkin = this.state.search.checkin ? new moment(this.state.search.checkin).format('D MMM YYYY') : "...";
-    const checkout = this.state.search.checkout ? new moment(this.state.search.checkout).format('D MMM YYYY') : "...";
+    const checkin = this.state.search.checkin ? moment(this.state.search.checkin).format('D MMM YYYY') : "...";
+    const checkout = this.state.search.checkout ? moment(this.state.search.checkout).format('D MMM YYYY') : "...";
     if (checkin === "..." && checkout === "...") {
-      return "Check-in & Check-out date";
+      return "Check-in & Check-out";
     }
     return checkin + " - " + checkout;
   }
@@ -239,7 +239,7 @@ export default class CustomNavBar extends Component {
               </Navbar.Collapse>
             </Col>
             <Col xs={12} className="px-0 pt-1">
-              <ProgressBar className="scroll-indicator bg-none" variant="dark" now={this.state.scrolled} />
+              {/* <ProgressBar className="scroll-indicator bg-none" variant="dark" now={this.state.scrolled} /> */}
             </Col>
           </Row>
         </Navbar>
@@ -312,13 +312,14 @@ export default class CustomNavBar extends Component {
               {
                 !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
                   <DateRangePicker
-                    startDate={new moment(this.state.search.checkin)}
-                    endDate={new moment(this.state.search.checkout)}
+                    minDate={moment()}
+                    startDate={moment(this.state.search.checkin)}
+                    endDate={moment(this.state.search.checkout)}
                     autoApply
                     onApply={(e, picker) => {
                       e.preventDefault();
-                      this.state.search.checkin = new moment(picker.startDate).format('YYYY-MM-DD');
-                      this.state.search.checkout = new moment(picker.endDate).format('YYYY-MM-DD');
+                      this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
+                      this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                       window.location.href = this.getHotelLink();
                     }}>
                     <Form>
@@ -370,7 +371,7 @@ export default class CustomNavBar extends Component {
             <Button type="submit" form="create-hotel" variant="link" className="text-dark pr-5">
               <h5 className="my-0"><strong><i className="fas fa-plus-square" /> Create now</strong></h5>
             </Button>
-            <Button variant="link"
+            {/* <Button variant="link"
               className="text-dark bold px-2"
               onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-info-circle" /> Info</h6>
@@ -379,13 +380,13 @@ export default class CustomNavBar extends Component {
               className="text-dark bold px-2"
               onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
               <h6 className="my-0"><i className="fas fa-door-closed" /> Rooms</h6>
-            </Button>
+            </Button> */}
           </div>
           <div className="text-right d-md-none">
             <Button type="submit" form="create-hotel" variant="link" className="text-dark pr-2 pl-0">
-              <h5 className="my-0"><strong><i className="fas fa-plus-square" /> Create</strong></h5>
+              <h5 className="my-0"><strong><i className="fas fa-plus-square" /> Create now</strong></h5>
             </Button>
-            <Button variant="link"
+            {/* <Button variant="link"
               className="text-dark bold pl-0 pr-2"
               onClick={() => document.querySelector('#hotel_info').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-info-circle" /></h5>
@@ -394,7 +395,7 @@ export default class CustomNavBar extends Component {
               className="text-dark bold px-0"
               onClick={() => document.querySelector('#hotel_rooms').scrollIntoView({ behavior: 'smooth' })}>
               <h5 className="my-0"><i className="fas fa-door-closed" /></h5>
-            </Button>
+            </Button> */}
           </div>
         </div>
       )
@@ -503,13 +504,14 @@ export default class CustomNavBar extends Component {
               !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
                 <Col xs={5}>
                   <DateRangePicker
-                    startDate={new moment(this.state.search.checkin)}
-                    endDate={new moment(this.state.search.checkout)}
+                    minDate={moment()}
+                    startDate={moment(this.state.search.checkin)}
+                    endDate={moment(this.state.search.checkout)}
                     autoApply
                     onApply={(e, picker) => {
                       e.preventDefault();
-                      this.state.search.checkin = new moment(picker.startDate).format('YYYY-MM-DD');
-                      this.state.search.checkout = new moment(picker.endDate).format('YYYY-MM-DD');
+                      this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
+                      this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                       window.location.href = this.getSearchLink();
                     }}>
                     <Form>
@@ -548,13 +550,14 @@ export default class CustomNavBar extends Component {
                 !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
                   <div className="d-inline ml-1">
                     <DateRangePicker
-                      startDate={new moment(this.state.search.checkin)}
-                      endDate={new moment(this.state.search.checkout)}
+                      minDate={moment()}
+                      startDate={moment(this.state.search.checkin)}
+                      endDate={moment(this.state.search.checkout)}
                       autoApply
                       onApply={(e, picker) => {
                         e.preventDefault();
-                        this.state.search.checkin = new moment(picker.startDate).format('YYYY-MM-DD');
-                        this.state.search.checkout = new moment(picker.endDate).format('YYYY-MM-DD');
+                        this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
+                        this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                         window.location.href = this.getSearchLink();
                       }}>
                       <Button variant="dark"><i className="fas fa-calendar-week" /></Button>
@@ -593,11 +596,11 @@ export default class CustomNavBar extends Component {
               </Row>
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu-right">
-              <Dropdown.Item className="text-left pl-2" href="/reservation"><i className="fas fa-calendar-check" /> Reservation</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2 bold" href="/reservation"><i className="fas fa-calendar-check" /> Reservation</Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item className="text-left pl-2" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
-              <Dropdown.Item className="text-left pl-2" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Dropdown.Item>
-              <Dropdown.Item className="text-left pl-2" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2 bold" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2 bold" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2 bold" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
 
@@ -625,17 +628,17 @@ export default class CustomNavBar extends Component {
               </Row>
             </Dropdown.Toggle>
             <Dropdown.Menu className="dropdown-menu-right">
-              <Dropdown.Item className="text-right bold" href="/myhotel"><i className="fas fa-hotel" /> My hotel</Dropdown.Item>
-              <Dropdown.Item className="text-right bold" href="/hotel/create"><i className="fas fa-plus-square" /> Create hotel</Dropdown.Item>
-              <Dropdown.Item className="text-right bold" href="/request">
+              <Dropdown.Item className="text-left pl-2 bold" href="/myhotel"><i className="fas fa-hotel" /> My hotel</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2 bold" href="/hotel/create"><i className="fas fa-plus-square" /> Create hotel</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2 bold" href="/request">
                 <div className={requests.length ? "text-danger" : ""}>
                   <i className="fas fa-file-import" />&nbsp;Request&nbsp;{requests.length ? <Badge variant="danger">{requests.length}</Badge> : ""}
                 </div>
               </Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item className="text-right bold" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
-              <Dropdown.Item className="text-right bold" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Dropdown.Item>
-              <Dropdown.Item className="text-right bold" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2 bold" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2 bold" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Dropdown.Item>
+              <Dropdown.Item className="text-left pl-2 bold" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
 
@@ -749,20 +752,26 @@ export default class CustomNavBar extends Component {
               <Popover className="text-dark">
                 <h6><strong>Property amenities</strong></h6>
                 <Row noGutters>
-                  <Col xs={4}
-                    className="text-center my-2 bold"
-                    onClick={() => this.toggleAmenitiesFilter(0)}>
-                    <p dangerouslySetInnerHTML={{ __html: this.state.amenities[0] ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
-                    {this.state.amenities[0] ? hotelService.amenities[0].name : hotelService.amenities[1].name}
+                  <Col xs={4}>
+                    <Button
+                      variant="light"
+                      className="room-card-amenity text-center px-0 py-0 my-2 bold text-dark"
+                      onClick={() => this.toggleAmenitiesFilter(0)}>
+                      <p dangerouslySetInnerHTML={{ __html: this.state.amenities[0] ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
+                      {this.state.amenities[0] ? <>{hotelService.amenities[0].name}<br />&nbsp;&nbsp;&nbsp;</> : hotelService.amenities[1].name}
+                    </Button>
                   </Col>
                   {
                     hotelService.amenities.slice(2, 13).map((amenity, idx) => {
                       return (
-                        <Col xs={4}
-                          className={"text-center my-2 " + (this.state.amenities[idx + 1] ? "text-dark bold" : "text-lightgray")}
-                          onClick={() => this.toggleAmenitiesFilter(idx + 1)}>
-                          <p dangerouslySetInnerHTML={{ __html: amenity.tag }} />
-                          {amenity.name}
+                        <Col xs={4}>
+                          <Button
+                            variant="light"
+                            className={"room-card-amenity text-center px-0 py-0 my-2 bold" + (this.state.amenities[idx + 1] ? " text-dark" : " text-lightgray")}
+                            onClick={() => this.toggleAmenitiesFilter(idx + 1)}>
+                            <p dangerouslySetInnerHTML={{ __html: amenity.tag }} />
+                            {amenity.name}{amenity.name.length <= 9 ? <><br />&nbsp;&nbsp;&nbsp;</> : ""}
+                          </Button>
                         </Col>
                       )
                     })
@@ -822,13 +831,14 @@ export default class CustomNavBar extends Component {
               !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
                 <Col xs={10} sm={8} className="my-2 my-md-0">
                   <DateRangePicker
-                    startDate={new moment(this.state.search.checkin)}
-                    endDate={new moment(this.state.search.checkout)}
+                    minDate={moment()}
+                    startDate={moment(this.state.search.checkin)}
+                    endDate={moment(this.state.search.checkout)}
                     autoApply
                     onApply={(e, picker) => {
                       e.preventDefault();
-                      this.state.search.checkin = new moment(picker.startDate).format('YYYY-MM-DD');
-                      this.state.search.checkout = new moment(picker.endDate).format('YYYY-MM-DD');
+                      this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
+                      this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                       window.location.href = this.getHotelLink();
                     }}>
                     <Form>

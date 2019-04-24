@@ -36,7 +36,7 @@ export default class MyHotel extends Component {
     } else if (this.state.hotels.length === 0) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
-          <h1>Hotel management</h1>
+          {this.getActionButtons()}
           <h4>You have no permission to manage any hotel at this time.</h4>
         </div>
       )
@@ -44,11 +44,7 @@ export default class MyHotel extends Component {
     return (
       <div className="my-hotel-bg">
         <div className="scroll-snap-child" />
-        <Col className="text-right">
-          <Button variant="dark py-2 px-3 my-4 text-right bold" href="/hotel/create">
-            <i className="fas fa-plus-square" />&nbsp;&nbsp;Create hotel
-          </Button>
-        </Col>
+        {this.getActionButtons()}
         <Row>
           {
             this.state.hotels.map(hotel => {
@@ -61,6 +57,19 @@ export default class MyHotel extends Component {
           }
         </Row>
       </div>
+    )
+  }
+
+  getActionButtons = () => {
+    return (
+      <Col className="text-right">
+        <Button variant="dark py-2 px-3 my-2 text-right bold" href="/search">
+          <i className="fas fa-search" />&nbsp;&nbsp;Find hotels
+        </Button>
+        <Button variant="success py-2 px-3 my-2 ml-2 ml-md-4 text-right bold" href="/hotel/create">
+          <i className="fas fa-plus-square" />&nbsp;&nbsp;Create hotel
+        </Button>
+      </Col>
     )
   }
 }

@@ -65,7 +65,7 @@ export default class HotelManageCard extends Component {
               : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
           }
         </div>
-        <Card.Body className="hotel-desc">
+        <Card.Body className="hotel-desc-body">
           <Card.Text>{hotel.desc.length < 120 ? hotel.desc : hotel.desc.slice(0, 120) + "..."}</Card.Text>
         </Card.Body>
         <Card.Footer>

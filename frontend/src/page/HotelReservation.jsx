@@ -77,7 +77,6 @@ export default class HotelReservation extends Component {
     return (
       reservations.length === 0 ?
         <div className="error-bg px-auto hotel-info scroll-snap-child">
-          <h1>Reservation</h1>
           <h4>This hotel have no reservations at this time.</h4>
         </div>
         :
@@ -114,7 +113,7 @@ export default class HotelReservation extends Component {
                                     </a>
                                   </Col>
                                   <Col xs={10} md={4} className="my-3">
-                                    <h6>Date: {new moment(r.checkin).format("D MMM YYYY")  + " - " + new moment(r.checkout).format("D MMM YYYY") }</h6>
+                                    <h6>Date: {moment(r.checkin).format("D MMM YYYY")  + " - " + moment(r.checkout).format("D MMM YYYY") }</h6>
                                     <h6>Number of room: {r.num}</h6>
                                     <h6>Price: ฿ {this.getPrice(r, room)}</h6>
                                   </Col>

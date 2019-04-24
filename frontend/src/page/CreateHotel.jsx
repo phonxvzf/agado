@@ -68,6 +68,9 @@ export default class CreateHotel extends Component {
 
   checkForm = (e) => {
     e.preventDefault();
+    if (e.target.id !== "create-hotel") {
+      return;
+    }
     if (this.isValid()) {
       if (this.state.action === "create") {
         this.setState({ check: false, showModal: "create_hotel_confirm" });
@@ -105,6 +108,18 @@ export default class CreateHotel extends Component {
     return pathname + search;
   }
 
+  deleteImg = (idx) => {
+    const hotel = this.state.hotel;
+    let imgs = hotel.imgs;
+    imgs[idx] = "";
+    this.setState({
+      hotel: {
+        ...hotel,
+        imgs: imgs
+      }
+    });
+  }
+
   render() {
     const hotel = this.state.hotel;
     if (!this.state.validUser) {
@@ -121,10 +136,14 @@ export default class CreateHotel extends Component {
           <Row className="shadow scroll-snap-child" noGutters>
             <Col xs={12} sm={6}>
               <div className="ratio4-3">
-                <input className="d-none" ref={ref => this.upimg1 = ref} onChange={(e) => this.uploadImg(e, 1)} type="file" />
+                <input className="d-none" ref={ref => this.upimg1 = ref} onClick={e => e.currentTarget.value = ""} onChange={(e) => this.uploadImg(e, 1)} type="file" />
                 {hotel.imgs[0] ? <Image className="absolute" src={hotel.imgs[0]} fluid /> : ""}
                 <Button variant="dark" className={"abs-center border-none" + (hotel.imgs[0] ? " bg-fade text-none" : "")} onClick={() => this.upimg1.click()}>
                   <h1 className="my-0"><i className="fas fa-images" /></h1>
+                </Button>
+                <Button variant="dark" className={"abs-top-right border-none" + (hotel.imgs[0] ? " bg-fade" : " d-none")}
+                  onClick={() => this.deleteImg(0)}>
+                  <h4 className="my-0"><i className="fas fa-times" /></h4>
                 </Button>
               </div>
             </Col>
@@ -132,19 +151,27 @@ export default class CreateHotel extends Component {
               <Row noGutters>
                 <Col>
                   <div className="ratio4-3">
-                    <input className="d-none" ref={ref => this.upimg2 = ref} onChange={(e) => this.uploadImg(e, 2)} type="file" />
+                    <input className="d-none" ref={ref => this.upimg2 = ref} onClick={e => e.currentTarget.value = ""} onChange={(e) => this.uploadImg(e, 2)} type="file" />
                     {hotel.imgs[1] ? <Image className="absolute" src={hotel.imgs[1]} fluid /> : ""}
                     <Button variant="dark" className={"abs-center border-none" + (hotel.imgs[1] ? " bg-fade text-none" : "")} onClick={() => this.upimg2.click()}>
                       <h1 className="my-0"><i className="fas fa-images" /></h1>
+                    </Button>
+                    <Button variant="dark" className={"abs-top-right border-none" + (hotel.imgs[1] ? " bg-fade" : " d-none")}
+                      onClick={() => this.deleteImg(1)}>
+                      <h4 className="my-0"><i className="fas fa-times" /></h4>
                     </Button>
                   </div>
                 </Col>
                 <Col>
                   <div className="ratio4-3">
-                    <input className="d-none" ref={ref => this.upimg3 = ref} onChange={(e) => this.uploadImg(e, 3)} type="file" />
+                    <input className="d-none" ref={ref => this.upimg3 = ref} onClick={e => e.currentTarget.value = ""} onChange={(e) => this.uploadImg(e, 3)} type="file" />
                     {hotel.imgs[2] ? <Image className="absolute" src={hotel.imgs[2]} fluid /> : ""}
                     <Button variant="dark" className={"abs-center border-none" + (hotel.imgs[2] ? " bg-fade text-none" : "")} onClick={() => this.upimg3.click()}>
                       <h1 className="my-0"><i className="fas fa-images" /></h1>
+                    </Button>
+                    <Button variant="dark" className={"abs-top-right border-none" + (hotel.imgs[2] ? " bg-fade" : " d-none")}
+                      onClick={() => this.deleteImg(2)}>
+                      <h4 className="my-0"><i className="fas fa-times" /></h4>
                     </Button>
                   </div>
                 </Col>
@@ -152,19 +179,27 @@ export default class CreateHotel extends Component {
               <Row noGutters>
                 <Col>
                   <div className="ratio4-3">
-                    <input className="d-none" ref={ref => this.upimg4 = ref} onChange={(e) => this.uploadImg(e, 4)} type="file" />
+                    <input className="d-none" ref={ref => this.upimg4 = ref} onClick={e => e.currentTarget.value = ""} onChange={(e) => this.uploadImg(e, 4)} type="file" />
                     {hotel.imgs[3] ? <Image className="absolute" src={hotel.imgs[3]} fluid /> : ""}
                     <Button variant="dark" className={"abs-center border-none" + (hotel.imgs[3] ? " bg-fade text-none" : "")} onClick={() => this.upimg4.click()}>
                       <h1 className="my-0"><i className="fas fa-images" /></h1>
+                    </Button>
+                    <Button variant="dark" className={"abs-top-right border-none" + (hotel.imgs[3] ? " bg-fade" : " d-none")}
+                      onClick={() => this.deleteImg(3)}>
+                      <h4 className="my-0"><i className="fas fa-times" /></h4>
                     </Button>
                   </div>
                 </Col>
                 <Col>
                   <div className="ratio4-3">
-                    <input className="d-none" ref={ref => this.upimg5 = ref} onChange={(e) => this.uploadImg(e, 5)} type="file" />
+                    <input className="d-none" ref={ref => this.upimg5 = ref} onClick={e => e.currentTarget.value = ""} onChange={(e) => this.uploadImg(e, 5)} type="file" />
                     {hotel.imgs[4] ? <Image className="absolute" src={hotel.imgs[4]} fluid /> : ""}
                     <Button variant="dark" className={"abs-center border-none" + (hotel.imgs[4] ? " bg-fade text-none" : "")} onClick={() => this.upimg5.click()}>
                       <h1 className="my-0"><i className="fas fa-images" /></h1>
+                    </Button>
+                    <Button variant="dark" className={"abs-top-right border-none" + (hotel.imgs[4] ? " bg-fade" : " d-none")}
+                      onClick={() => this.deleteImg(4)}>
+                      <h4 className="my-0"><i className="fas fa-times" /></h4>
                     </Button>
                   </div>
                 </Col>
@@ -173,12 +208,55 @@ export default class CreateHotel extends Component {
           </Row>
           <Form id="create-hotel" onSubmit={this.checkForm}>
             <div className="px-content mt-5 scroll-snap-child" id="hotel_info">
-              <h3 className="d-inline" onClick={() => this.setState({ focus: "name" })}>{hotel.name ? hotel.name : "Hotel's name"}</h3>
-              <span>
-                <Button variant="link" className="text-dark px-0" onClick={() => this.setState({ focus: "name" })}>
-                  &nbsp;<i className="fas fa-edit" />
-                </Button>
-              </span>
+              <div className="position-relative">
+                <Form.Control
+                  type="text"
+                  className="custom-form-control w-50 h1 bold"
+                  onChange={(e) => this.setState({ hotel: { ...hotel, name: e.currentTarget.value } })}
+                  onBlur={() => this.setState({ focus: null })}
+                  placeholder=" "
+                  defaultValue={hotel.name}
+                  autoFocus
+                  required />
+                <span className="hotel-name h1 bold">Hotel's name</span>
+              </div>
+              <div className="position-relative">
+                <Form.Control
+                  type="text"
+                  className="custom-form-control w-50 h3 bold"
+                  onChange={(e) => this.setState({ hotel: { ...hotel, city: e.currentTarget.value } })}
+                  onBlur={() => this.setState({ focus: null })}
+                  placeholder=" "
+                  defaultValue={hotel.city}
+                  required />
+                <span className="hotel-city h3 bold">City</span>
+              </div>
+              <div className="position-relative">
+                <Form.Control
+                  type="text"
+                  className="custom-form-control w-75 h3"
+                  onChange={(e) => this.setState({ hotel: { ...hotel, address: e.currentTarget.value } })}
+                  onBlur={() => this.setState({ focus: null })}
+                  placeholder=" "
+                  defaultValue={hotel.address}
+                  required />
+                <span className="hotel-addr h3">Address</span>
+              </div>
+              <div className="position-relative">
+                <Form.Control
+                  type="text"
+                  className="custom-form-control w-100 h3"
+                  onChange={(e) => this.setState({ hotel: { ...hotel, desc: e.currentTarget.value } })}
+                  onBlur={() => this.setState({ focus: null })}
+                  placeholder=" "
+                  defaultValue={hotel.desc}
+                  required />
+                <span className="hotel-desc h3">Description</span>
+              </div>
+              {/* <h3 className="d-inline" onClick={() => this.setState({ focus: "name" })}>{hotel.name ? hotel.name : "Hotel's name"}</h3>
+              <Button variant="link" className="text-dark px-0 align-top" onClick={() => this.setState({ focus: "name" })}>
+                &nbsp;<i className="fas fa-edit" />
+              </Button>
               {this.state.focus === "name" || this.state.check ?
                 <Form.Control
                   type="text"
@@ -188,13 +266,10 @@ export default class CreateHotel extends Component {
                   defaultValue={hotel.name}
                   autoFocus
                   required /> : ""}
-              <br />
               <h5 className="d-inline" onClick={() => this.setState({ focus: "city" })}>{hotel.city ? hotel.city : "City"}</h5>
-              <span>
-                <Button variant="link" className="text-dark px-0" onClick={() => this.setState({ focus: "city" })}>
-                  &nbsp;<i className="fas fa-edit" />
-                </Button>
-              </span>
+              <Button variant="link" className="text-dark px-0 py-0 align-top" onClick={() => this.setState({ focus: "city" })}>
+                &nbsp;<i className="fas fa-edit" />
+              </Button>
               {this.state.focus === "city" || this.state.check ?
                 <Form.Control
                   type="text"
@@ -211,7 +286,7 @@ export default class CreateHotel extends Component {
                   <i className="fas fa-map-marker-alt" />
                   &nbsp;{hotel.address ? hotel.address : "Address"}
                 </span>
-                <Button variant="link" className="text-dark px-0" onClick={() => this.setState({ focus: "address" })}>
+                <Button variant="link" className="text-dark px-0 py-0 align-top" onClick={() => this.setState({ focus: "address" })}>
                   &nbsp;<i className="fas fa-edit" />
                 </Button>
               </span>
@@ -230,7 +305,7 @@ export default class CreateHotel extends Component {
                   <i className="fas fa-file-alt" onClick={() => this.setState({ focus: "desc" })} />
                   &nbsp;{hotel.desc ? hotel.desc : "Description"}
                 </span>
-                <Button variant="link" className="text-dark px-0" onClick={() => this.setState({ focus: "desc" })}>
+                <Button variant="link" className="text-dark px-0 py-0 align-top" onClick={() => this.setState({ focus: "desc" })}>
                   &nbsp;<i className="fas fa-edit" />
                 </Button>
                 <br />
@@ -244,12 +319,12 @@ export default class CreateHotel extends Component {
                   placeholder="Description"
                   defaultValue={hotel.desc}
                   autoFocus
-                  required /> : ""}
+                  required /> : ""} */}
               <hr className="mb-5" />
             </div>
             <div id="hotel_rooms" className="mb-5">
               <div>
-                <h3 className="scroll-snap-child px-content">Rooms</h3>
+                <h3 className="scroll-snap-child px-content bold">Rooms</h3>
                 <ItemsCarousel
                   className="scroll-snap-child"
                   freeScrolling

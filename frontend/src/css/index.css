@@ -32,3 +32,13 @@ html {
 .break-all-word {
   word-break: break-all;
 }
+
+textarea, input {
+  padding:10px;
+	font-family: FontAwesome, -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
+  "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+  sans-serif;
+    font-style: normal;
+    font-weight: normal;
+    text-decoration: inherit;
+}

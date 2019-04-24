@@ -12,7 +12,7 @@
 	transition: all 0.1s linear;
 }
 
-.signin-signup div.active {
-  color: #000;
+.signin-signup .active {
+  color: var(--dark) !important;
 	font-size: 18px;
 }

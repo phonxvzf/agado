@@ -1,3 +1,4 @@
+import moment from 'moment';
 import React, { Component } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import '../css/SigninSignupModal.css';
@@ -7,7 +8,10 @@ import CustomModal from './CustomModal';
 export default class SigninSignupModal extends Component {
   state = {
     active: "signin",
-    showModal: null
+    showModal: null,
+    signup: {
+      date_of_birth: moment().month(0).date(1)
+    }
   }
 
   signin = async (e) => {
@@ -19,7 +23,11 @@ export default class SigninSignupModal extends Component {
       user_type: this.props.type === "Traveler" ? "traveler" : "hotel_manager"
     };
     if (await userService.signin(user)) {
-      window.history.go();
+      if (user.user_type === "traveler") {
+        window.history.go();
+      } else if (user.user_type === "hotel_manager") {
+        window.location.href = "/myhotel";
+      }
     } else {
       this.setState({ showModal: "signin_failed" });
     }
@@ -34,7 +42,7 @@ export default class SigninSignupModal extends Component {
       first_name: signup.first_name,
       last_name: signup.last_name,
       gender: signup.gender ? signup.gender : "Not specified",
-      date_of_birth: signup.date_of_birth,
+      date_of_birth: moment(signup.date_of_birth).format('YYYY-MM-DD'),
       email: signup.email,
       phone_num: signup.phone_num,
       user_type: this.props.type === "Traveler" ? "traveler" : "hotel_manager"
@@ -44,6 +52,23 @@ export default class SigninSignupModal extends Component {
     } else {
       this.setState({ showModal: "signup_failed" });
     }
+  }
+
+  changeBirthDate = (value, type) => {
+    let date = moment(this.state.signup.date_of_birth);
+    if (type === "day") {
+      date.date(value);
+    } else if (type === "month") {
+      date.month(value);
+    } else if (type === "year") {
+      date.year(value);
+    }
+    this.setState({
+      signup: {
+        ...this.state.signup,
+        date_of_birth: date
+      }
+    })
   }
 
   render() {
@@ -64,10 +89,10 @@ export default class SigninSignupModal extends Component {
             <>
               <Row className="text-center">
                 <Col xs={6}>
-                  <div onClick={() => this.setState({ active: "signin" })} className={this.state.active === "signin" ? "active" : ""}>Sign in</div>
+                  <Button variant="link" onClick={() => this.setState({ active: "signin" })} className={"text-secondary bold" + (this.state.active === "signin" ? " active" : "")}>Sign in</Button>
                 </Col>
                 <Col xs={6}>
-                  <div onClick={() => this.setState({ active: "signup" })} className={this.state.active === "signup" ? "active" : ""}>Sign up</div>
+                  <Button variant="link" onClick={() => this.setState({ active: "signup" })} className={"text-secondary bold" + (this.state.active === "signup" ? " active" : "")}>Sign up</Button>
                 </Col>
               </Row>
               <hr />
@@ -180,11 +205,38 @@ export default class SigninSignupModal extends Component {
           </Form.Group>
           <Form.Group as={Col} md={6}>
             <Form.Label>Date of birth</Form.Label>
-            <Form.Control
-              type="date"
-              onChange={(e) => this.setState({ signup: { ...this.state.signup, date_of_birth: e.currentTarget.value } })}
-              placeholder="Date of birth"
-              required />
+            <Row noGutters>
+              <Col xs={4} className="pr-2">
+                <Form.Control as="select"
+                  onChange={(e) => this.changeBirthDate(e.currentTarget.value, 'day')}
+                  value={moment(this.state.signup.date_of_birth).date()}>
+                  {
+                    Array(31).fill().map((_, i) => i + 1)
+                      .map(day => <option>{day}</option>)
+                  }
+                </Form.Control>
+              </Col>
+              <Col xs={4} className="px-1">
+                <Form.Control as="select"
+                  onChange={(e) => this.changeBirthDate(e.currentTarget.value, 'month')}
+                  value={moment(this.state.signup.date_of_birth).format('MMM')}>
+                  {
+                    Array(12).fill().map((_, i) => moment().month(i).format('MMM'))
+                      .map(month => <option>{month}</option>)
+                  }
+                </Form.Control>
+              </Col>
+              <Col xs={4} className="pl-2">
+                <Form.Control as="select"
+                  onChange={(e) => this.changeBirthDate(e.currentTarget.value, 'year')}
+                  value={moment(this.state.signup.date_of_birth).year()}>
+                  {
+                    Array(80).fill().map((_, i) => moment().year() - i)
+                      .map(year => <option>{year}</option>)
+                  }
+                </Form.Control>
+              </Col>
+            </Row>
           </Form.Group>
         </Form.Row>
         <Form.Row>

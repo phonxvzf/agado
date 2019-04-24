@@ -14,11 +14,19 @@
   .hotel-bg {
     padding: 70px 0% 10px 0%;
   }
+
+  .scroll-snap-container {
+    scroll-padding: 70px;
+  }
 }
 
 @media (min-width: 768px) {
   .hotel-bg {
     padding: 140px 0% 10px 0%;
+  }
+
+  .scroll-snap-container {
+    scroll-padding: 140px;
   }
 }
 

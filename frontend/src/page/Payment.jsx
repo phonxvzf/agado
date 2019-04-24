@@ -121,7 +121,7 @@ export default class Payment extends Component {
           <br />
           <h4>Booking information:</h4>
           <div className="ml-3 ml-md-5">
-            <h6>Date: {new moment(this.state.search.checkin).format("D MMM YYYY") + " - " + new moment(this.state.search.checkout).format("D MMM YYYY")}</h6>
+            <h6>Date: {moment(this.state.search.checkin).format("D MMM YYYY") + " - " + moment(this.state.search.checkout).format("D MMM YYYY")}</h6>
             <h6>Hotel: {hotel.name}</h6>
             <h6>Room: {hotel.rooms[Number(this.state.search.room_id)].name}</h6>
             <h6>Number of room: {Number(this.state.search.num)}</h6>

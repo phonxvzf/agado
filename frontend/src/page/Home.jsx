@@ -34,6 +34,7 @@ export default class Home extends Component {
             <Row className="justify-content-center">
               <Col xs={9} sm={9} md={8} lg={7} xl={6} className="my-2">
                 <Form.Control
+                  className="not-form-control"
                   type="text"
                   onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
                   placeholder="Hotel or Destination"

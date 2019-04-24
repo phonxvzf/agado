@@ -51,7 +51,7 @@ export class userService {
   }
 
   static signin = async (user) => {
-    return await axios.post('/login', user)
+    return await axios.post('/user/login', user)
       .then(res => {
         localStorage.setItem("user", JSON.stringify(res.data));
         return true;

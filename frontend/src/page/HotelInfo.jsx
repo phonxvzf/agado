@@ -29,7 +29,7 @@ export default class HotelInfo extends Component {
           user: await userService.getUser(review.user_id)
         };
       }));
-      hotel.managers = await Promise.all(hotel.managers.map(async user_id => await userService.getUser(user_id)));
+      hotel.managersInfo = await Promise.all(hotel.managers.map(async user_id => await userService.getUser(user_id)));
     }
     this.setState({
       pathname: pathname,
@@ -285,7 +285,7 @@ export default class HotelInfo extends Component {
             </Col>
             <Col xs={12} sm={8} md={9} lg={10}>
               <h5>{review.title}</h5>
-              <div className="fs-14">{this.getRatingStar(review.rating)} {new moment(review.date).format("D MMM YYYY") }</div>
+              <div className="fs-14">{this.getRatingStar(review.rating)} {moment(review.date).format("D MMM YYYY") }</div>
               {review.comment}
             </Col>
           </Row>
@@ -325,7 +325,7 @@ export default class HotelInfo extends Component {
         </Row>
         <Row>
           {
-            hotel.managers.map(user => {
+            hotel.managersInfo.map(user => {
               if (!user) return;
               return (
                 <Col xs={12} sm={6} md={4} lg={4} className="my-3">

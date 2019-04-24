@@ -49,10 +49,10 @@ export default class RoomCard extends Component {
   }
 
   getDateString = () => {
-    const checkin = this.props.search.checkin ? new moment(this.props.search.checkin).format('D MMM YYYY') : "...";
-    const checkout = this.props.search.checkout ? new moment(this.props.search.checkout).format('D MMM YYYY') : "...";
+    const checkin = this.props.search.checkin ? moment(this.props.search.checkin).format('D MMM YYYY') : "...";
+    const checkout = this.props.search.checkout ? moment(this.props.search.checkout).format('D MMM YYYY') : "...";
     if (checkin === "..." && checkout === "...") {
-      return "Check-in & Check-out date";
+      return "Check-in & Check-out";
     }
     return checkin + " - " + checkout;
   }
@@ -146,14 +146,15 @@ export default class RoomCard extends Component {
                 <Alert variant="danger">Please enter dates to see prices.</Alert>
                 <div className="d-md-none">
                   <DateRangePicker
-                    startDate={new moment(this.props.search.checkin)}
-                    endDate={new moment(this.props.search.checkout)}
+                    minDate={moment()}
+                    startDate={moment(this.props.search.checkin)}
+                    endDate={moment(this.props.search.checkout)}
                     drops="up"
                     autoApply
                     onApply={(e, picker) => {
                       e.preventDefault();
-                      this.props.search.checkin = new moment(picker.startDate).format('YYYY-MM-DD');
-                      this.props.search.checkout = new moment(picker.endDate).format('YYYY-MM-DD');
+                      this.props.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
+                      this.props.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                       window.location.href = this.getHotelLink();
                     }}>
                     <Form>
@@ -179,7 +180,7 @@ export default class RoomCard extends Component {
                   <Form id={"reservation" + this.props.room_id} onSubmit={this.reserveRoom}>
                     <InputGroup>
                       <InputGroup.Prepend>
-                        <InputGroup.Text className="bg-dark border-dark text-light">Rooms</InputGroup.Text>
+                        <InputGroup.Text className="bg-dark border-dark text-light bold">Rooms</InputGroup.Text>
                       </InputGroup.Prepend>
                       <Form.Control
                         className="border-dark"

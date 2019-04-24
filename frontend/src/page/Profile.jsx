@@ -93,12 +93,28 @@ export default class Profile extends Component {
     return pathname + search;
   }
 
+  changeBirthDate = (value, type) => {
+    let date = moment(this.state.editedUser.date_of_birth);
+    if (type === "day") {
+      date.date(value);
+    } else if (type === "month") {
+      date.month(value);
+    } else if (type === "year") {
+      date.year(value);
+    }
+    this.setState({
+      editedUser: {
+        ...this.state.editedUser,
+        date_of_birth: date
+      }
+    })
+  }
+
   render() {
     if (!this.state) {
       return <div className="error-bg scroll-snap-child" />
     }
     const user = this.state.user;
-    console.log(user)
     if (!user) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
@@ -121,7 +137,7 @@ export default class Profile extends Component {
         </div>
         <CustomModal
           showModal={this.state.showModal === "save_completed"}
-          closeModal={() => window.history.go()}
+          closeModal={() => this.setState({ showModal: null })}
           title="Save completed"
           body="Your profile was changed." />
         <CustomModal
@@ -165,7 +181,7 @@ export default class Profile extends Component {
           </Row>
           <Row className="align-items-center" noGutters>
             <Col xs={4} sm={4} md={3} xl={2} as="h6"><strong>Birth date:</strong></Col>
-            <Col as="h6">{new moment(user.date_of_birth).format("D MMM YYYY")}</Col>
+            <Col as="h6">{moment(user.date_of_birth).format("D MMM YYYY")}</Col>
           </Row>
           <Row className="align-items-center" noGutters>
             <Col xs={4} sm={4} md={3} xl={2} as="h6"><strong>Email:</strong></Col>
@@ -241,14 +257,41 @@ export default class Profile extends Component {
                 </Form.Control>
               </Col>
             </Row>
-            <Row className="align-items-center" noGutters>
-              <Col xs={5} sm={4} md={3} xl={2} as="h6"><strong>Birth date:</strong></Col>
-              <Col xs={7} sm={8} md={9} xl={10} as="h6">
-                <Form.Control
-                  type="date"
-                  onChange={(e) => this.setState({ editedUser: { ...editedUser, date_of_birth: e.currentTarget.value } })}
-                  defaultValue={new Date(editedUser.date_of_birth)}
-                  required />
+            <Row className="align-items-center mb-2 mb-md-0" noGutters>
+              <Col xs={12} sm={4} md={3} xl={2} as="h6"><strong>Birth date:</strong></Col>
+              <Col xs={12} sm={8} md={9} xl={10} as="h6">
+                <Row noGutters>
+                  <Col xs={4} className="pr-2">
+                    <Form.Control as="select"
+                      onChange={(e) => this.changeBirthDate(e.currentTarget.value, 'day')}
+                      value={moment(editedUser.date_of_birth).date()}>
+                      {
+                        Array(31).fill().map((_, i) => i + 1)
+                          .map(day => <option>{day}</option>)
+                      }
+                    </Form.Control>
+                  </Col>
+                  <Col xs={4} className="px-1">
+                    <Form.Control as="select"
+                      onChange={(e) => this.changeBirthDate(e.currentTarget.value, 'month')}
+                      value={moment(editedUser.date_of_birth).format('MMM')}>
+                      {
+                        Array(12).fill().map((_, i) => moment().month(i).format('MMM'))
+                          .map(month => <option>{month}</option>)
+                      }
+                    </Form.Control>
+                  </Col>
+                  <Col xs={4} className="pl-2">
+                    <Form.Control as="select"
+                      onChange={(e) => this.changeBirthDate(e.currentTarget.value, 'year')}
+                      value={moment(editedUser.date_of_birth).year()}>
+                      {
+                        Array(80).fill().map((_, i) => moment().year() - i)
+                          .map(year => <option>{year}</option>)
+                      }
+                    </Form.Control>
+                  </Col>
+                </Row>
               </Col>
             </Row>
             <Row className="align-items-center" noGutters>
@@ -314,7 +357,7 @@ export default class Profile extends Component {
                   <Col xs={12} sm={8} md={9} lg={10}>
                     <h5 className="d-inline">{review.title} </h5>
                     <a className="fs-14 text-dark" href={this.getHotelLink(hotel.hotel_id)}>@{hotel.name}</a>
-                    <div className="fs-14">{this.getRatingStar(review.rating)} {new moment(review.date).format("D MMM YYYY")}</div>
+                    <div className="fs-14">{this.getRatingStar(review.rating)} {moment(review.date).format("D MMM YYYY")}</div>
                     {review.comment}
                   </Col>
                 </Row>

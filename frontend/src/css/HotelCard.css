@@ -7,6 +7,8 @@
   position: absolute;
   top: 30%;
   right: 0px;
+  box-shadow: -5px 5px 10px 0px rgba(0, 0, 0, 0.6);
+  z-index: 2;
 }
 
 .price {
@@ -35,6 +37,12 @@ p.card-text {
   color: #666;
 }
 
-.hotel-desc {
+.hotel-desc-body {
   height: 103px;
+}
+
+.link-only,
+.link-only:hover {
+  color: inherit;
+  text-decoration: none;
 }

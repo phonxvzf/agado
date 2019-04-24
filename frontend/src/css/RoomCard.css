@@ -25,7 +25,17 @@
 }
 
 .room-card-amenity {
-  font-size: 15px;
+  font-size: 14px;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.btn-light.room-card-amenity:hover,
+.btn-light.room-card-amenity:focus,
+.btn-light.room-card-amenity:active {
+  color: var(--lightgray);
+  border: none;
 }
 
 .bg-brown,

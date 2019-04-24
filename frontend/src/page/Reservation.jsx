@@ -33,18 +33,18 @@ export default class Reservation extends Component {
           <h4>You have to be a Traveler to access this page.</h4>
         </div>
       )
+    } else if (this.state.reservations.length === 0) {
+      return (
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
+          <h4>You have no reservations at this time.</h4>
+        </div>
+      )
     }
     return (
       <div className="reservation-bg">
         <div className="scroll-snap-child" />
         <Row>
           {
-            this.state.reservations.length === 0 ?
-            <div className="scroll-snap-child">
-              <h1>Reservation</h1>
-              <h4>You have no reservations at this time.</h4>
-            </div>
-            :
             this.state.reservations.map(reservation => {
               return (
                 <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child">

@@ -61,7 +61,6 @@ export default class Request extends Component {
     return (
       requests.length === 0 ?
         <div className="error-bg px-auto hotel-info scroll-snap-child">
-          <h1>Request</h1>
           <h4>You have no requests at this time.</h4>
         </div>
         :
