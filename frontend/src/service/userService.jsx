@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-axios.defaults.baseURL = (process.env.NODE_ENV !== 'production') ? 'http://localhost:3000' : '/api'
+axios.defaults.baseURL = (process.env.NODE_ENV !== 'production') ? 'http://' + window.location.hostname + ':3000' : '/api';
 
 export class userService {
   static getCurrentUser = () => {

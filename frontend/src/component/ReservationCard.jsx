@@ -96,7 +96,7 @@ export default class ReservationCard extends Component {
                 {
                   this.isPassed() ?
                     <Button className="px-4 py-2" variant="info" onClick={() => this.setState({ showModal: "review" })}>
-                      {this.state.oldReview ? "Edit old review" : "Write a review"}
+                      {this.state.oldReview ? "Edit review" : "Write a review"}
                     </Button>
                     : <Button className="px-4 py-2" variant="danger" onClick={() => this.setState({ showModal: "cancel_reservation_confirm" })}>Cancel</Button>
                 }

@@ -4,6 +4,7 @@ import React, { Component } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import CustomModal from '../component/CustomModal';
 import HotelCard from '../component/HotelCard';
+import HotelManageCard from '../component/HotelManageCard';
 import '../css/Profile.css';
 import { hotelService } from '../service/hotelService';
 import { reviewService } from '../service/reviewService';
@@ -208,12 +209,23 @@ export default class Profile extends Component {
     return (
       <Row className="align-items-center justify-content-center">
         <Col xs={12} sm={4} className="text-center">
-          <div className="circle-avatar w-50" style={editedUser.img ? { backgroundImage: `url(${editedUser.img})` } : { backgroundColor: userService.getUserColor(editedUser.username) }} />
+          <div className="circle-avatar w-50 hover-delete" style={editedUser.img ? { backgroundImage: `url(${editedUser.img})` } : { backgroundColor: userService.getUserColor(editedUser.username) }} />
+          <Button variant="dark" className={"profile-delete border-none text-center" + (editedUser.img ? "" : " d-none")} onClick={() => this.setState({ editedUser: { ...editedUser, img: "" }, imgName: "" })} >
+            <i className="fas fa-times" />
+          </Button>
           <br />
           <div>
             <Form className="custom-file w-75">
-              <Form.Control type="file" className="custom-file-input" onChange={this.uploadImg} />
-              <Form.Label className="custom-file-label text-left">{this.state.imgName ? this.state.imgName : "Choose file"}</Form.Label>
+              <Form.Control type="file" className="custom-file-input" onClick={e => e.currentTarget.value = ""} onChange={this.uploadImg} />
+              <Form.Label className="custom-file-label text-left">
+                {
+                  this.state.imgName ?
+                    this.state.imgName.length >= 15 ?
+                      this.state.imgName.substr(0, 15) + "..."
+                      : this.state.imgName
+                    : "Choose file"
+                }
+              </Form.Label>
             </Form>
           </div>
         </Col>
@@ -320,7 +332,7 @@ export default class Profile extends Component {
               "" + editedUser.user_id !== "" + Number(this.state.search.user_id) ? "" :
                 <>
                   <Button type="submit" variant="success" className="mr-4 my-2">Save changes</Button>
-                  <Button variant="secondary" className="my-2" onClick={() => this.setState({ mode: "" })}>Cancel</Button>
+                  <Button variant="secondary" className="my-2" onClick={() => this.setState({ mode: "", editedUser: { ...this.state.currentUser } })}>Cancel</Button>
                 </>
             }
           </Form>
@@ -400,17 +412,26 @@ export default class Profile extends Component {
     return (
       <div className="px-content">
         <Row className="align-items-center mt-5 scroll-snap-child" noGutters>
-          <h3>Hotels managed</h3>
+          <h3>Managed Hotels</h3>
         </Row>
         <Row>
           {
-            hotels.map(hotel => {
-              return (
-                <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hotel_id}>
-                  <HotelCard search={this.state.search} hotel={hotel} />
-                </Col>
-              )
-            })
+            this.state.currentUser && this.state.currentUser.user_id === this.state.user.user_id ?
+              hotels.map(hotel => {
+                return (
+                  <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hotel_id}>
+                    <HotelManageCard hotel={hotel} currentUser={this.state.currentUser} />
+                  </Col>
+                )
+              })
+              :
+              hotels.map(hotel => {
+                return (
+                  <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hotel_id}>
+                    <HotelCard search={this.state.search} hotel={hotel} />
+                  </Col>
+                )
+              })
           }
         </Row>
       </div>

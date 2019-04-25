@@ -84,6 +84,7 @@ export default class CreateHotel extends Component {
   }
 
   createHotel = () => {
+    this.props.setPreventLeavePage(false);
     let hotel = this.state.hotel;
     hotel.managers = [this.state.currentUser.user_id];
     if (hotelService.createHotel(hotel)) {
@@ -93,6 +94,7 @@ export default class CreateHotel extends Component {
   }
 
   editHotel = () => {
+    this.props.setPreventLeavePage(false);
     const hotel = this.state.hotel;
     if (hotelService.editHotel(hotel.hotel_id, hotel)) {
       // this.setState({ showModal: "edit_hotel_completed" });

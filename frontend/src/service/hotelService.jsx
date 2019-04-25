@@ -46,6 +46,18 @@ export class hotelService {
   static createHotel = (hotel) => {
     let hotels = this.getHotels();
     hotel.hotel_id = hotels.length + 1;
+    hotel.rooms = hotel.rooms.map(room => {
+      room.amenities = room.amenities.map((amenity, idx) => {
+        if (!idx) {
+          return amenity ? 0 : 1;
+        }
+        if (amenity) {
+          return idx;
+        }
+      });
+      room.amenities = room.amenities.reduce((amenities, x) => amenities = x ? amenities.concat(x) : amenities, []);
+      return room;
+    });
     hotels.push(hotel);
     localStorage.setItem("hotels", JSON.stringify(hotels));
     return true;

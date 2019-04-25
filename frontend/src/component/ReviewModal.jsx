@@ -1,3 +1,4 @@
+import qs from 'qs';
 import React, { Component } from 'react';
 import { Button, Col, Form, Modal, Row } from 'react-bootstrap';
 import { reviewService } from '../service/reviewService';
@@ -65,6 +66,16 @@ export default class ReviewModal extends Component {
     }
   }
 
+  getHotelLink = () => {
+    const pathname = "/hotel";
+    const search = qs.stringify({
+      hotel_id: Number(this.props.hotel_id),
+      checkin: this.props.checkin,
+      checkout: this.props.checkout
+    }, { addQueryPrefix: true });
+    return pathname + search;
+  }
+
   render() {
     const currentUser = userService.getCurrentUser();
     if (!currentUser || currentUser.user_type === "hotel_manager") {
@@ -83,7 +94,7 @@ export default class ReviewModal extends Component {
           all={
             <Form onSubmit={this.createReview}>
               <Modal.Header closeButton>
-                <Modal.Title>{this.props.oldReview ? "Edit old review" : "Write a new review"}</Modal.Title>
+                <Modal.Title>{this.props.oldReview ? "Edit review" : "Write a new review"}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <Row className="align-items-center my-3">
@@ -150,12 +161,12 @@ export default class ReviewModal extends Component {
           } />
         <CustomModal
           showModal={this.state.showModal === "create_completed"}
-          closeModal={() => window.history.go()}
+          closeModal={() => { window.location.href = this.getHotelLink() + "#hotel_reviews"; window.history.go(); }}
           title="Create completed"
           body="You can see your review now and you can also edit or delete this review later." />
         <CustomModal
           showModal={this.state.showModal === "edit_completed"}
-          closeModal={() => window.history.go()}
+          closeModal={() => { window.location.href = this.getHotelLink() + "#hotel_reviews"; window.history.go(); }}
           title="Edit completed"
           body="You can see your edited review now." />
         <CustomModal

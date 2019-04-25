@@ -101,6 +101,7 @@ export default class Payment extends Component {
     } else if (step === 1) {
       return this.getPaymentComponent();
     } else if (step === 2) {
+      this.props.setPreventLeavePage(false);
       return this.getCompletedComponent();
     }
   }

@@ -110,7 +110,7 @@ export default class SigninSignupModal extends Component {
           } />
         <CustomModal
           showModal={this.state.showModal === "signup_completed"}
-          closeModal={() => window.history.go()}
+          closeModal={() => this.props.type === "Traveler" ? window.history.go() : window.location.href = "/myhotel"}
           title="Sign up completed"
           body="Thank you for joining us. This account will be signed in automatically." />
         <CustomModal

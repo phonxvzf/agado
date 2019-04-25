@@ -50,7 +50,7 @@ export default class MyHotel extends Component {
             this.state.hotels.map(hotel => {
               return (
                 <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hotel_id}>
-                  <HotelManageCard hotel={hotel} />
+                  <HotelManageCard hotel={hotel} currentUser={this.state.currentUser} />
                 </Col>
               )
             })
@@ -63,10 +63,10 @@ export default class MyHotel extends Component {
   getActionButtons = () => {
     return (
       <Col className="text-right">
-        <Button variant="dark py-2 px-3 my-2 text-right bold" href="/search">
+        <Button variant="dark py-2 px-3 my-2 text-right bold shadow" href="/search">
           <i className="fas fa-search" />&nbsp;&nbsp;Find hotels
         </Button>
-        <Button variant="success py-2 px-3 my-2 ml-2 ml-md-4 text-right bold" href="/hotel/create">
+        <Button variant="success py-2 px-3 my-2 ml-2 ml-md-4 text-right bold shadow" href="/hotel/create">
           <i className="fas fa-plus-square" />&nbsp;&nbsp;Create hotel
         </Button>
       </Col>

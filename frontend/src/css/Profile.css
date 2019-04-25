@@ -96,3 +96,13 @@
 .text-lightgray {
   color: var(--lightgray);
 }
+
+.profile-delete {
+  position: absolute;
+  top: 0%;
+  left: 75%;
+  transform: translate(-100%, 0%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+}

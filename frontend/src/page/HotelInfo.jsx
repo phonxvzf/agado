@@ -77,7 +77,7 @@ export default class HotelInfo extends Component {
         <div className="hotel-bg px-auto hotel-info">
           {
             this.props.mode === "edit" && this.isUserOwn() ?
-              <CreateHotel pathname={this.state.pathname} search={this.state.search} currentUser={this.state.currentUser} hotel={this.state.hotel} />
+              <CreateHotel pathname={this.state.pathname} search={this.state.search} currentUser={this.state.currentUser} hotel={this.state.hotel} setPreventLeavePage={this.props.setPreventLeavePage} />
               :
               <>
                 <div id="hotel_info">
@@ -100,6 +100,8 @@ export default class HotelInfo extends Component {
         </div>
         <ReviewModal
           hotel_id={Number(this.state.search.hotel_id)}
+          checkin={this.state.search.checkin}
+          checkout={this.state.search.checkout}
           oldReview={this.state.oldReview}
           showModal={this.state.showModal === "review"}
           closeModal={() => this.setState({ showModal: null })} />
@@ -239,7 +241,7 @@ export default class HotelInfo extends Component {
             {
               !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
                 <Button variant="info" className="px-4" onClick={() => this.setState({ showModal: "review" })}>
-                  {this.state.oldReview ? "Edit old review" : "Write a review"}
+                  {this.state.oldReview ? "Edit review" : "Write a review"}
                 </Button>
                 : ""
             }

@@ -41,19 +41,18 @@ export default class HotelCard extends Component {
     return (
       <Card className="shadow">
         <a className="link-only" href={this.getHotelLink()}>
-          <Card.Header className="py-4">
-            <Row className="align-items-center" noGutters={true}>
-              <Col xs={8}>
-                <Card.Title as="h6">{hotel.name}</Card.Title>
+          <Card.Header>
+            <Row className="align-items-center text-dark" noGutters={true}>
+              <Col className="mr-auto">
+                <Card.Title as="h5">{hotel.name}</Card.Title>
                 <Card.Subtitle as="h6">{hotel.city}</Card.Subtitle>
               </Col>
-              <Col xs={4} className="text-center">
-                <Button variant="link" className="link-only px-0" href={this.getHotelLink() + "#hotel_reviews"}>
-                  {this.getRatingStar(hotel.rating)}
-                  <br />
-                  {hotel.total_review} reviews
-                </Button>
-              </Col>
+              <Button variant="link" className="link-only px-0" href={this.getHotelLink() + "#hotel_reviews"}>
+                {this.getRatingStar(hotel.rating)}
+                <br />
+                <strong>Rating {hotel.rating.toFixed(1)}</strong>
+                <br />({hotel.total_review} reviews)
+              </Button>
             </Row>
           </Card.Header>
           <div className="ratio4-3">
@@ -63,7 +62,10 @@ export default class HotelCard extends Component {
                 : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
             }
           </div>
-          <Badge variant="info" className="right-card"><div className="price mx-4 my-2">฿ {hotel.start_price}</div></Badge>
+          <Badge variant="info" className="right-card px-4 py-2">
+            <span className="fs-10">Start at</span><br />
+            <span className="price">฿ {hotel.start_price}</span>
+          </Badge>
         </a>
         <Card.Body className="hotel-desc-body">
           <Card.Text>{hotel.desc.length < 120 ? hotel.desc : hotel.desc.slice(0, 120) + "..."}</Card.Text>

@@ -122,11 +122,8 @@ export default class RoomCard extends Component {
               <Collapse in={!this.state.collapse}>
                 <Row noGutters>
                   {
-                    room.amenities.map((isHas, idx) => {
-                      if (idx && !isHas) {
-                        return <></>;
-                      }
-                      const amenity = hotelService.amenities[idx === 0 ? !isHas + 0 : idx + 1];
+                    room.amenities.map(idx => {
+                      const amenity = hotelService.amenities[idx];
                       return (
                         <Col xs={3} sm={2} md={3} lg={2} className="room-card-amenity text-center my-2 bold">
                           <p dangerouslySetInnerHTML={{ __html: amenity.tag }} />
@@ -180,17 +177,33 @@ export default class RoomCard extends Component {
                   <Form id={"reservation" + this.props.room_id} onSubmit={this.reserveRoom}>
                     <InputGroup>
                       <InputGroup.Prepend>
-                        <InputGroup.Text className="bg-dark border-dark text-light bold">Rooms</InputGroup.Text>
+                        <InputGroup.Text className="bg-dark border-dark text-light">Rooms</InputGroup.Text>
                       </InputGroup.Prepend>
-                      <Form.Control
-                        className="border-dark"
-                        type="number"
-                        onChange={this._onChange}
-                        placeholder="0"
-                        min={0}
-                        max={room.available_room}
-                        value={this.state.num}
-                        required />
+                      {
+                        currentUser && currentUser.user_type === "traveler" ?
+                          <Form.Control
+                            className="border-dark"
+                            type="number"
+                            onChange={this._onChange}
+                            placeholder="0"
+                            min={0}
+                            max={room.available_room}
+                            value={this.state.num}
+                            required />
+                          :
+                          <OverlayTrigger overlay={<Tooltip>Please sign in with traveler account</Tooltip>}>
+                            <Form.Control
+                              className="border-dark"
+                              type="number"
+                              onChange={this._onChange}
+                              placeholder="0"
+                              min={0}
+                              max={room.available_room}
+                              value={this.state.num}
+                              disabled
+                              required />
+                          </OverlayTrigger>
+                      }
                       <InputGroup.Append>
                         <InputGroup.Text className="bg-dark border-dark text-light">
                           Total Price: ฿ {room.price * Math.max(1, this.props.interval) * Math.max(this.state.num, 0)}

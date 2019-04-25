@@ -150,7 +150,7 @@ export default class NewRoomCard extends Component {
                       return (
                         <Carousel.Item>
                           <div className="ratio4-3">
-                            <input className="d-none" ref={ref => this.upimgs[idx] = ref} onChange={(e) => this.uploadImg(e, idx)} type="file" />
+                            <input className="d-none" ref={ref => this.upimgs[idx] = ref} onClick={e => e.currentTarget.value = ""} onChange={(e) => this.uploadImg(e, idx)} type="file" />
                             {img ? <Image className="absolute" src={img} fluid /> : ""}
                             <Button variant="dark" className={"abs-center border-none" + (img ? " bg-fade text-none" : "")} onClick={() => this.upimgs[idx].click()}>
                               <h1 className="my-0"><i className="fas fa-images" /></h1>
@@ -249,11 +249,18 @@ export default class NewRoomCard extends Component {
                         onClick={() => {
                           if (!this.state.edit && this.props.room) return;
                           let amenities = room.amenities;
-                          amenities[0] = !amenities[0];
+                          if (amenities.includes(0)) {
+                            amenities.splice(amenities.findIndex(x => x === 0), 1);
+                            amenities.push(1);
+                          } else {
+                            amenities.splice(amenities.findIndex(x => x === 1), 1);
+                            amenities.push(0);
+                          }
+                          amenities.sort();
                           this.onChange({ ...room, amenities: amenities });
                         }}>
-                        <p dangerouslySetInnerHTML={{ __html: room.amenities[0] ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
-                        {room.amenities[0] ? hotelService.amenities[0].name : hotelService.amenities[1].name}
+                        <p dangerouslySetInnerHTML={{ __html: room.amenities.includes(0) ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
+                        {room.amenities.includes(0) ? hotelService.amenities[0].name : hotelService.amenities[1].name}
                       </Button>
                     </Col>
                     {
@@ -262,11 +269,16 @@ export default class NewRoomCard extends Component {
                           <Col xs={3} sm={2} md={3} lg={2} className="text-center">
                             <Button
                               variant="light"
-                              className={"room-card-amenity text-center px-0 py-0 my-2 bold" + (room.amenities[idx + 1] ? " text-dark" : " text-lightgray")}
+                              className={"room-card-amenity text-center px-0 py-0 my-2 bold" + (room.amenities.includes(idx + 2) ? " text-dark" : " text-lightgray")}
                               onClick={() => {
                                 if (!this.state.edit && this.props.room) return;
                                 let amenities = room.amenities;
-                                amenities[idx + 1] = !amenities[idx + 1];
+                                if (amenities.includes(idx + 2)) {
+                                  amenities.splice(amenities.findIndex(x => x === idx + 2), 1);
+                                } else {
+                                  amenities.push(idx + 2);
+                                }
+                                amenities.sort();
                                 this.onChange({ ...room, amenities: amenities });
                               }}>
                               <p dangerouslySetInnerHTML={{ __html: amenity.tag }} />

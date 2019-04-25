@@ -292,11 +292,11 @@ export default class CustomNavBar extends Component {
       return "Request"
     } else if (this.state.pathname === "/payment") {
       return "Payment"
-    } else if (this.state.pathname === "/reservation") {
-      return "Reservation"
-    } else if (this.state.pathname === "/tutorial") {
+    // } else if (this.state.pathname === "/reservation") {
+    //   return "Reservation"
+    } else if (this.state.pathname === "/tutorial" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return "Tutorial"
-    } else if (this.state.pathname === "/profile") {
+    } else if (this.state.pathname === "/profile" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return "Profile"
     }
   }
@@ -382,7 +382,7 @@ export default class CustomNavBar extends Component {
                         e.preventDefault();
                         this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
                         this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
-                        window.location.href = this.getSearchLink();
+                        window.location.href = this.getHotelLink();
                       }}>
                       <Button variant="dark"><i className="fas fa-calendar-week" /></Button>
                     </DateRangePicker>
@@ -531,22 +531,22 @@ export default class CustomNavBar extends Component {
     } else if (this.state.pathname === "/payment") {
       return (
         <div className="text-right d-md-none text-dark">
-          <h5 className="my-0"><strong>Payment</strong></h5>
+          <h6 className="my-0 bold">Payment</h6>
         </div>
       )
-    } else if (this.state.pathname === "/reservation") {
-      return (
-        <div className="text-right d-md-none text-dark">
-          <h5 className="my-0"><strong>Reservation</strong></h5>
-        </div>
-      )
-    } else if (this.state.pathname === "/tutorial") {
+    // } else if (this.state.pathname === "/reservation") {
+    //   return (
+    //     <div className="text-right d-md-none text-dark">
+    //       <h5 className="my-0"><strong>Reservation</strong></h5>
+    //     </div>
+    //   )
+    } else if (this.state.pathname === "/tutorial" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return (
         <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Tutorial</strong></h5>
         </div>
       )
-    } else if (this.state.pathname === "/profile") {
+    } else if (this.state.pathname === "/profile" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return (
         <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Profile</strong></h5>
@@ -681,6 +681,7 @@ export default class CustomNavBar extends Component {
           <strong className="d-md-none">{" " + currentUser.username}</strong>
           <Nav className="d-md-none">
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/reservation"><i className="fas fa-calendar-check" /> Reservation</Nav.Link>
+            <hr className="mx-0 my-1" />
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Nav.Link>
@@ -725,6 +726,7 @@ export default class CustomNavBar extends Component {
                 <i className="fas fa-file-import" />&nbsp;Request&nbsp;{requests.length ? <Badge variant="danger">{requests.length}</Badge> : ""}
               </div>
             </Nav.Link>
+            <hr className="mx-0 my-1" />
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href="/tutorial"><i className="fab fa-leanpub" /> Tutorial</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" href={this.getProfileLink()}><i className="fas fa-user-alt" /> Profile</Nav.Link>
             <Nav.Link className="text-dark bold ml-4 ml-md-0" onClick={userService.signout}><i className="fas fa-sign-out-alt" /> Sign out</Nav.Link>
