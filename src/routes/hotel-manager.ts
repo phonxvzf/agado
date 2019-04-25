@@ -4,28 +4,16 @@ import hotelManager from '../controller/hotel-manager';
 
 const router = new koaRouter();
 
-// Hotel Manager
-router.get(
-  '/hotelManager',
-  auth.requireAuth,
-  auth.checkHotelManagerType,
-  hotelManager.getHotelManager,
-);
 router.post(
-  '/hotelManager',
-  auth.requireAuth,
-  auth.checkHotelManagerType,
-  hotelManager.createHotelManager,
-);
-router.put(
-  '/hotelManager',
+  '/hotel/manager',
   auth.requireAuth,
   auth.checkHotelManagerType,
   hotelManager.checkHotelManagerPermission,
-  hotelManager.updateHotelManager,
+  hotelManager.createHotelManager,
 );
+
 router.del(
-  '/hotelManager',
+  '/hotel/manager',
   auth.requireAuth,
   auth.checkHotelManagerType,
   hotelManager.checkHotelManagerPermission,

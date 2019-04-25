@@ -4,7 +4,7 @@ interface HotelRoom {
   name: string;
   num_bed: number;
   max_person: number;
-  price: number;
+  price: number | string;
   total_room: number;
 }
 

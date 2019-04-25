@@ -6,20 +6,12 @@ const hotelRepo = {
     return database.insert(hotelData).returning('hotel_id').into('hotel');
   },
 
-  getAllHotels: async (): Promise<Hotel[]> => {
-    return database.select('*').from('hotel');
-  },
-
-  getHotel: async (hotelId: number): Promise<Hotel[]> => {
+  getHotelByHotelId: async (hotelId: number): Promise<Hotel[]> => {
     return database.select('*').from('hotel').where('hotel_id', '=', hotelId);
   },
 
-  getHotelByName: async (hotelName: string): Promise<Hotel[]> => {
-    return database.select('*').from('hotel').where('name', '=', hotelName);
-  },
-
-  updateHotel: async (hotelId: number, hotelData: Hotel): Promise<number[]> => {
-    return database('hotel').update(hotelData).where('hotel_id', '=', hotelId);
+  updateHotel: async (hotelData: Hotel): Promise<number[]> => {
+    return database('hotel').update(hotelData).where('hotel_id', '=', hotelData['hotel_id']);
   },
 
   deleteHotel: async (hotelId: number) => {
