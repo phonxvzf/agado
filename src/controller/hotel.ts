@@ -3,6 +3,11 @@ import httpStatus from '../common/http-status';
 import { codes, ApiError } from '../common/api-error';
 import { hotelRepo, Hotel } from '../model/hotel';
 import { validator } from '../common/validator';
+import { hotelManagerRepo } from '../model/hotel-manager';
+import review from '../model/review';
+import { userRepo } from '../model/user';
+
+const reviewRepo = review;
 
 const ctrlHotel = {
   getHotel: async (ctx: koa.Context, next: () => Promise<any>) => {
@@ -13,8 +18,38 @@ const ctrlHotel = {
       throw new ApiError('Hotel not found', codes.HOTEL_NOT_FOUND, 404);
     }
 
+    const reviewInfo = await reviewRepo.getByHotel(hotelId);
+
     ctx.response.body = hotelInfo;
+    ctx.response.body['reviews'] = reviewInfo;
     ctx.response.status = httpStatus.OK.code;
+    return next();
+  },
+
+  getUserHotel: async (ctx: koa.Context, next: () => Promise<any>) => {
+    const userId = validator.validateId(ctx.request.query['user_id'], 'Please specify user_id');
+
+    const [userInfo] = await userRepo.getUser(userId);
+
+    if (userInfo == null) {
+      throw new ApiError('User not found', codes.USER_NOT_FOUND, 404);
+    } else if (userInfo['user_type'] !== 'hotel_manager') {
+      throw new ApiError('Not a hotel manager', codes.BAD_VALUE, httpStatus.BAD_REQUEST.code);
+    }
+
+    const hotelIdList = await hotelManagerRepo.getHotelManagerByUserId(userId);
+
+    ctx.response.body = [];
+
+    for (let i = 0; i < hotelIdList.length; i += 1) {
+      const hotelId = hotelIdList[i]['hotel_id'];
+      const reviewInfo = await reviewRepo.getByHotel(hotelId);
+
+      ctx.response.body.push({ hotel_id: hotelId, reviews: reviewInfo });
+    }
+
+    ctx.response.status = httpStatus.OK.code;
+
     return next();
   },
 

@@ -14,6 +14,20 @@ const ctrlHotelRoom = {
     return next();
   },
 
+  getUserHotelRoom: async(ctx: koa.Context, next: () => Promise<any>) => {
+    for (const each of ctx.response.body) {
+      const hotelId = each['hotel_id'];
+
+      const hotelRoomInfo = await hotelRoomRepo.getHotelRoomByHotelId(hotelId);
+      hotelRoomInfo.map(room => room['price'] = Number.parseFloat(
+        String(room['price']).substring(1)));
+
+      each['rooms'] = hotelRoomInfo;
+    }
+
+    return next();
+  },
+
   updateHotelRoom: async(ctx: koa.Context, next: () => Promise<any>) => {
     const hotelId = ctx.request.body['hotel_id'];
 

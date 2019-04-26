@@ -75,6 +75,8 @@ let travelerToken: string;
 let hotelManagerToken: string;
 let hotelManager2Token: string;
 
+let travelerId: number;
+let hotelManagerId: number;
 let hotelId: number;
 
 // Test after user.test
@@ -82,10 +84,12 @@ let hotelId: number;
 beforeAll(async (done) => {
   let resTraveler = await request(server).post('/user').send(defaultTravelerData);
   resTraveler = await request(server).post('/user/login').send(defaultTravelerData);
+  travelerId = resTraveler.body['user_id'];
   travelerToken = resTraveler.body.token;
 
   let resHotelManager = await request(server).post('/user').send(defaultHotelManagerData);
   resHotelManager = await request(server).post('/user/login').send(defaultHotelManagerData);
+  hotelManagerId = resHotelManager.body['user_id'];
   hotelManagerToken = resHotelManager.body.token;
 
   resHotelManager = await request(server).post('/user').send(defaultHotelManager2Data);
@@ -118,14 +122,27 @@ afterAll(async (done) => {
 describe('Get hotel information', () => {
   it('[GET /hotel] should succeed', async () => {
     const res = await request(server).get(`/hotel?hotel_id=${hotelId}`);
-    expect(res.status).toEqual(200);
+    expect(res.status).toEqual(httpStatus.OK.code);
   });
 
-  it('[GET /hotel] should fail (hotel not exists)', async () => {
-    const res = await request(server)
-      .get('/hotel?hotel_id=2000000')
-      .set('Authorization', `Bearer ${hotelManagerToken}`);
+  it('[GET /hotel] should fail (hotel does not exist)', async () => {
+    const res = await request(server).get('/hotel?hotel_id=2000000')
     expect(res.status).toEqual(httpStatus.NOT_FOUND.code);
+  });
+
+  it('[GET /hotel/of_user] should succeed', async () => {
+    const res = await request(server).get(`/hotel/of_user?user_id=${hotelManagerId}`)
+    expect(res.status).toEqual(httpStatus.OK.code);
+  });
+
+  it('[GET /hotel/of_user] should fail (user does not exist)', async () => {
+    const res = await request(server).get('/hotel/of_user?user_id=2000000')
+    expect(res.status).toEqual(httpStatus.NOT_FOUND.code);
+  });
+
+  it('[GET /hotel/of_user] should fail (user is a traveler)', async () => {
+    const res = await request(server).get(`/hotel/of_user?user_id=${travelerId}`)
+    expect(res.status).toEqual(httpStatus.BAD_REQUEST.code);
   });
 });
 

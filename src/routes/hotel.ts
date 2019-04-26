@@ -19,6 +19,15 @@ router.get(
   hotelRoomImage.getHotelRoomImage,
 );
 
+router.get(
+  '/hotel/of_user',
+  hotel.getUserHotel,
+  hotelImage.getUserHotelImage,
+  hotelRoom.getUserHotelRoom,
+  hotelRoomAmenity.getUserHotelRoomAmenity,
+  hotelRoomImage.getUserHotelRoomImage,
+);
+
 router.post(
   '/hotel',
   auth.requireAuth,

@@ -12,6 +12,17 @@ const ctrlHotelImage = {
     return next();
   },
 
+  getUserHotelImage: async (ctx: koa.Context, next: () => Promise<any>) => {
+    for (const each of ctx.response.body) {
+      const hotelId = each['hotel_id'];
+      const hotelImageInfo = await hotelImageRepo.getHotelImage(hotelId);
+
+      each['imgs'] = hotelImageInfo.map(image => image['img']);
+    }
+
+    return next();
+  },
+
   // After ctrlHotel.createHotel
   updateHotelImage: async (ctx: koa.Context, next: () => Promise<any>) => {
     const hotelId = ctx.request.body['hotel_id'];
