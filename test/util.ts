@@ -4,6 +4,7 @@ import { userRepo, User } from '../src/model/user';
 import { hotelRepo, Hotel } from '../src/model/hotel';
 import { hotelRoomRepo, HotelRoom } from '../src/model/hotel-room';
 import { hotelManagerRepo, HotelManager } from '../src/model/hotel-manager';
+import request from '../src/model/request';
 import crypto from 'crypto';
 
 const validGenderArray = Array.from(validGender);
@@ -26,6 +27,18 @@ const util = {
     return database.del().from('hotel_manager');
   },
 
+  wipeRequests: async () => {
+    return database.del().from('request');
+  },
+
+  wipeReservation: async () => {
+    return database.del().from('reservation');
+  },
+
+  wipeReviews: async () => {
+    return database.del().from('review');
+  },
+
   generateUserData: (): User => {
     return {
       username: crypto.randomBytes(10).toString('base64'),
@@ -43,7 +56,6 @@ const util = {
       token: undefined,
     };
   },
-
 
   generateUser: async (): Promise<number[]> => {
     const userData = util.generateUserData();

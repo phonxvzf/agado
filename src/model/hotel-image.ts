@@ -10,6 +10,10 @@ const hotelImageRepo = {
     return database.select('*').from('hotel_img').where('hotel_id', '=', hotelId);
   },
 
+  getByHotelIds: async (hotelIds: number[]): Promise<HotelImage[]> => {
+    return database.select('*').from('hotel_img').whereIn('hotel_id', hotelIds);
+  },
+
   deleteHotelImageByHotelId: async (hotelId: number) => {
     return database.del().from('hotel_img').where('hotel_id', '=', hotelId);
   },

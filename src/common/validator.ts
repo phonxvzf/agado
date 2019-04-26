@@ -3,6 +3,7 @@ import { codes, ApiError } from './api-error';
 const validGender = new Set(['Male', 'Female', 'Not specified', 'Prefer not to say']);
 const validUserType = new Set(['traveler', 'hotel_manager', 'admin']);
 const validPermitted = new Set(['no', 'req', 'pmt']);
+const validSortMode = new Set(['price', 'rating']);
 
 const validator = {
   validateUndefined: (str: string, errorMessage: string) => {
@@ -34,6 +35,11 @@ const validator = {
       throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
     }
     return parse;
+  },
+
+  validateIntegerInArray: (na: string[], errorMessage: string) => {
+    na.forEach(n => validator.validateNumber(n, errorMessage));
+    return na.map(n => Number.parseInt(n, 10));
   },
 
   validateNumBool: (n: string, errorMessage: string) => {
@@ -70,6 +76,11 @@ const validator = {
     if (validPermitted.has(permitted)) {
       return permitted;
     }
+    throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
+  },
+
+  validateSortMode: (mode: string, errorMessage: string) => {
+    if (validSortMode.has(mode)) return mode;
     throw new ApiError(errorMessage, codes.BAD_VALUE, 400);
   },
 };

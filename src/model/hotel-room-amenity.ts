@@ -12,6 +12,11 @@ const hotelRoomAmenityRepo = {
       .andWhere('room_id', '=', roomId);
   },
 
+  getByHotelIds: async (hotelIds: number[]): Promise<HotelRoomAmenity[]> => {
+    return database.select('*').from('hotel_room_amenity')
+      .whereIn('hotel_id', hotelIds);
+  },
+
   deleteHotelRoomAmenityByHotelId: async (hotelId: number) => {
     return database.del().from('hotel_room_amenity').where('hotel_id', '=', hotelId);
   },

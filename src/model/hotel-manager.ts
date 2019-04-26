@@ -14,6 +14,10 @@ const hotelManagerRepo = {
     return database.select('*').from('hotel_manager').where('hotel_id', '=', hotelId);
   },
 
+  getByHotelIds: async (hotelIds: number[]): Promise<HotelManager[]> => {
+    return database.select('*').from('hotel_manager').whereIn('hotel_id', hotelIds);
+  },
+
   deleteHotelManager: async (hotelManagerData: HotelManager) => {
     return database.del()
       .from('hotel_manager')
