@@ -18,7 +18,10 @@ const config = {
   JWT_SUBJECT: process.env.JWT_SUBJECT || 'agado-jwt',
   JWT_SECRET: process.env.JWT_SECRET || crypto.randomBytes(20).toString('base64'),
   JWT_ISSUER: process.env.JWT_ISSUER || 'agado',
-  JWT_TTL: process.env.JWT_TTL || '999999m',
+  JWT_TTL: process.env.JWT_TTL || '5m',
+
+  // Traffic-related
+  TRAFFIC_MAX_JSON_PAYLOAD: process.env.TRAFFIC_MAX_JSON_PAYLOAD || '1024mb',
 };
 
 export default config;

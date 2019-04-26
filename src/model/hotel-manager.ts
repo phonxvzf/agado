@@ -15,7 +15,9 @@ const hotelManagerRepo = {
   },
 
   getByHotelIds: async (hotelIds: number[]): Promise<HotelManager[]> => {
-    return database.select('*').from('hotel_manager').whereIn('hotel_id', hotelIds);
+    return database.select('*').from('hotel_manager')
+      .whereIn('hotel_id', hotelIds)
+      .innerJoin('user', 'hotel_manager.user_id', '=', 'user.user_id');
   },
 
   deleteHotelManager: async (hotelManagerData: HotelManager) => {

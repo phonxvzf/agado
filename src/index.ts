@@ -11,7 +11,9 @@ app.use(cors({
   allowHeaders: ['Authorization', 'Content-Type'],
 }));
 
-app.use(koaBodyparser());
+app.use(koaBodyparser({
+  jsonLimit: config.TRAFFIC_MAX_JSON_PAYLOAD,
+}));
 
 import errorParser from './controller/error-parser';
 import allRoutes from './routes/all-routes';

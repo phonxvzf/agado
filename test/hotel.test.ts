@@ -126,22 +126,22 @@ describe('Get hotel information', () => {
   });
 
   it('[GET /hotel] should fail (hotel does not exist)', async () => {
-    const res = await request(server).get('/hotel?hotel_id=2000000')
+    const res = await request(server).get('/hotel?hotel_id=2000000');
     expect(res.status).toEqual(httpStatus.NOT_FOUND.code);
   });
 
   it('[GET /hotel/of_user] should succeed', async () => {
-    const res = await request(server).get(`/hotel/of_user?user_id=${hotelManagerId}`)
+    const res = await request(server).get(`/hotel/of_user?user_id=${hotelManagerId}`);
     expect(res.status).toEqual(httpStatus.OK.code);
   });
 
   it('[GET /hotel/of_user] should fail (user does not exist)', async () => {
-    const res = await request(server).get('/hotel/of_user?user_id=2000000')
+    const res = await request(server).get('/hotel/of_user?user_id=2000000');
     expect(res.status).toEqual(httpStatus.NOT_FOUND.code);
   });
 
   it('[GET /hotel/of_user] should fail (user is a traveler)', async () => {
-    const res = await request(server).get(`/hotel/of_user?user_id=${travelerId}`)
+    const res = await request(server).get(`/hotel/of_user?user_id=${travelerId}`);
     expect(res.status).toEqual(httpStatus.BAD_REQUEST.code);
   });
 });
