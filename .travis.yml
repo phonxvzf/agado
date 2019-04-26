@@ -17,6 +17,7 @@ env:
   global:
     - GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
     - NODE_ENV=CI
+    - CXX=g++-4.8
 
 jobs:
   include:
@@ -26,6 +27,11 @@ jobs:
         - docker
       addons:
         postgresql: "9.6"
+      apt:
+        sources:
+          - ubuntu-toolchain-r-test
+        packages:
+          - g++-4.8
       before_script:
         - psql -c 'create database agado_test;' -U postgres
       env:
