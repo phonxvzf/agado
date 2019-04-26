@@ -1,6 +1,6 @@
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Badge, Button, Card, Col, Row } from 'react-bootstrap';
+import { Badge, Button, Card, Col, OverlayTrigger, Row, Tooltip } from 'react-bootstrap';
 import '../css/HotelCard.css';
 
 export default class HotelCard extends Component {
@@ -47,12 +47,13 @@ export default class HotelCard extends Component {
                 <Card.Title as="h5">{hotel.name}</Card.Title>
                 <Card.Subtitle as="h6">{hotel.city}</Card.Subtitle>
               </Col>
-              <Button variant="link" className="link-only px-0" href={this.getHotelLink() + "#hotel_reviews"}>
-                {this.getRatingStar(hotel.rating)}
-                <br />
-                <strong>Rating {hotel.rating.toFixed(1)}</strong>
-                <br />({hotel.total_review} reviews)
-              </Button>
+              <OverlayTrigger overlay={<Tooltip>{hotel.total_review} review{hotel.total_review > 1 ? "s" : ""}</Tooltip>}>
+                  <Button variant="link" className="link-only px-0" href={this.getHotelLink() + "#hotel_reviews"}>
+                    {this.getRatingStar(hotel.rating)}
+                    <br />
+                    <strong>Rating {hotel.rating.toFixed(1)}</strong>
+                  </Button>
+                </OverlayTrigger>
             </Row>
           </Card.Header>
           <div className="ratio4-3">

@@ -54,6 +54,18 @@ export default class CreateHotel extends Component {
     if (!img) {
       return;
     }
+    if (!img.type.startsWith("image/")) {
+      this.setState({
+        showModal: "upload_not_img"
+      })
+      return;
+    }
+    if (img.size > 1e7) {
+      this.setState({
+        showModal: "upload_large_img"
+      })
+      return;
+    }
     this.getImgUrl(img).then(imgUrl => {
       let imgs = this.state.hotel.imgs;
       imgs[idx - 1] = imgUrl;
@@ -398,6 +410,16 @@ export default class CreateHotel extends Component {
           closeModal={() => window.location.href = this.getHotelLink()}
           title="Edit hotel completed"
           body="The hotel's information is changed now. You can also edit or delete this hotel later." />
+        <CustomModal
+          showModal={this.state.showModal === "upload_not_img"}
+          closeModal={() => this.setState({ showModal: null })}
+          title="Unable to upload the file"
+          body="This file is not an image. " />
+        <CustomModal
+          showModal={this.state.showModal === "upload_large_img"}
+          closeModal={() => this.setState({ showModal: null })}
+          title="Unable to upload the file"
+          body="The file size exceeds the limit of 10 MB." />
       </>
     )
   }

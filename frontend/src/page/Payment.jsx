@@ -57,9 +57,10 @@ export default class Payment extends Component {
       num: Number(search.num)
     }
     if (reservationService.createReservation(reservation)) {
+      this.props.setPreventLeavePage(false);
       this.setState({
         step: 2
-      })
+      });
     }
   }
 
@@ -101,7 +102,6 @@ export default class Payment extends Component {
     } else if (step === 1) {
       return this.getPaymentComponent();
     } else if (step === 2) {
-      this.props.setPreventLeavePage(false);
       return this.getCompletedComponent();
     }
   }

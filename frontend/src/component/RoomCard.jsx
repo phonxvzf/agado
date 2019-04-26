@@ -150,6 +150,12 @@ export default class RoomCard extends Component {
                     autoApply
                     onApply={(e, picker) => {
                       e.preventDefault();
+                      if (moment(picker.startDate).format('YYYY-MM-DD') === moment(picker.endDate).format('YYYY-MM-DD')) {
+                        return;
+                      }
+                      if (picker.startDate === picker.endDate) {
+                        return;
+                      }
                       this.props.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
                       this.props.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                       window.location.href = this.getHotelLink();

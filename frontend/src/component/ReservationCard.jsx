@@ -1,7 +1,7 @@
 import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Button, Card, Col, Row } from 'react-bootstrap';
+import { Badge, Button, Card, Col, Row } from 'react-bootstrap';
 import { hotelService } from '../service/hotelService';
 import { reservationService } from '../service/reservationService';
 import { reviewService } from '../service/reviewService';
@@ -35,7 +35,7 @@ export default class ReservationCard extends Component {
     const checkin = this.props.reservation.checkin;
     const checkout = this.props.reservation.checkout;
     const interval = Math.max(0, (new Date(checkout) - new Date(checkin)) / 24 / 60 / 60 / 1000);
-    const hotel = hotelService.getHotel(this.props.reservation.hotel_id);
+    const hotel = this.state.hotel;
     const room = hotel.rooms[Number(this.props.reservation.room_id)];
     return interval * (room ? room.price : 0) * Number(this.props.reservation.num);
   }
@@ -62,28 +62,29 @@ export default class ReservationCard extends Component {
   render() {
     const reservation = this.props.reservation;
     const hotel = this.state.hotel;
+    const days = this.getDayleft();
     return (
       <>
         <Card className="shadow">
           <a className="link-only" href={this.getHotelLink()}>
             <Card.Header className="py-4">
-              <Row className="align-items-center" noGutters={true}>
+              <Row className="align-items-end" noGutters={true}>
                 <Col xs={8}>
                   <Card.Title as="h6">{hotel.name}</Card.Title>
                   <Card.Subtitle as="h6">{moment(reservation.checkin).format("D MMM YYYY") + " - " + moment(reservation.checkout).format("D MMM YYYY")}</Card.Subtitle>
                 </Col>
                 <Col xs={4} className="text-center">
-                  {this.getDayleft()}
+                  <Badge variant={(days === "Passed" ? "secondary" : "dark")}>{days}</Badge>
                 </Col>
               </Row>
             </Card.Header>
-            <div className="ratio4-3">
+            {/* <div className="ratio4-3">
               {
                 hotel.imgs[0] === "" ?
                   <div className="bg-dark abs-center border-none" />
                   : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
               }
-            </div>
+            </div> */}
           </a>
           <Card.Body>
             <Card.Text>Room: {hotel.rooms[Number(reservation.room_id)] ? hotel.rooms[Number(reservation.room_id)].name : ""}</Card.Text>
@@ -95,10 +96,10 @@ export default class ReservationCard extends Component {
               <Col>
                 {
                   this.isPassed() ?
-                    <Button className="px-4 py-2" variant="info" onClick={() => this.setState({ showModal: "review" })}>
+                    <Button variant="info" onClick={() => this.setState({ showModal: "review" })}>
                       {this.state.oldReview ? "Edit review" : "Write a review"}
                     </Button>
-                    : <Button className="px-4 py-2" variant="danger" onClick={() => this.setState({ showModal: "cancel_reservation_confirm" })}>Cancel</Button>
+                    : <Button variant="danger" onClick={() => this.setState({ showModal: "cancel_reservation_confirm" })}>Cancel</Button>
                 }
               </Col>
             </Row>

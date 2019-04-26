@@ -1,6 +1,6 @@
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Button, Card, Col, Row } from 'react-bootstrap';
+import { Button, Card, Col, Image, Row } from 'react-bootstrap';
 import { hotelService } from '../service/hotelService';
 import { requestService } from '../service/requestService';
 import { userService } from '../service/userService';
@@ -74,12 +74,13 @@ export default class Request extends Component {
                   <div className="px-content">
                     <Card>
                       <Card.Header>
-                        <Row className="align-items-center text-center justify-content-center">
+                        <Row className="align-items-center justify-content-center">
                           <a className="text-dark" href={this.getHotelLink(hotel.hotel_id)}>
-                            <h4 className="mr-md-4 my-2">{hotel.name}</h4>
+                            <h4 className="mr-md-4 my-2 bold">{hotel.name}</h4>
                           </a>
                           {/* <Button variant="info" className="my-2" href={this.getHotelLink(hotel.hotel_id)}>View hotel</Button> */}
                         </Row>
+                        {/* {this.getHotelImages(hotel)} */}
                       </Card.Header>
                       <Card.Body>
                         {
@@ -93,7 +94,13 @@ export default class Request extends Component {
                                     <a className="text-dark" href={this.getProfileLink(user.user_id)}>
                                       <Row className="align-items-center">
                                         <div className="d-inline-block circle-avatar w-25" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
-                                        <Col>{this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}</Col>
+                                        <Col>
+                                          <strong>{user.first_name + " " + user.last_name}</strong>
+                                          <br />
+                                          {user.email}
+                                          <br />
+                                          Tel: {user.phone_num}
+                                        </Col>
                                       </Row>
                                     </a>
                                   </Col>
@@ -116,6 +123,64 @@ export default class Request extends Component {
             })
           }
         </div>
+    )
+  }
+
+  getHotelImages = (hotel) => {
+    return (
+      <Row className="shadow scroll-snap-child" noGutters>
+        <Col xs={12} sm={6}>
+          <div className="ratio4-3">
+            {
+              hotel.imgs[0] === "" ?
+                <div className="bg-dark abs-center border-none" />
+                : <Image className="absolute" src={hotel.imgs[0]} fluid />
+            }
+          </div>
+        </Col>
+        <Col xs={12} sm={6}>
+          <Row noGutters>
+            <Col>
+              <div className="ratio4-3">
+                {
+                  hotel.imgs[1] === "" ?
+                    <div className="bg-dark abs-center border-none" />
+                    : <Image className="absolute" src={hotel.imgs[1]} fluid />
+                }
+              </div>
+            </Col>
+            <Col>
+              <div className="ratio4-3">
+                {
+                  hotel.imgs[2] === "" ?
+                    <div className="bg-dark abs-center border-none" />
+                    : <Image className="absolute" src={hotel.imgs[2]} fluid />
+                }
+              </div>
+            </Col>
+          </Row>
+          <Row noGutters>
+            <Col>
+              <div className="ratio4-3">
+                {
+                  hotel.imgs[3] === "" ?
+                    <div className="bg-dark abs-center border-none" />
+                    : <Image className="absolute" src={hotel.imgs[3]} fluid />
+                }
+              </div>
+            </Col>
+            <Col>
+              <div className="ratio4-3">
+                {
+                  hotel.imgs[4] === "" ?
+                    <div className="bg-dark abs-center border-none" />
+                    : <Image className="absolute" src={hotel.imgs[4]} fluid />
+                }
+              </div>
+            </Col>
+          </Row>
+        </Col>
+      </Row>
     )
   }
 }

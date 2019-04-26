@@ -44,7 +44,9 @@ export default class CustomNavBar extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    this.loadPrice(nextProps.priceRange);
+    if (nextProps.priceRange.min !== -Infinity || nextProps.priceRange.max !== Infinity) {
+      this.loadPrice(nextProps.priceRange);
+    }
   }
 
   handleScroll = (e) => {
@@ -292,8 +294,8 @@ export default class CustomNavBar extends Component {
       return "Request"
     } else if (this.state.pathname === "/payment") {
       return "Payment"
-    // } else if (this.state.pathname === "/reservation") {
-    //   return "Reservation"
+      // } else if (this.state.pathname === "/reservation") {
+      //   return "Reservation"
     } else if (this.state.pathname === "/tutorial" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return "Tutorial"
     } else if (this.state.pathname === "/profile" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
@@ -332,6 +334,9 @@ export default class CustomNavBar extends Component {
                     autoApply
                     onApply={(e, picker) => {
                       e.preventDefault();
+                      if (moment(picker.startDate).format('YYYY-MM-DD') === moment(picker.endDate).format('YYYY-MM-DD')) {
+                        return;
+                      }
                       this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
                       this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                       window.location.href = this.getHotelLink();
@@ -380,6 +385,9 @@ export default class CustomNavBar extends Component {
                       autoApply
                       onApply={(e, picker) => {
                         e.preventDefault();
+                        if (moment(picker.startDate).format('YYYY-MM-DD') === moment(picker.endDate).format('YYYY-MM-DD')) {
+                          return;
+                        }
                         this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
                         this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                         window.location.href = this.getHotelLink();
@@ -534,12 +542,12 @@ export default class CustomNavBar extends Component {
           <h6 className="my-0 bold">Payment</h6>
         </div>
       )
-    // } else if (this.state.pathname === "/reservation") {
-    //   return (
-    //     <div className="text-right d-md-none text-dark">
-    //       <h5 className="my-0"><strong>Reservation</strong></h5>
-    //     </div>
-    //   )
+      // } else if (this.state.pathname === "/reservation") {
+      //   return (
+      //     <div className="text-right d-md-none text-dark">
+      //       <h5 className="my-0"><strong>Reservation</strong></h5>
+      //     </div>
+      //   )
     } else if (this.state.pathname === "/tutorial" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return (
         <div className="text-right d-md-none text-dark">
@@ -582,6 +590,9 @@ export default class CustomNavBar extends Component {
                     autoApply
                     onApply={(e, picker) => {
                       e.preventDefault();
+                      if (moment(picker.startDate).format('YYYY-MM-DD') === moment(picker.endDate).format('YYYY-MM-DD')) {
+                        return;
+                      }
                       this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
                       this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                       window.location.href = this.getSearchLink();
@@ -630,6 +641,9 @@ export default class CustomNavBar extends Component {
                       autoApply
                       onApply={(e, picker) => {
                         e.preventDefault();
+                        if (moment(picker.startDate).format('YYYY-MM-DD') === moment(picker.endDate).format('YYYY-MM-DD')) {
+                          return;
+                        }
                         this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
                         this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
                         window.location.href = this.getSearchLink();
@@ -653,15 +667,16 @@ export default class CustomNavBar extends Component {
     if (!currentUser) {
       return (
         <Nav className="">
-          <Navbar.Text>sign in/sign up as:</Navbar.Text>
+          <Navbar.Text>Sign in/sign up as:</Navbar.Text>
           <Nav.Link className="text-dark bold ml-4 ml-md-0" onClick={() => this.setState({ showModal: "signin_signup", type: "Traveler" })}>Traveler</Nav.Link>
+          <Navbar.Text className="d-xs-sm-none d-sm-md-none">or</Navbar.Text>
           <Nav.Link className="text-dark bold ml-4 ml-md-0" onClick={() => this.setState({ showModal: "signin_signup", type: "Hotel Manager" })}>Hotel Manager</Nav.Link>
         </Nav>
       )
     } else if (currentUser.user_type === "traveler") {
       return (
         <>
-          <Navbar.Text>signed in as Traveler:</Navbar.Text>
+          <Navbar.Text>Signed in as Traveler:</Navbar.Text>
           <Dropdown className="mr-md-4 d-xs-sm-none d-sm-md-none">
             <Dropdown.Toggle bsPrefix="none" variant="link" className="text-dark bold">
               <Row className="align-items-center">
@@ -691,7 +706,7 @@ export default class CustomNavBar extends Component {
     } else if (currentUser.user_type === "hotel_manager") {
       return (
         <>
-          <Navbar.Text>signed in as Hotel Manager:</Navbar.Text>
+          <Navbar.Text>Signed in as Hotel Manager:</Navbar.Text>
           <Dropdown className="mr-md-4 d-xs-sm-none d-sm-md-none">
             <Dropdown.Toggle bsPrefix="none" variant="link" className="text-dark bold">
               <Row className="align-items-center">

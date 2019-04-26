@@ -1,6 +1,6 @@
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Button, Col, Row } from 'react-bootstrap';
+import { Button, Col, Form, InputGroup, Row } from 'react-bootstrap';
 import HotelManageCard from '../component/HotelManageCard';
 import '../css/MyHotel.css';
 import { hotelService } from '../service/hotelService';
@@ -23,6 +23,14 @@ export default class MyHotel extends Component {
     this.setState({
       hotels: hotels
     })
+  }
+
+  getSearchLink = () => {
+    const pathname = "/search";
+    const search = qs.stringify({
+      hotel_name: this.state.search.hotel_name
+    }, { addQueryPrefix: true });
+    return pathname + search;
   }
 
   render() {
@@ -62,14 +70,26 @@ export default class MyHotel extends Component {
 
   getActionButtons = () => {
     return (
-      <Col className="text-right">
-        <Button variant="dark py-2 px-3 my-2 text-right bold shadow" href="/search">
-          <i className="fas fa-search" />&nbsp;&nbsp;Find hotels
-        </Button>
-        <Button variant="success py-2 px-3 my-2 ml-2 ml-md-4 text-right bold shadow" href="/hotel/create">
-          <i className="fas fa-plus-square" />&nbsp;&nbsp;Create hotel
-        </Button>
-      </Col>
+      <Form className="justify-content-end my-2" inline onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+        <Row noGutters>
+          <Col>
+            <InputGroup className="shadow">
+              <Form.Control
+                type="text"
+                onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
+                placeholder="Find hotels"
+                defaultValue={this.state.search.hotel_name}
+                autoFocus />
+              <InputGroup.Append>
+                <Button type="submit" variant="dark" className="border-none"><i className="fas fa-search" /></Button>
+              </InputGroup.Append>
+            </InputGroup>
+          </Col>
+          <Button variant="success px-3 ml-2 ml-md-4 text-right bold shadow" href="/hotel/create">
+            <i className="fas fa-plus-square" />&nbsp;&nbsp;Create hotel
+          </Button>
+        </Row>
+      </Form>
     )
   }
 }

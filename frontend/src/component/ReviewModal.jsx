@@ -150,7 +150,7 @@ export default class ReviewModal extends Component {
                 {
                   this.props.oldReview ?
                     <>
-                      <Button variant="primary" onClick={this.editReview}>Edit</Button>
+                      <Button variant="info" onClick={this.editReview}>Edit</Button>
                       <Button variant="danger" onClick={() => this.setState({ showModal: "delete_confirm" })}>Delete</Button>
                     </> :
                     <Button type="submit" variant="success">Create</Button>

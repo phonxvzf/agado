@@ -71,7 +71,7 @@ class App extends Component {
     };
 
     document.onclick = (e) => {
-      if (!e.target.classList.contains('navbar-collapse') && document.querySelector('.navbar-collapse').classList.contains('show')) {
+      if (e.target && !e.target.classList.contains('navbar-collapse') && document.querySelector('.navbar-collapse').classList.contains('show')) {
         document.querySelector('.navbar-toggler').click();
       }
     }

@@ -56,7 +56,7 @@ p.card-text {
 }
 
 .hover-dark:hover {
-  background-color: var(--dark);
-  color: var(--light) !important;
+  /* background-color: var(--dark); */
+  color: var(--dark) !important;
   border: none;
 }

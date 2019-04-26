@@ -40,6 +40,18 @@ export default class Profile extends Component {
     if (!img) {
       return;
     }
+    if (!img.type.startsWith("image/")) {
+      this.setState({
+        showModal: "upload_not_img"
+      })
+      return;
+    }
+    if (img.size > 1e7) {
+      this.setState({
+        showModal: "upload_large_img"
+      })
+      return;
+    }
     this.setState({ imgName: img.name });
     this.getImgUrl(img).then(imgUrl => {
       this.setState({ editedUser: { ...this.state.editedUser, img: imgUrl } });
@@ -145,7 +157,7 @@ export default class Profile extends Component {
           showModal={this.state.showModal === "save_failed"}
           closeModal={() => this.setState({ showModal: null })}
           title="Permission denied"
-          body="Your accunt is not exist in the database." />
+          body="Your account does not exist in the system." />
         <CustomModal
           showModal={this.state.showModal === "delete_confirm"}
           closeModal={() => this.setState({ showModal: null })}
@@ -159,6 +171,16 @@ export default class Profile extends Component {
           closeModal={() => userService.signout()}
           title="Delete completed"
           body="Your accunt will not be able to access anymore. You will be signed out automatically." />
+        <CustomModal
+          showModal={this.state.showModal === "upload_not_img"}
+          closeModal={() => this.setState({ showModal: null })}
+          title="Unable to upload the file"
+          body="This file is not an image. " />
+        <CustomModal
+          showModal={this.state.showModal === "upload_large_img"}
+          closeModal={() => this.setState({ showModal: null })}
+          title="Unable to upload the file"
+          body="The file size exceeds the limit of 10 MB." />
       </>
     )
   }
@@ -410,10 +432,12 @@ export default class Profile extends Component {
       return <></>;
     }
     return (
-      <div className="px-content">
-        <Row className="align-items-center mt-5 scroll-snap-child" noGutters>
-          <h3>Managed Hotels</h3>
-        </Row>
+      <>
+        <div className="px-content">
+          <Row className="align-items-center mt-5 scroll-snap-child" noGutters>
+            <h3>Managed Hotels</h3>
+          </Row>
+        </div>
         <Row>
           {
             this.state.currentUser && this.state.currentUser.user_id === this.state.user.user_id ?
@@ -434,7 +458,7 @@ export default class Profile extends Component {
               })
           }
         </Row>
-      </div>
+      </>
     )
   }
 }

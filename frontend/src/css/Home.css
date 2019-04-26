@@ -232,3 +232,21 @@ input::-webkit-calendar-picker-indicator{
   border-bottom: 3px solid var(--info);
   border-radius: 0;
 }
+
+.dropdown-item:active {
+  background-color: var(--dark);
+}
+
+.bg-coming {
+  background-color: #ffd8a3;
+  /* color: var(--light); */
+}
+
+.bg-passed {
+  background-color: var(--dark);
+  color: var(--light);
+}
+
+.bg-lightgray {
+  background-color: var(--lightgray);
+}

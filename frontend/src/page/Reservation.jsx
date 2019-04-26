@@ -14,6 +14,20 @@ export default class Reservation extends Component {
     let reservations = []
     if (currentUser && currentUser.user_type === "traveler") {
       reservations = reservationService.getReservationOf(currentUser.user_id);
+      reservations.sort((a, b) => {
+        const x = new Date(a.checkin);
+        const y = new Date(b.checkin);
+        const now = new Date();
+        if (x > now && y > now) {
+          return x > y ? 1 : -1;
+        } else if (x > now) {
+          return -1;
+        } else if (y > now) {
+          return 1;
+        } else {
+          return x < y ? 1 : -1;
+        }
+      });
     }
 
     this.setState({
@@ -41,7 +55,7 @@ export default class Reservation extends Component {
       )
     }
     return (
-      <div className="reservation-bg">
+      <div className="reservation-bg hotel-info">
         <div className="scroll-snap-child" />
         <Row>
           {
