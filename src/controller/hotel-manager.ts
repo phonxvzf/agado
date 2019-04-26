@@ -9,24 +9,20 @@ const ctrlHotelManager = {
   checkHotelManagerPermission: async (ctx: koa.Context, next: () => Promise<any>) => {
     const invalidMessage = 'Invalid argument(s)';
     const userId = validator.validateId(ctx.request.body['user_id'], invalidMessage);
-    let hotelId;
+    let hotelId: number;
+
     if (ctx.request.query['hotel_id'] !== undefined) {
       hotelId = validator.validateId(ctx.request.query['hotel_id'], invalidMessage);
     } else if (ctx.request.body['hotel_id'] !== undefined) {
       hotelId = validator.validateId(ctx.request.body['hotel_id'], invalidMessage);
     } else {
-      throw new ApiError('Please specify hotel_id');
+      throw new ApiError('Please specify hotel_id', codes.BAD_VALUE, 400);
     }
 
-    try {
-      const hotelManagerInfo = await hotelManagerRepo.getHotelManagerByUserId(userId);
-      const hotelIdList = hotelManagerInfo.map(management => management['hotel_id']);
-      if (!hotelIdList.includes(hotelId)) {
-        throw new ApiError('Access denied', codes.UNAUTHORIZED, 401);
-      }
-    } catch (e) {
-      ctx.response.body = ctx.request.body;
-      throw new ApiError('Hotel manager not found', codes.HOTEL_MANAGER_NOT_FOUND, 404);
+    const hotelManagerInfo = await hotelManagerRepo.getHotelManagerByUserId(userId);
+    const hotelIdList = hotelManagerInfo.map(management => management['hotel_id']);
+    if (!hotelIdList.includes(hotelId)) {
+      throw new ApiError('Access denied', codes.UNAUTHORIZED, 401);
     }
 
     ctx.response.status = httpStatus.OK.code;
@@ -35,17 +31,15 @@ const ctrlHotelManager = {
 
   createHotelManager: async (ctx: koa.Context, next: () => Promise<any>) => {
     const invalidMessage = 'Invalid argument(s)';
-    let userId;
-    let hotelId;
+    let userId: number;
+    let hotelId: number;
 
     if (ctx.request.query['user_id'] !== undefined) {
-      console.log(1);
       userId = validator.validateId(ctx.request.query['user_id'], invalidMessage);
     } else if (ctx.request.body['user_id'] !== undefined) {
-      console.log(2);
       userId = validator.validateId(ctx.request.body['user_id'], invalidMessage);
     } else {
-      throw new ApiError('Please specify user_id');
+      throw new ApiError('Please specify user_id', codes.BAD_VALUE, 400);
     }
 
     if (ctx.request.query['hotel_id'] !== undefined) {
@@ -53,15 +47,13 @@ const ctrlHotelManager = {
     } else if (ctx.request.body['hotel_id'] !== undefined) {
       hotelId = validator.validateId(ctx.request.body['hotel_id'], invalidMessage);
     } else {
-      throw new ApiError('Please specify hotel_id');
+      throw new ApiError('Please specify hotel_id', codes.BAD_VALUE, 400);
     }
 
     const hotelManagerInfo: HotelManager = {
       user_id: userId,
       hotel_id: hotelId,
     };
-
-    console.log(hotelManagerInfo);
 
     try {
       await hotelManagerRepo.createHotelManager(hotelManagerInfo);
@@ -75,7 +67,7 @@ const ctrlHotelManager = {
 
   deleteHotelManager: async (ctx: koa.Context, next: () => Promise<any>) => {
     const invalidMessage = 'Please specify user_id and hotel_id';
-    let userId;
+    let userId: number;
     const hotelId = validator.validateId(ctx.request.query['hotel_id'], invalidMessage);
 
     if (ctx.request.query['user_id'] !== undefined) {
@@ -83,7 +75,7 @@ const ctrlHotelManager = {
     } else if (ctx.request.body['user_id'] !== undefined) {
       userId = validator.validateId(ctx.request.body['user_id'], invalidMessage);
     } else {
-      throw new ApiError('Please specify user_id');
+      throw new ApiError('Please specify user_id', codes.BAD_VALUE, 400);
     }
 
     const hotelManagerInfo: HotelManager = {

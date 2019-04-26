@@ -6,16 +6,74 @@ import httpStatus from '../src/common/http-status';
 const request = supertest;
 const server = index;
 
-const defaultTravelerData = util.generateUserData();
-defaultTravelerData.user_type = 'traveler';
+const defaultTravelerData = {
+  user_type: 'traveler',
+  username: 'traveler',
+  password: 'traveler',
+  first_name: 'traveler',
+  last_name: 'traveler',
+  gender: 'Male',
+  date_of_birth: '1111-11-11',
+  email: 'aaa@aa.a',
+  phone_num: '0812345678',
+};
 
-const defaultHotelManagerData = util.generateUserData();
-defaultHotelManagerData.user_type = 'hotel_manager';
+const defaultHotelManagerData = {
+  user_type: 'hotel_manager',
+  username: 'hotel_manager',
+  password: 'hotel_manager',
+  first_name: 'hotel_manager',
+  last_name: 'hotel_manager',
+  gender: 'Male',
+  date_of_birth: '1112-12-12',
+  email: 'bbb@bb.b',
+  phone_num: '0823456789',
+};
 
-const defaultHotelData = util.generateHotelData();
+const defaultHotelManager2Data = {
+  user_type: 'hotel_manager',
+  username: 'hotel_manager2',
+  password: 'hotel_manager2',
+  first_name: 'hotel_manager2',
+  last_name: 'hotel_manager2',
+  gender: 'Male',
+  date_of_birth: '1112-12-12',
+  email: 'bbb@bb.b',
+  phone_num: '0823456789',
+};
+
+const defaultHotelData = {
+  hotel_id: undefined,
+  name: 'name',
+  city: 'city',
+  address: 'address',
+  desc: 'desc',
+  imgs: ['img1', 'img2', 'img3', 'img4', 'img5'],
+  rooms: [
+    {
+      name: 'room1',
+      num_bed: 1,
+      max_person: 1,
+      price: 1,
+      total_room: 1,
+      amenities: [1, 2],
+      imgs: ['r1img1'],
+    },
+    {
+      name: 'room2',
+      num_bed: 2,
+      max_person: 2,
+      price: 2,
+      total_room: 2,
+      amenities: [3, 4],
+      imgs: ['r2img1', 'r2img2'],
+    },
+  ],
+};
 
 let travelerToken: string;
 let hotelManagerToken: string;
+let hotelManager2Token: string;
 
 let hotelId: number;
 
@@ -30,11 +88,19 @@ beforeAll(async (done) => {
   resHotelManager = await request(server).post('/user/login').send(defaultHotelManagerData);
   hotelManagerToken = resHotelManager.body.token;
 
+  resHotelManager = await request(server).post('/user').send(defaultHotelManager2Data);
+  resHotelManager = await request(server).post('/user/login').send(defaultHotelManager2Data);
+  hotelManager2Token = resHotelManager.body.token;
+
   done();
 });
 
+// Only works after POST is working
 beforeEach(async (done) => {
-  [hotelId] = await util.addHotel(defaultHotelData);
+  const resHotel = await request(server).post('/hotel')
+    .set('Authorization', `Bearer ${hotelManagerToken}`)
+    .send(defaultHotelData);
+  hotelId = resHotel.body['hotel_id'];
   done();
 });
 
@@ -50,24 +116,9 @@ afterAll(async (done) => {
 });
 
 describe('Get hotel information', () => {
-  it('[GET /hotel] should fail (not logged on)', async () => {
-    const res = await request(server).get('/hotel?id=100');
-    expect(res.status).toEqual(401);
-  });
-
-  it('[GET /hotel] should succeed (traveler access)', async () => {
-    const res = await request(server)
-      .get(`/hotel?hotel_id=${hotelId}`)
-      .set('Authorization', `Bearer ${travelerToken}`);
-    expect(res.body['hotel_id']).toEqual(hotelId);
-    expect(res.status).toEqual(httpStatus.OK.code);
-  });
-
-  it('[GET /hotel] should succeed (hotel manager access)', async () => {
-    const res = await request(server)
-      .get(`/hotel?hotel_id=${hotelId}`)
-      .set('Authorization', `Bearer ${hotelManagerToken}`);
-    expect(res.status).toEqual(httpStatus.OK.code);
+  it('[GET /hotel] should succeed', async () => {
+    const res = await request(server).get(`/hotel?hotel_id=${hotelId}`);
+    expect(res.status).toEqual(200);
   });
 
   it('[GET /hotel] should fail (hotel not exists)', async () => {
@@ -80,7 +131,7 @@ describe('Get hotel information', () => {
 
 describe('Create hotel', () => {
   it('[POST /hotel] should fail (not logged on)', async () => {
-    const res = await request(server).post('/hotel').send({});
+    const res = await request(server).post('/hotel').send(defaultHotelData);
     expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
   });
 
@@ -92,7 +143,7 @@ describe('Create hotel', () => {
     expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
   });
 
-  it('[POST /hotel] should succeed (hotel access)', async () => {
+  it('[POST /hotel] should succeed (hotel manager access)', async () => {
     const res = await request(server)
       .post('/hotel')
       .set('Authorization', `Bearer ${hotelManagerToken}`)
@@ -111,7 +162,7 @@ describe('Create hotel', () => {
 
 describe('Edit hotel data', () => {
   it('[PUT /hotel] should fail (not logged on)', async () => {
-    const res = await request(server).put('/hotel').send({});
+    const res = await request(server).put('/hotel').send(defaultHotelData);
     expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
   });
 
@@ -119,20 +170,29 @@ describe('Edit hotel data', () => {
     const res = await request(server)
       .put('/hotel')
       .set('Authorization', `Bearer ${travelerToken}`)
-      .send({});
+      .send(defaultHotelData);
     expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
   });
 
-  // Test after hotel_manager.test -- TODO
-  // it('[PUT /hotel] should succeed (hotel access)', async () => {
-  //   const completeHotelData = Object.assign({ id: hotelId }, defaultHotelData);
-  //   const res = await request(server)
-  //     .put('/hotel')
-  //     .set('Authorization', `Bearer ${hotelManagerToken}`)
-  //     .send(completeHotelData);
-  //   console.log(res.body);
-  //   expect(res.status).toEqual(httpStatus.OK.code);
-  // });
+  it('[PUT /hotel] should succeed (hotel manager access)', async () => {
+    const completeHotelData = Object.assign({}, defaultHotelData);
+    completeHotelData['hotel_id'] = hotelId;
+    const res = await request(server)
+      .put('/hotel')
+      .set('Authorization', `Bearer ${hotelManagerToken}`)
+      .send(completeHotelData);
+    expect(res.status).toEqual(httpStatus.OK.code);
+  });
+
+  it('[PUT /hotel] should fail (hotel manager access but no permission)', async () => {
+    const completeHotelData = Object.assign({}, defaultHotelData);
+    completeHotelData['hotel_id'] = hotelId;
+    const res = await request(server)
+      .put('/hotel')
+      .set('Authorization', `Bearer ${hotelManager2Token}`)
+      .send(completeHotelData);
+    expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
+  });
 
   it('[PUT /hotel] should fail (insufficient information)', async () => {
     const res = await request(server)
@@ -145,34 +205,37 @@ describe('Edit hotel data', () => {
 
 describe('Delete hotel data', () => {
   it('[DEL /hotel] should fail (not logged on)', async () => {
-    const res = await request(server).del('/hotel').send({});
+    const res = await request(server).del(`/hotel/?hotel_id=${hotelId}`);
     expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
   });
 
   it('[DEL /hotel] should fail (traveler access)', async () => {
     const res = await request(server)
-      .del('/hotel')
-      .set('Authorization', `Bearer ${travelerToken}`)
-      .send({});
+      .del(`/hotel/?hotel_id=${hotelId}`)
+      .set('Authorization', `Bearer ${travelerToken}`);
     expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
   });
 
-  // Test after hotel_manager.test -- TODO
-  // it('[DEL /hotel] should succeed (hotel access)', async () => {
-  //   const completeHotelData = Object.assign({ id: hotelId }, defaultHotelData);
-  //   const res = await request(server)
-  //     .del('/hotel')
-  //     .set('Authorization', `Bearer ${hotelManagerToken}`)
-  //     .send(completeHotelData);
-  //   console.log(res.body);
-  //   expect(res.status).toEqual(httpStatus.NO_CONTENT.code);
-  // });
+  it('[DEL /hotel] should succeed (hotel manager access)', async () => {
+    const res = await request(server)
+      .del(`/hotel/?hotel_id=${hotelId}`)
+      .set('Authorization', `Bearer ${hotelManagerToken}`);
+    expect(res.status).toEqual(httpStatus.NO_CONTENT.code);
+  });
+
+  it('[DEL /hotel] should fail (hotel manager access but no permission)', async () => {
+    const completeHotelData = Object.assign({}, defaultHotelData);
+    completeHotelData['hotel_id'] = hotelId;
+    const res = await request(server)
+      .del(`/hotel/?hotel_id=${hotelId}`)
+      .set('Authorization', `Bearer ${hotelManager2Token}`);
+    expect(res.status).toEqual(httpStatus.UNAUTHORIZED.code);
+  });
 
   it('[DEL /hotel] should fail (insufficient information)', async () => {
     const res = await request(server)
       .del('/hotel')
-      .set('Authorization', `Bearer ${hotelManagerToken}`)
-      .send({});
+      .set('Authorization', `Bearer ${hotelManagerToken}`);
     expect(res.status).toEqual(httpStatus.BAD_REQUEST.code);
   });
 });
