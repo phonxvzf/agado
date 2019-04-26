@@ -2,6 +2,7 @@ import qs from 'qs';
 import React, { Component } from 'react';
 import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import '../css/Home.css';
+import { userService } from '../service/userService';
 
 export default class Home extends Component {
   componentWillMount() {
@@ -11,6 +12,11 @@ export default class Home extends Component {
       pathname: pathname,
       search: search
     });
+
+    const currentUser = userService.getCurrentUser();
+    if (currentUser && currentUser.user_type === "hotel_manager") {
+      window.location.href = "/myhotel";
+    }
   }
 
   getSearchLink = () => {

@@ -234,7 +234,7 @@ export default class CustomNavBar extends Component {
               <Navbar.Toggle />
             </Col>
             <Col xs={4} md={3} xl={2} className="ml-lg-3 px-0">
-              <Navbar.Brand className="py-0 mx-0" href="/">
+              <Navbar.Brand className="py-0 mx-0" href={this.state.currentUser && this.state.currentUser.user_type === "hotel_manager" ? "/myhotel" : "/"}>
                 <Image src={agadoLogo} fluid />
               </Navbar.Brand>
             </Col>
