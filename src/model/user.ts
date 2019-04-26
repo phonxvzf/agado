@@ -26,6 +26,12 @@ const userRepo = {
     return database.select('*').from('user').where('username', '=', username);
   },
 
+  getByNameAndType: async (username: string, userType: string): Promise<User[]> => {
+    return database.select('*').from('user')
+      .where('username', '=', username)
+      .andWhere('user_type', '=', userType);
+  },
+
   updateUser: async (userId: number, userData: User): Promise<number[]> => {
     const encrypted = Object.assign({}, userData) as User;
     if (encrypted.password) {

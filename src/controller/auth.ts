@@ -71,19 +71,15 @@ const ctrl = {
       'invalid user type',
     );
 
-    const [userInfo] = await userRepo.getUserByName(ctx.request.body['username']);
+    const [userInfo] = await userRepo.getByNameAndType(ctx.request.body['username'], userType);
     if (userInfo == null) {
-      throw new ApiError('incorrect username or password', codes.UNAUTHORIZED, 401);
+      throw new ApiError('access denied', codes.UNAUTHORIZED, 401);
     }
 
     const passwordCorrect: boolean =
       await bcrypt.compare(ctx.request.body['password'], userInfo.password);
     if (!passwordCorrect) {
       throw new ApiError('incorrect username or password', codes.UNAUTHORIZED, 401);
-    }
-
-    if (userInfo.user_type !== userType) {
-      throw new ApiError('unmatched user type', codes.UNAUTHORIZED, 401);
     }
 
     const token = generateToken(userInfo.user_id);
