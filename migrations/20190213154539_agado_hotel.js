@@ -6,11 +6,10 @@ exports.up = async (knex) => {
 };
 
 exports.down = async (knex) => {
-  await knex.raw('DROP TABLE hotel_room_tag');
+  await knex.raw('DROP TABLE IF EXISTS hotel_room_tag');
   await knex.raw('DROP TABLE hotel_room');
   await knex.raw('DROP TABLE hotel_manager');
   await knex.raw('DROP TABLE hotel');
-  // await knex.raw('ALTER TYPE user_types RENAME ATTRIBUTE hotel_manager TO hotel CASCADE')
   await knex.raw('DROP TYPE permission_status');
   await knex.raw('DROP TYPE room_property');
   await knex.raw('DROP TYPE room_status');
