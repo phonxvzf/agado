@@ -5,6 +5,7 @@ const codes = {
   NO_ERROR: 0x00,
   BAD_VALUE: 0x01,
   NOT_IMPLEMENTED: 0x02,
+  OBJECT_NOT_FOUND: 0x03,
   UNKNOWN_ERROR: 0xFF,
   // Authentication related
   UNAUTHORIZED: 0x10,
@@ -17,6 +18,12 @@ const codes = {
   // Hotel manager related
   HOTEL_MANAGER_NOT_FOUND: 0x31,
   DUPLICATE_HOTEL_MANAGER: 0x33,
+  // Request related
+  REQUEST_NOT_FOUND: 0x41,
+  // Reservation related
+  RESERVATION_NOT_FOUND: 0x51,
+  // Review related
+  REVIEW_NOT_FOUND: 0x61,
 };
 
 class ErrorResponse {

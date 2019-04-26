@@ -66,10 +66,14 @@ const ctrl = {
   login: async (ctx: koa.Context, next: () => Promise<any>) => {
     validator.validateUndefined(ctx.request.body['username'], 'invalid username or password');
     validator.validateUndefined(ctx.request.body['password'], 'invalid username or password');
+    const userType = validator.validateUserType(
+      ctx.request.body['user_type'],
+      'invalid user type',
+    );
 
-    const [userInfo] = await userRepo.getUserByName(ctx.request.body['username']);
+    const [userInfo] = await userRepo.getByNameAndType(ctx.request.body['username'], userType);
     if (userInfo == null) {
-      throw new ApiError('incorrect username or password', codes.UNAUTHORIZED, 401);
+      throw new ApiError('access denied', codes.UNAUTHORIZED, 401);
     }
 
     const passwordCorrect: boolean =
@@ -78,11 +82,12 @@ const ctrl = {
       throw new ApiError('incorrect username or password', codes.UNAUTHORIZED, 401);
     }
 
-    const token = generateToken(userInfo['id']);
-    userInfo['token'] = token;
+    const token = generateToken(userInfo.user_id);
+    await userRepo.updateToken(userInfo.user_id, token);
 
-    await userRepo.updateToken(userInfo['id'], userInfo['token']);
-    delete userInfo.password;
+    userInfo.token = token;
+    delete userInfo.password; // remove password from returning field
+
     ctx.response.body = userInfo;
     ctx.response.status = httpStatus.OK.code;
     return next();
@@ -100,7 +105,8 @@ const ctrl = {
   },
 
   getUser: async (ctx: koa.Context, next: () => Promise<any>) => {
-    const [userInfo] = await userRepo.getUser(ctx.request.body['user_id']);
+    const userId = validator.validateId(ctx.request.query['user_id'], 'specify user_id');
+    const [userInfo] = await userRepo.getUser(userId);
     if (userInfo == null) {
       throw new ApiError('user not found', codes.USER_NOT_FOUND, 404);
     }
@@ -115,6 +121,15 @@ const ctrl = {
     // always check getUser first
     const [userInfo] = await userRepo.getUser(ctx.request.body['user_id']);
     if (userInfo.user_type !== 'hotel_manager') {
+      throw new ApiError('access denied', codes.UNAUTHORIZED, 401);
+    }
+    ctx.response.status = httpStatus.NO_CONTENT.code;
+    return next();
+  },
+
+  checkTravelerType: async (ctx: koa.Context, next: () => Promise<any>) => {
+    const [userInfo] = await userRepo.getUser(ctx.request.body['user_id']);
+    if (userInfo.user_type !== 'traveler') {
       throw new ApiError('access denied', codes.UNAUTHORIZED, 401);
     }
     ctx.response.status = httpStatus.NO_CONTENT.code;
@@ -145,14 +160,25 @@ const ctrl = {
       phone_num: phoneNum,
       user_type: userType,
       date_of_birth: dateOfBirth,
+      user_id: undefined,
+      token: undefined,
+      img: null,
     };
 
     try {
       const [userId] = await userRepo.createUser(userData);
-      ctx.response.body = { id: userId };
+      const token = generateToken(userId);
+      await userRepo.updateToken(userId, token);
+
+      userData.user_id = userId;
+      userData.token = token;
+
+      delete userData.password;
+
+      ctx.response.body = userData;
       ctx.response.status = httpStatus.CREATED.code;
     } catch (e) {
-      throw new ApiError('user already exists', codes.DUPLICATE_USER, 400);
+      throw new ApiError('user already exists', codes.DUPLICATE_USER, httpStatus.CONFLICT.code);
     }
     return next();
   },
@@ -160,7 +186,7 @@ const ctrl = {
   updateUser: async (ctx: koa.Context, next: () => Promise<any>) => {
     const rawPassword: string = ctx.request.body['password'];
     const invalidMessage = 'specify username, (password,) first_name, '
-      + 'last_name, gender, email, user_type, phone_num, date_of_birth';
+      + 'last_name, gender, email, user_type, phone_num, date_of_birth, img';
     const username = validator.validateUndefined(ctx.request.body['username'], invalidMessage);
     const firstName = validator.validateUndefined(ctx.request.body['first_name'], invalidMessage);
     const lastName = validator.validateUndefined(ctx.request.body['last_name'], invalidMessage);
@@ -170,24 +196,28 @@ const ctrl = {
     const userType = validator.validateUndefined(ctx.request.body['user_type'], invalidMessage);
     const dateOfBirth =
       validator.validateUndefined(ctx.request.body['date_of_birth'], invalidMessage);
+    const img = validator.validateNullable(ctx.request.body['img'], invalidMessage);
 
     const userData: User = {
       username,
       email,
       gender,
+      img,
       password: rawPassword,
       first_name: firstName,
       last_name: lastName,
       phone_num: phoneNum,
       user_type: userType,
       date_of_birth: dateOfBirth,
+      user_id: undefined,
+      token: undefined,
     };
 
     // If password is not specified, don't update it.
     if (rawPassword == null) delete userData.password;
 
     const [userId] = await userRepo.updateUser(ctx.request.body['user_id'], userData);
-    ctx.response.body = { id: userId };
+    ctx.response.body = { userId };
     ctx.response.status = httpStatus.OK.code;
     return next();
   },

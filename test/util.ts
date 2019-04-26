@@ -2,8 +2,9 @@ import { validGender, validUserType } from '../src/common/validator';
 import database from '../src/model/database';
 import { userRepo, User } from '../src/model/user';
 import { hotelRepo, Hotel } from '../src/model/hotel';
-import { hotelRoomRepo, HotelRoom } from '../src/model/hotel_room';
-import { hotelManagerRepo, HotelManager } from '../src/model/hotel_manager';
+import { hotelRoomRepo, HotelRoom } from '../src/model/hotel-room';
+import { hotelManagerRepo, HotelManager } from '../src/model/hotel-manager';
+import request from '../src/model/request';
 import crypto from 'crypto';
 
 const validGenderArray = Array.from(validGender);
@@ -26,6 +27,18 @@ const util = {
     return database.del().from('hotel_manager');
   },
 
+  wipeRequests: async () => {
+    return database.del().from('request');
+  },
+
+  wipeReservation: async () => {
+    return database.del().from('reservation');
+  },
+
+  wipeReviews: async () => {
+    return database.del().from('review');
+  },
+
   generateUserData: (): User => {
     return {
       username: crypto.randomBytes(10).toString('base64'),
@@ -38,41 +51,9 @@ const util = {
       phone_num: crypto.randomBytes(10).toString('base64'),
       date_of_birth:
         (new Date(Math.floor(1e12 + Math.random() * 1e12))).toISOString().substr(0, 10),
-    };
-  },
-
-  generateHotelData: (): Hotel => {
-    return {
-      name: crypto.randomBytes(10).toString('base64'),
-      desc: crypto.randomBytes(10).toString('base64'),
-      addr: crypto.randomBytes(10).toString('base64'),
-      prov: crypto.randomBytes(10).toString('base64'),
-      lat: Math.random() * 180 - 90,
-      long: Math.random() * 360 - 180,
-      rating: Math.random() * 5,
-    };
-  },
-
-  generateHotelRoomData: (): HotelRoom => {
-    return {
-      rno: crypto.randomBytes(10).toString('base64'),
-      rname: crypto.randomBytes(10).toString('base64'),
-      max_cap: Math.floor(Math.random() * 1000) + 1,
-      ex_bed: Math.floor(Math.random() * 1000) + 1,
-      ex_bed_price: Math.floor(Math.random() * 1e12),
-      reserved: Math.round(Math.random()) === 1 ? true : false,
-      rstatus: Math.round(Math.random()) === 1 ? 'avail' : 'unavail',
-      price: Math.floor(Math.random() * 1e12),
-    };
-  },
-
-  generateHotelManagerData: (userId: number, hotelId: number): HotelManager => {
-    const permitMode = Math.floor(Math.random() * 3) + 1;
-    const permitted = (permitMode === 0 ? 'pmt' : (permitMode === 1 ? 'no' : 'req'));
-    return {
-      permitted,
-      uid: userId,
-      hid: hotelId,
+      img: crypto.randomBytes(10).toString('base64'),
+      user_id: undefined,
+      token: undefined,
     };
   },
 
@@ -81,34 +62,12 @@ const util = {
     return userRepo.createUser(userData);
   },
 
-  generateHotel: async (): Promise<number[]> => {
-    const hotelData = util.generateHotelData();
-    return hotelRepo.createHotel(hotelData);
-  },
-
-  generateHotelRoom: async (): Promise<number[]> => {
-    const hotelId = 1;
-    const hotelRoomData = util.generateHotelRoomData();
-    return hotelRoomRepo.createHotelRoom(hotelId, hotelRoomData);
-  },
-
-  generateHotelManager: async () => {
-    const userId = 1;
-    const hotelId = 1;
-    const hotelManagerData = util.generateHotelManagerData(userId, hotelId);
-    return hotelManagerRepo.createHotelManager(hotelManagerData);
-  },
-
   addUser: async (userData: User): Promise<number[]> => {
     return userRepo.createUser(userData);
   },
 
   addHotel: async (hotelData: Hotel): Promise<number[]> => {
     return hotelRepo.createHotel(hotelData);
-  },
-
-  addHotelRoom: async (hotelId: number, hotelRoomData: HotelRoom): Promise<number[]> => {
-    return hotelRoomRepo.createHotelRoom(hotelId, hotelRoomData);
   },
 
   addHotelManager: async (hotelManagerData: HotelManager) => {

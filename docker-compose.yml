@@ -30,7 +30,7 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3000
-      JWT_TTL: "15m"
+      JWT_TTL: "99999m"
       JWT_SECRET: "test_secret"
       DB_HOST: "db"
       DB_PORT: 5432
