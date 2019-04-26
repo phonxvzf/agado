@@ -117,6 +117,9 @@ const ctrlSearch = {
         hotelRooms[iHotelRooms]['imgs'] = hotelRoomImages
           .filter(img => img.room_id === hotelRooms[iHotelRooms].room_id)
           .map(img => img.img);
+        hotelRooms[iHotelRooms]['price'] = Number(
+          hotelRooms[iHotelRooms]['price'].toString().substr(1),
+        );
         availableHotels[i]['rooms'].push(hotelRooms[iHotelRooms]);
       }
 
