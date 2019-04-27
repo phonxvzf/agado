@@ -1,15 +1,41 @@
 import koa from 'koa';
 import { hotelRoomRepo, HotelRoom }  from '../model/hotel-room';
+import reservation from '../model/reservation';
+
+const reservationRepo = reservation;
 
 const ctrlHotelRoom = {
   getHotelRoom: async(ctx: koa.Context, next: () => Promise<any>) => {
     const hotelId = ctx.response.body['hotel_id'];
 
     const hotelRoomInfo = await hotelRoomRepo.getHotelRoomByHotelId(hotelId);
-    hotelRoomInfo.map(room => room['price'] = Number.parseFloat(
-      String(room['price']).substring(1)));
+    hotelRoomInfo.map(room => room['price'] = Number(String(room['price']).replace(/[,$]/g, '')));
 
     ctx.response.body['rooms'] = hotelRoomInfo;
+
+    if (ctx.request.query['checkin'] !== undefined
+        && ctx.request.query['checkout'] !== undefined) {
+      const checkIn = new Date(ctx.request.query['checkin']);
+      const checkOut = new Date(ctx.request.query['checkout']);
+
+      let reservationInfo = await reservationRepo.getByHotelId(hotelId);
+      reservationInfo = reservationInfo.filter(reserve => reserve['hotel_id'] === hotelId);
+
+      for (const room of ctx.response.body['rooms']) {
+        const roomId = room['room_id'];
+        const currentReservationInfo = reservationInfo.filter(reserve =>
+          reserve['room_id'] === roomId);
+        const intersectReservation = currentReservationInfo.filter((reserve) => {
+          const reserveCheckIn = new Date(reserve['checkin']);
+          const reserveCheckOut = new Date(reserve['checkout']);
+
+          return reserveCheckIn < checkOut && reserveCheckOut > checkIn;
+        });
+
+        const availableRoom = room['total_room'] - intersectReservation.length;
+        room['available_room'] = availableRoom;
+      }
+    }
 
     return next();
   },

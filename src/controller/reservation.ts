@@ -29,7 +29,7 @@ const ctrl = {
 
     const reservationInst: Reservation = ctx.request.body as Reservation;
     try {
-      const reservationId = await reservation.createReservation(reservationInst);
+      const [reservationId] = await reservation.createReservation(reservationInst);
       ctx.response.body = { reservation_id: reservationId };
       ctx.response.status = 201;
     } catch (e) {
