@@ -48,8 +48,10 @@ export default class HotelInfo extends Component {
       this.setState({
         scrolled: true
       });
-      if (window.location.hash === "#hotel_reviews")
-        setTimeout(() => document.querySelector('.review-btn').click(), 500);
+      if (window.location.hash === "#hotel_reviews") {
+        const reviewBtn = document.querySelector('.review-btn');
+        setTimeout(() => reviewBtn && reviewBtn.click(), 500);
+      }
     }
   }
 
