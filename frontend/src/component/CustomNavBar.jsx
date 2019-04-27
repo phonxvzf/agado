@@ -309,25 +309,29 @@ export default class CustomNavBar extends Component {
   }
 
   getTitle = () => {
-    if (this.state.pathname === "/hotel/reservation") {
+    const pathname = this.state.pathname;
+    if (pathname === "/" && this.state.currentUser) {
+      return "Welcome #" + this.state.currentUser.username
+    } else if (pathname === "/hotel/reservation") {
       return "Hotel's Reservation"
-    } else if (this.state.pathname === "/myhotel") {
+    } else if (pathname === "/myhotel") {
       return "My Hotel"
-    } else if (this.state.pathname === "/request") {
+    } else if (pathname === "/request") {
       return "Request"
-    } else if (this.state.pathname === "/payment") {
+    } else if (pathname === "/payment") {
       return "Payment"
-      // } else if (this.state.pathname === "/reservation") {
+      // } else if (pathname === "/reservation") {
       //   return "Reservation"
-    } else if (this.state.pathname === "/tutorial" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
+    } else if (pathname === "/tutorial" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return "Tutorial"
-    } else if (this.state.pathname === "/profile" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
+    } else if (pathname === "/profile" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return "Profile"
     }
   }
 
   getSearchTab = () => {
-    if (this.state.pathname === "/hotel") {
+    const pathname = this.state.pathname;
+    if (pathname === "/hotel") {
       return (
         <>
           <Row className="d-xs-sm-none d-sm-md-none">
@@ -336,9 +340,9 @@ export default class CustomNavBar extends Component {
                 <InputGroup>
                   <Form.Control
                     className="border-dark"
-                    type="text"
+                    type="search"
                     onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
-                    placeholder="Hotel or Destination"
+                    placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                     defaultValue={this.state.search.hotel_name}
                     autoFocus />
                   <InputGroup.Append>
@@ -387,9 +391,9 @@ export default class CustomNavBar extends Component {
                   <InputGroup>
                     <Form.Control
                       className="border-dark"
-                      type="text"
+                      type="search"
                       onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
-                      placeholder="Hotel or Destination"
+                      placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                       defaultValue={this.state.search.hotel_name}
                       autoFocus />
                     <InputGroup.Append>
@@ -465,7 +469,7 @@ export default class CustomNavBar extends Component {
           </div>
         </>
       )
-    } else if (this.state.pathname === "/hotel/create"
+    } else if (pathname === "/hotel/create"
       && this.state.currentUser
       && this.state.currentUser.user_type === "hotel_manager") {
       return (
@@ -502,7 +506,7 @@ export default class CustomNavBar extends Component {
           </div>
         </div>
       )
-    } else if (this.state.pathname === "/hotel/edit"
+    } else if (pathname === "/hotel/edit"
       && this.state.currentUser
       && this.state.currentUser.user_type === "hotel_manager"
       && this.state.hotel
@@ -541,49 +545,55 @@ export default class CustomNavBar extends Component {
           </div>
         </div>
       )
-    } else if (this.state.pathname === "/hotel/reservation") {
+    } else if (pathname === "/" && this.state.currentUser) {
+      return (
+        <div className="text-right d-md-none text-dark">
+          <h5 className="my-0"><strong>#{this.state.currentUser.username}</strong></h5>
+        </div>
+      )
+    } else if (pathname === "/hotel/reservation") {
       return (
         <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Reservation</strong></h5>
         </div>
       )
-    } else if (this.state.pathname === "/myhotel") {
+    } else if (pathname === "/myhotel") {
       return (
         <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>My Hotel</strong></h5>
         </div>
       )
-    } else if (this.state.pathname === "/request") {
+    } else if (pathname === "/request") {
       return (
         <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Request</strong></h5>
         </div>
       )
-    } else if (this.state.pathname === "/payment") {
+    } else if (pathname === "/payment") {
       return (
         <div className="text-right d-md-none text-dark">
           <h6 className="my-0 bold">Payment</h6>
         </div>
       )
-      // } else if (this.state.pathname === "/reservation") {
+      // } else if (pathname === "/reservation") {
       //   return (
       //     <div className="text-right d-md-none text-dark">
       //       <h5 className="my-0"><strong>Reservation</strong></h5>
       //     </div>
       //   )
-    } else if (this.state.pathname === "/tutorial" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
+    } else if (pathname === "/tutorial" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return (
         <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Tutorial</strong></h5>
         </div>
       )
-    } else if (this.state.pathname === "/profile" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
+    } else if (pathname === "/profile" && this.state.currentUser && this.state.currentUser.user_type === "hotel_manager") {
       return (
         <div className="text-right d-md-none text-dark">
           <h5 className="my-0"><strong>Profile</strong></h5>
         </div>
       )
-    } else if (this.state.pathname !== "/") {
+    } else if (pathname !== "/") {
       return (
         <>
           <Row className="d-xs-sm-none d-sm-md-none">
@@ -592,9 +602,9 @@ export default class CustomNavBar extends Component {
                 <InputGroup>
                   <Form.Control
                     className="border-dark"
-                    type="text"
+                    type="search"
                     onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
-                    placeholder="Hotel or Destination"
+                    placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                     defaultValue={this.state.search.hotel_name}
                     autoFocus />
                   <InputGroup.Append>
@@ -643,9 +653,9 @@ export default class CustomNavBar extends Component {
                   <InputGroup>
                     <Form.Control
                       className="border-dark"
-                      type="text"
+                      type="search"
                       onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
-                      placeholder="Hotel or Destination"
+                      placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                       defaultValue={this.state.search.hotel_name}
                       autoFocus />
                     <InputGroup.Append>
@@ -703,7 +713,7 @@ export default class CustomNavBar extends Component {
           <Dropdown className="mr-md-4 d-xs-sm-none d-sm-md-none">
             <Dropdown.Toggle bsPrefix="none" variant="link" className="text-dark bold">
               <Row className="align-items-center">
-                <Col>{currentUser.username}</Col>
+                <Col>{this.state.pathname === "/" ? "" : currentUser.username}</Col>
                 <div className="d-inline-block circle-avatar icon" style={currentUser.img ? { backgroundImage: `url(${currentUser.img})` } : { backgroundColor: userService.getUserColor() }} />
               </Row>
             </Dropdown.Toggle>
@@ -930,9 +940,9 @@ export default class CustomNavBar extends Component {
                 <InputGroup>
                   <Form.Control
                     className="border-dark"
-                    type="text"
+                    type="search"
                     onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
-                    placeholder="Hotel or Destination"
+                    placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                     defaultValue={this.state.search.hotel_name}
                     autoFocus />
                   <InputGroup.Append>
