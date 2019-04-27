@@ -103,7 +103,7 @@ const ctrlSearch = {
           engagementInfo[reserve['checkout'].toString()] -= reserve['num'];
         }
 
-        dateInfo.sort();
+        dateInfo.sort((date1, date2) => date1.getTime() - date2.getTime());
         let maxEngagement = 0;
         let currentEngagement = 0;
         for (const date of dateInfo) {
