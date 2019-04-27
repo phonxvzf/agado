@@ -283,7 +283,7 @@ describe('Search for hotels', () => {
     let checkout = (new Date(300)).toISOString();
     res = await request(server).get(`/search?checkin=${checkin}&checkout=${checkout}`);
     expect(res.status).toEqual(200);
-    expect(res.body.length).toEqual(2);
+    expect(res.body.length).toEqual(3);
     expect(res.body[0].hotel_id).toEqual(hotelIds[0]);
     expect(res.body[1].hotel_id).toEqual(hotelIds[1]);
 
@@ -291,6 +291,6 @@ describe('Search for hotels', () => {
     checkout = (new Date(300)).toISOString();
     res = await request(server).get(`/search?checkin=${checkin}&checkout=${checkout}`);
     expect(res.status).toEqual(200);
-    expect(res.body.length).toEqual(0);
+    expect(res.body.length).toEqual(3);
   });
 });
