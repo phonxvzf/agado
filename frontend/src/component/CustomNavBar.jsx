@@ -15,30 +15,43 @@ import CustomModal from './CustomModal';
 import SigninSignupModal from './SigninSignupModal';
 
 export default class CustomNavBar extends Component {
-  componentWillMount() {
+  async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
+    let hotel = null;
+    if (search.hotel_id) {
+      hotel = await hotelService.getHotel(search.hotel_id);
+    }
+    const requests = currentUser ? await requestService.getRequestOf() : "";
+    const isRequestPending = currentUser && search.hotel_id ? await requestService.isRequestPending(Number(search.hotel_id), currentUser.user_id) : null;
     this.setState({
       pathname: pathname,
       search: search,
-      currentUser: currentUser
+      currentUser: currentUser,
+      hotel: hotel,
+      requests: requests,
+      isRequestPending: isRequestPending
     });
 
     this.loadPrice();
     this.loadRating();
     this.loadAmenities();
     this.loadSortBy();
+
+    this.setState({
+      loaded: true
+    });
   }
 
   componentDidMount() {
-    if (window.innerWidth <= 768 && this.state.pathname === "/hotel") {
+    if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
       window.addEventListener('scroll', this.handleScroll, true);
     }
   }
 
   componentWillUnmount() {
-    if (window.innerWidth <= 768 && this.state.pathname === "/hotel") {
+    if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
       window.removeEventListener('scroll', this.handleScroll, true);
     }
   }
@@ -122,24 +135,24 @@ export default class CustomNavBar extends Component {
     return pathname + search;
   }
 
-  requestPermission = () => {
+  requestPermission = async () => {
     const request = {
       hotel_id: Number(this.state.search.hotel_id),
       user_id: this.state.currentUser.user_id
     }
-    if (requestService.createRequest(request)) {
+    if (await requestService.createRequest(request)) {
       window.history.go();
     }
   }
 
-  cancelMaagement = () => {
-    if (hotelService.cancelManagement(Number(this.state.search.hotel_id), this.state.currentUser.user_id)) {
+  cancelMaagement = async () => {
+    if (await hotelService.cancelManagement(Number(this.state.search.hotel_id), this.state.currentUser.user_id)) {
       window.location.href = "/myhotel";
     }
   }
 
   isUserOwn = () => {
-    const hotel = hotelService.getHotel(Number(this.state.search.hotel_id));
+    const hotel = this.state.hotel;
     return hotel && hotel.managers.includes(this.state.currentUser.user_id);
   }
 
@@ -223,6 +236,9 @@ export default class CustomNavBar extends Component {
   }
 
   render() {
+    if (!this.state || !this.state.loaded) {
+      return <></>;
+    }
     return (
       <>
         <Navbar className="shadow pb-md-0 pt-md-2" bg="light" variant="light" fixed="top" expand="md" collapseOnSelect>
@@ -425,7 +441,7 @@ export default class CustomNavBar extends Component {
                               </Button>
                             </>
                             :
-                            requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
+                            this.state.isRequestPending ?
                               <Button disabled variant="light" className="text-secondary w-100 text-left">
                                 <h6 className="my-0 bold"><i className="fas fa-paper-plane" /> Request is pending</h6>
                               </Button>
@@ -482,8 +498,8 @@ export default class CustomNavBar extends Component {
     } else if (this.state.pathname === "/hotel/edit"
       && this.state.currentUser
       && this.state.currentUser.user_type === "hotel_manager"
-      && hotelService.getHotel(Number(this.state.search.hotel_id))
-      && hotelService.getHotel(Number(this.state.search.hotel_id)).manager.includes(this.state.currentUser.user_id)) {
+      && this.state.hotel
+      && this.state.hotel.manager.includes(this.state.currentUser.user_id)) {
       return (
         <div className="text-center">
           <div className="d-xs-sm-none d-sm-md-none">
@@ -663,7 +679,7 @@ export default class CustomNavBar extends Component {
 
   getUserActions = () => {
     const currentUser = this.state.currentUser;
-    const requests = currentUser ? requestService.getRequestOf(currentUser.user_id) : "";
+    const requests = this.state.requests;
     if (!currentUser) {
       return (
         <Nav className="">
@@ -894,7 +910,7 @@ export default class CustomNavBar extends Component {
         </>
       );
     } else if (this.state.pathname === "/hotel") {
-      if (!hotelService.getHotel(Number(this.state.search.hotel_id))) {
+      if (!this.state.hotel) {
         return <></>;
       }
       return (
@@ -972,7 +988,7 @@ export default class CustomNavBar extends Component {
                     <hr className="mx-0 my-3 d-md-none" />
                     <div className="text-center">
                       {
-                        requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
+                        this.state.isRequestPending ?
                           <Button disabled variant="link" className="text-secondary">
                             <h6 className="my-0 bold"><i className="fas fa-paper-plane" /> Request is pending</h6>
                           </Button>
@@ -998,7 +1014,7 @@ export default class CustomNavBar extends Component {
                 <h6 className="my-0"><i className="fas fa-door-closed" /> Rooms</h6>
               </Button>
               <Button variant="link"
-                className="text-dark bold mx-xl-2"
+                className="text-dark bold mx-xl-2 review-btn"
                 onClick={() => document.querySelector('#hotel_reviews').scrollIntoView({ behavior: 'smooth' })}>
                 <h6 className="my-0"><i className="fas fa-comment-dots" /> Reviews</h6>
               </Button>
@@ -1032,7 +1048,7 @@ export default class CustomNavBar extends Component {
                   :
                   <Col className="text-center">
                     {
-                      requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
+                      this.state.isRequestPending ?
                         <Button disabled variant="link" className="text-secondary">
                           <h6 className="my-0 bold"><i className="fas fa-paper-plane" /> Request is pending</h6>
                         </Button>

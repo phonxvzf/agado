@@ -36,6 +36,8 @@ exports.down = async (knex) => {
   return knex.raw(`
     CREATE TYPE "room_status" AS ENUM ('avail', 'unavail');
 
+		DELETE FROM "hotel_room";	
+
     ALTER TABLE "hotel_room"
     RENAME "hotel_id" TO "hid";
     ALTER TABLE "hotel_room"

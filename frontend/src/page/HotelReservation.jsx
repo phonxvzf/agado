@@ -11,7 +11,7 @@ export default class HotelReservation extends Component {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
-    const hotel = hotelService.getHotel(Number(search.hotel_id));
+    const hotel = await hotelService.getHotel(Number(search.hotel_id));
 
     let reservations = [];
     if (currentUser) {

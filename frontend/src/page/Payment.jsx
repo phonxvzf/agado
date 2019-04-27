@@ -23,15 +23,17 @@ const theme = createMuiTheme({
 });
 
 export default class Payment extends Component {
-  componentWillMount() {
+  async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
+    const hotel = await hotelService.getHotel(Number(search.hotel_id));
 
     this.setState({
       pathname: pathname,
       search: search,
       currentUser: currentUser,
+      hotel: hotel,
       step: 0,
       validUser: search.hotel_id && search.checkin && search.checkout && search.room_id && search.room_id && search.num && currentUser && currentUser.user_type === "traveler"
     });
@@ -41,11 +43,12 @@ export default class Payment extends Component {
     const checkin = this.state.search.checkin;
     const checkout = this.state.search.checkout;
     const interval = Math.max(0, (new Date(checkout) - new Date(checkin)) / 24 / 60 / 60 / 1000);
-    const hotel = hotelService.getHotel(Number(this.state.search.hotel_id))
-    return interval * hotel.rooms[Number(this.state.search.room_id)].price * Number(this.state.search.num);
+    const hotel = this.state.hotel;
+    const room = hotel.rooms.filter(room => room.room_id === Number(this.state.search.room_id))[0];
+    return interval * room.price * Number(this.state.search.num);
   }
 
-  bookNow = (e) => {
+  bookNow = async (e) => {
     e.preventDefault();
     const search = this.state.search;
     const reservation = {
@@ -56,7 +59,7 @@ export default class Payment extends Component {
       room_id: Number(search.room_id),
       num: Number(search.num)
     }
-    if (reservationService.createReservation(reservation)) {
+    if (await reservationService.createReservation(reservation)) {
       this.props.setPreventLeavePage(false);
       this.setState({
         step: 2
@@ -65,6 +68,9 @@ export default class Payment extends Component {
   }
 
   render() {
+    if (!this.state) {
+      return <></>;
+    }
     if (!this.state.validUser) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
@@ -108,7 +114,8 @@ export default class Payment extends Component {
 
   getInfoComponent = () => {
     const currentUser = this.state.currentUser;
-    const hotel = hotelService.getHotel(Number(this.state.search.hotel_id));
+    const hotel = this.state.hotel;
+    const room = hotel.rooms.filter(room => room.room_id === Number(this.state.search.room_id))[0];
     return (
       <>
         <div className="px-payment">
@@ -124,7 +131,7 @@ export default class Payment extends Component {
           <div className="ml-3 ml-md-5">
             <h6>Date: {moment(this.state.search.checkin).format("D MMM YYYY") + " - " + moment(this.state.search.checkout).format("D MMM YYYY")}</h6>
             <h6>Hotel: {hotel.name}</h6>
-            <h6>Room: {hotel.rooms[Number(this.state.search.room_id)].name}</h6>
+            <h6>Room: {room.name}</h6>
             <h6>Number of room: {Number(this.state.search.num)}</h6>
             <h6>Price: ฿ {this.getPrice()}</h6>
           </div>

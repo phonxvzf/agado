@@ -95,20 +95,20 @@ export default class CreateHotel extends Component {
     }
   }
 
-  createHotel = () => {
+  createHotel = async () => {
     this.props.setPreventLeavePage(false);
     let hotel = this.state.hotel;
     hotel.managers = [this.state.currentUser.user_id];
-    if (hotelService.createHotel(hotel)) {
+    if (await hotelService.createHotel(hotel)) {
       window.location.href = "/myhotel";
       // this.setState({ showModal: "create_hotel_completed" });
     }
   }
 
-  editHotel = () => {
+  editHotel = async () => {
     this.props.setPreventLeavePage(false);
     const hotel = this.state.hotel;
-    if (hotelService.editHotel(hotel.hotel_id, hotel)) {
+    if (await hotelService.editHotel(hotel)) {
       // this.setState({ showModal: "edit_hotel_completed" });
       window.location.href = this.getHotelLink()
     }

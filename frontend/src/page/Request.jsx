@@ -13,12 +13,24 @@ export default class Request extends Component {
 
     let requests = [];
     if (currentUser) {
-      requests = await requestService.getRequestOf(currentUser.user_id).reduce(async (prev, request) => {
+      requests = await requestService.getRequestOf();
+      
+      requests = await requests.reduce(async (prev, request) => {
         let r = await prev;
         request.user = await userService.getUser(request.user_id);
-        r[request.hotel_id] = (r[request.hotel_id] || []).concat(request);
+        const requests = r[request.hotel_id] ? r[request.hotel_id].requests : [];
+        r[request.hotel_id] = {
+          requests: requests.concat(request)
+        };
         return r;
-      }, Promise.resolve([]));
+      }, Promise.resolve({}));
+
+      let temp = [];
+      for (const hotel_id in requests) {
+        requests[hotel_id].hotel = await hotelService.getHotel(hotel_id);
+        temp.push(requests[hotel_id]);
+      }
+      requests = temp;
     }
 
     this.setState({
@@ -68,7 +80,7 @@ export default class Request extends Component {
           {
             requests.map(request => {
               if (!request) return <></>;
-              const hotel = hotelService.getHotel(request[0].hotel_id);
+              const hotel = request.hotel;
               return (
                 <div className="px-content scroll-snap-child mb-5">
                   <div className="px-content">
@@ -84,7 +96,7 @@ export default class Request extends Component {
                       </Card.Header>
                       <Card.Body>
                         {
-                          request.map((r, idx) => {
+                          request.requests.map((r, idx) => {
                             const user = r.user;
                             return (
                               <>

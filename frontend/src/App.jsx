@@ -49,18 +49,6 @@ class App extends Component {
 
   componentDidMount() {
     const pathname = window.location.pathname;
-    const hash = window.location.hash;
-
-    window.onload = () => {
-      if (!hash) {
-        return;
-      }
-      const tag = document.querySelector(hash);
-      if (tag) {
-        tag.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-
     window.onbeforeunload = () => {
       if (this.state.preventLeavePage) {
         if (pathname === "/payment" || pathname === "/hotel/create" || (pathname === "/hotel" && this.state.mode === "edit")) {

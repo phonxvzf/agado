@@ -7,13 +7,13 @@ import { reservationService } from '../service/reservationService';
 import { userService } from '../service/userService';
 
 export default class Reservation extends Component {
-  componentWillMount() {
+  async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
     let reservations = []
     if (currentUser && currentUser.user_type === "traveler") {
-      reservations = reservationService.getReservationOf(currentUser.user_id);
+      reservations = await reservationService.getReservationOf(currentUser.user_id);
       reservations.sort((a, b) => {
         const x = new Date(a.checkin);
         const y = new Date(b.checkin);
@@ -40,6 +40,9 @@ export default class Reservation extends Component {
   }
 
   render() {
+    if (!this.state) {
+      return <></>;
+    }
     if (!this.state.validUser) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">

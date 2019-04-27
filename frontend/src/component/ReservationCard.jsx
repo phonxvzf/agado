@@ -9,11 +9,12 @@ import CustomModal from './CustomModal';
 import ReviewModal from './ReviewModal';
 
 export default class ReservationCard extends Component {
-  componentWillMount() {
+  async componentWillMount() {
     const reservation = this.props.reservation;
-    const oldReview = reviewService.getOldReview(reservation.user_id, reservation.hotel_id);
+    const oldReview = await reviewService.getOldReview(reservation.hotel_id);
+    const hotel = await hotelService.getHotel(reservation.hotel_id);
     this.setState({
-      hotel: hotelService.getHotel(reservation.hotel_id),
+      hotel: hotel,
       oldReview: oldReview
     })
   }
@@ -36,7 +37,7 @@ export default class ReservationCard extends Component {
     const checkout = this.props.reservation.checkout;
     const interval = Math.max(0, (new Date(checkout) - new Date(checkin)) / 24 / 60 / 60 / 1000);
     const hotel = this.state.hotel;
-    const room = hotel.rooms[Number(this.props.reservation.room_id)];
+    const room = hotel.rooms.filter(room => room.room_id === Number(this.props.reservation.room_id))[0];
     return interval * (room ? room.price : 0) * Number(this.props.reservation.num);
   }
 
@@ -52,17 +53,21 @@ export default class ReservationCard extends Component {
     return pathname + search;
   }
 
-  cancelReservation = () => {
+  cancelReservation = async () => {
     const reservation_id = this.props.reservation.reservation_id;
-    if (reservationService.deleteReservation(reservation_id)) {
+    if (await reservationService.deleteReservation(reservation_id)) {
       window.history.go();
     }
   }
 
   render() {
+    if (!this.state) {
+      return <></>;
+    }
     const reservation = this.props.reservation;
     const hotel = this.state.hotel;
     const days = this.getDayleft();
+    const room = hotel.rooms.filter(room => room.room_id === Number(reservation.room_id))[0];
     return (
       <>
         <Card className="shadow">
@@ -80,14 +85,14 @@ export default class ReservationCard extends Component {
             </Card.Header>
             {/* <div className="ratio4-3">
               {
-                hotel.imgs[0] === "" ?
+                !hotel.imgs[0] ?
                   <div className="bg-dark abs-center border-none" />
                   : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
               }
             </div> */}
           </a>
           <Card.Body>
-            <Card.Text>Room: {hotel.rooms[Number(reservation.room_id)] ? hotel.rooms[Number(reservation.room_id)].name : ""}</Card.Text>
+            <Card.Text>Room: {room ? room.name : ""}</Card.Text>
             <Card.Text>Number of room: {reservation.num}</Card.Text>
             <Card.Text>Price: ฿ {this.getPrice()}</Card.Text>
           </Card.Body>

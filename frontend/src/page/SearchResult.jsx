@@ -6,15 +6,10 @@ import '../css/SearchResult.css';
 import { hotelService } from '../service/hotelService';
 
 export default class SearchResult extends Component {
-  componentWillMount() {
+  async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-    this.setState({
-      pathname: pathname,
-      search: search
-    });
-
-    const hotels = hotelService.getHotels();
+    const hotels = await hotelService.getHotels(search.checkin, search.checkout);
     let min = hotels.map(hotel => hotel.start_price).reduce((a, b) => Math.min(a, b), Infinity);
     min = min === Infinity ? 0 : min;
     let max = hotels.map(hotel => hotel.start_price).reduce((a, b) => Math.max(a, b), 0);
@@ -24,13 +19,17 @@ export default class SearchResult extends Component {
       max: max
     }
     this.props.setPriceRange(priceRange);
-
     this.setState({
+      pathname: pathname,
+      search: search,
       hotels: hotels
     });
   }
 
   render() {
+    if (!this.state) {
+      return <></>;
+    }
     return (
       <div className="search-result-bg">
         <div className="scroll-snap-child" />

@@ -47,8 +47,8 @@ export default class HotelManageCard extends Component {
     return pathname + search;
   }
 
-  cancelMaagement = () => {
-    if (hotelService.cancelManagement(Number(this.props.hotel.hotel_id), this.props.currentUser.user_id)) {
+  cancelMaagement = async () => {
+    if (await hotelService.cancelManagement(Number(this.props.hotel.hotel_id), this.props.currentUser.user_id)) {
       window.location.href = "/myhotel";
     }
   }
@@ -79,7 +79,7 @@ export default class HotelManageCard extends Component {
             </Card.Header>
             <div className="ratio4-3">
               {
-                hotel.imgs[0] === "" ?
+                !hotel.imgs[0] ?
                   <div className="bg-dark abs-center border-none" />
                   : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
               }

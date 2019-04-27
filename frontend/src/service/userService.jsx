@@ -7,6 +7,11 @@ export class userService {
     return JSON.parse(localStorage.getItem("user"));
   }
 
+  static getToken = () => {
+    const currentUser = this.getCurrentUser();
+    return currentUser ? currentUser.token : null;
+  }
+
   static getUsers = () => {
     return JSON.parse(localStorage.getItem("users"));
   }
@@ -74,10 +79,10 @@ export class userService {
     window.location.href = "/";
   }
 
-  static editUserInfo = async (editedUser, token) => {
+  static editUserInfo = async (editedUser) => {
     return await axios.put('/user', editedUser, {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${this.getToken()}`
       }
     })
       .then(res => {
@@ -102,10 +107,10 @@ export class userService {
     // return false;
   }
 
-  static deleteUser = async (token) => {
+  static deleteUser = async () => {
     return await axios.delete('/user', {
       headers: {
-        Authorization: `Bearer ${token}`
+        Authorization: `Bearer ${this.getToken()}`
       }
     })
       .then(res => {

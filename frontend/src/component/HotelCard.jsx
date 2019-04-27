@@ -58,7 +58,7 @@ export default class HotelCard extends Component {
           </Card.Header>
           <div className="ratio4-3">
             {
-              hotel.imgs[0] === "" ?
+              !hotel.imgs[0] ?
                 <div className="bg-dark abs-center border-none" />
                 : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
             }

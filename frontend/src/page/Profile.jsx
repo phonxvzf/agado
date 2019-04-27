@@ -16,12 +16,22 @@ export default class Profile extends Component {
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const user = await userService.getUser(Number(search.user_id));
     const currentUser = userService.getCurrentUser();
+    const hotels = user ? await hotelService.getHotelOf(user.user_id) : [];
+    let reviews = user ? await reviewService.getReviewsOf(user.user_id) : [];
+    reviews = await Promise.all(reviews.map(async review => {
+      return {
+        ...review,
+        hotel: await hotelService.getHotel(review.hotel_id)
+      };
+    }));
     this.setState({
       pathname: pathname,
       search: search,
       user: user,
       currentUser: currentUser,
       editedUser: currentUser,
+      hotels: hotels,
+      reviews: reviews,
       mode: ""
     });
   }
@@ -71,7 +81,7 @@ export default class Profile extends Component {
       date_of_birth: editedUser.date_of_birth,
       img: editedUser.img
     };
-    if (await userService.editUserInfo(editedUser, editedUser.token)) {
+    if (await userService.editUserInfo(editedUser)) {
       this.setState({
         user: user,
         showModal: "save_completed",
@@ -84,7 +94,7 @@ export default class Profile extends Component {
 
   deleteAccount = async (e) => {
     e.preventDefault();
-    if (await userService.deleteUser(this.state.currentUser.token)) {
+    if (await userService.deleteUser()) {
       // this.setState({ showModal: "delete_completed" });
       userService.signout()
     }
@@ -137,9 +147,9 @@ export default class Profile extends Component {
     }
     return (
       <>
-        <div className="profile-bg scroll-snap-child">
+        <div className="profile-bg hotel-info scroll-snap-child">
           {
-            this.state.mode === "" ? this.getUserInfoComponent() :
+            !this.state.mode ? this.getUserInfoComponent() :
               this.state.mode === "edit" ? this.getEditUserComponent() : ""
           }
           <hr />
@@ -217,7 +227,7 @@ export default class Profile extends Component {
           {
             !currentUser || "" + currentUser.user_id !== "" + Number(this.state.search.user_id) ? "" :
               <>
-                <Button variant="success" className="mr-4 my-2" onClick={() => this.setState({ mode: "edit" })}>Edit profile</Button>
+                <Button variant="info" className="mr-4 my-2" onClick={() => this.setState({ mode: "edit" })}>Edit profile</Button>
                 <Button variant="danger" className="my-2" onClick={() => this.setState({ showModal: "delete_confirm" })}>Delete account</Button>
               </>
           }
@@ -364,7 +374,7 @@ export default class Profile extends Component {
   }
 
   getPreviousReviews = () => {
-    const reviews = reviewService.getReviewsOf(this.state.user.user_id);
+    const reviews = this.state.reviews;
     const user = this.state.user;
     if (reviews.length === 0) {
       return <></>;
@@ -376,7 +386,7 @@ export default class Profile extends Component {
         </Row>
         {
           reviews.map(review => {
-            const hotel = hotelService.getHotel(review.hotel_id);
+            const hotel = review.hotel;
             return (
               <>
                 <Row className="align-items-center scroll-snap-child">
@@ -427,7 +437,7 @@ export default class Profile extends Component {
   }
 
   getHotelsManaged = () => {
-    let hotels = hotelService.getHotelOf(this.state.user.user_id);
+    let hotels = this.state.hotels;
     if (hotels.length === 0) {
       return <></>;
     }

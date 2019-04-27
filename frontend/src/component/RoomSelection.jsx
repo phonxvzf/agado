@@ -30,10 +30,13 @@ export default class RoomSelection extends Component {
             numberOfCards={1}
             gutter={-0.05 * window.innerWidth}>
             {
-              this.props.rooms.map((room, idx) => {
+              this.props.rooms.map(room => {
+                if (room.available_room === 0) {
+                  return <></>;
+                }
                 return (
                   <Row className="my-4 ml-2 w-90" key={room.room_id}>
-                    <RoomCard search={this.props.search} currentUser={this.props.currentUser} room={room} room_id={idx} interval={this.state.interval} />
+                    <RoomCard search={this.props.search} currentUser={this.props.currentUser} room={room} room_id={room.room_id} interval={this.state.interval} />
                   </Row>
                 );
               })

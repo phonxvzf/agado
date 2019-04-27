@@ -17,7 +17,7 @@ export default class RoomCard extends Component {
   _onChange = (e) => {
     const target = e.currentTarget;
     this.setState({
-      num: target.value === "" ? "" : Math.min(target.max, Math.max(target.value, target.min))
+      num: !target.value ? "" : Math.min(target.max, Math.max(target.value, target.min))
     });
   }
 
@@ -79,7 +79,7 @@ export default class RoomCard extends Component {
                           <Carousel.Item>
                             <div className="ratio4-3">
                               {
-                                img === "" ?
+                               !img ?
                                   <div className="bg-dark abs-center border-none" />
                                   : <Image className="absolute" src={img} fluid />
                               }

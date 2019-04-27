@@ -269,7 +269,7 @@ export default class NewRoomCard extends Component {
                               amenities.splice(amenities.findIndex(x => x === 1), 1);
                               amenities.push(0);
                             }
-                            amenities.sort();
+                            amenities.sort((x, y) => x < y ? -1 : 1);
                             this.onChange({ ...room, amenities: amenities });
                           }}>
                           <p dangerouslySetInnerHTML={{ __html: room.amenities.includes(0) ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
@@ -291,7 +291,7 @@ export default class NewRoomCard extends Component {
                                   } else {
                                     amenities.push(idx + 2);
                                   }
-                                  amenities.sort();
+                                  amenities.sort((x, y) => x < y ? -1 : 1);
                                   this.onChange({ ...room, amenities: amenities });
                                 }}>
                                 <p dangerouslySetInnerHTML={{ __html: amenity.tag }} />

@@ -47,8 +47,7 @@ export default class HotelReservationCard extends Component {
   render() {
     const reservation = this.props.reservation;
     const hotel = this.props.hotel;
-    // const room = hotel.rooms.filter(room => room.room_id === Number(reservation.room_id))[0];
-    const room = hotel.rooms[Number(reservation.room_id)];
+    const room = hotel.rooms.filter(room => room.room_id === Number(reservation.room_id))[0];
     const user = this.state.user;
     if (!user) {
       return <></>;
