@@ -13,7 +13,7 @@ export default class SearchResult extends Component {
     let min = hotels.map(hotel => hotel.start_price).reduce((a, b) => Math.min(a, b), Infinity);
     min = min === Infinity ? 0 : min;
     let max = hotels.map(hotel => hotel.start_price).reduce((a, b) => Math.max(a, b), 0);
-    max = max === min ? max + 1000 : max;
+    max = max < min + 1000 ? min + 1000 : max;
     const priceRange = {
       min: min,
       max: max

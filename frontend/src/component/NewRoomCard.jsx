@@ -61,7 +61,7 @@ export default class NewRoomCard extends Component {
       })
       return;
     }
-    if (img.size > 1e7) {
+    if (img.size > 5000000) {
       this.setState({
         showModal: "upload_large_img"
       })
@@ -208,6 +208,7 @@ export default class NewRoomCard extends Component {
                                 <Form.Control
                                   type="number"
                                   min={1}
+                                  step={1}
                                   onChange={(e) => this.onChange({ ...room, num_bed: Math.max(e.currentTarget.value, 1) })}
                                   onBlur={() => this.setState({ focus: null })}
                                   placeholder="Beds"
@@ -234,6 +235,7 @@ export default class NewRoomCard extends Component {
                                 <Form.Control
                                   type="number"
                                   min={1}
+                                  step={1}
                                   onChange={(e) => this.onChange({ ...room, max_person: Math.max(e.currentTarget.value, 1) })}
                                   onBlur={() => this.setState({ focus: null })}
                                   placeholder="People"
@@ -316,6 +318,7 @@ export default class NewRoomCard extends Component {
                           <Form.Control
                             type="number"
                             min={0}
+                            step={1}
                             onChange={(e) => this.onChange({ ...room, price: Math.max(e.currentTarget.value, 0) })}
                             onBlur={() => this.setState({ focus: null })}
                             placeholder="Price"
@@ -342,6 +345,7 @@ export default class NewRoomCard extends Component {
                           <Form.Control
                             type="number"
                             min={1}
+                            step={1}
                             onChange={(e) => this.onChange({ ...room, total_room: Math.max(e.currentTarget.value, 1), available_room: Math.max(e.currentTarget.value, 1) })}
                             onBlur={() => this.setState({ focus: null })}
                             placeholder="Total room"
@@ -392,7 +396,7 @@ export default class NewRoomCard extends Component {
           showModal={this.state.showModal === "upload_large_img"}
           closeModal={() => this.setState({ showModal: null })}
           title="Unable to upload the file"
-          body="The file size exceeds the limit of 10 MB." />
+          body="The file size exceeds the limit of 5 MB." />
       </>
     )
   }

@@ -63,6 +63,12 @@ export default class SigninSignupModal extends Component {
     } else if (type === "year") {
       date.year(value);
     }
+    if (date >= moment()) {
+      this.setState({
+        showModal: "invalid_date_of_birth"
+      });
+      return;
+    }
     this.setState({
       signup: {
         ...this.state.signup,
@@ -123,6 +129,11 @@ export default class SigninSignupModal extends Component {
           closeModal={() => this.setState({ showModal: null })}
           title="Incorrect username or password"
           body="Please try again." />
+        <CustomModal
+          showModal={this.state.showModal === "invalid_date_of_birth"}
+          closeModal={() => this.setState({ showModal: null })}
+          title="Invlid date of birth"
+          body="The date must be in the past." />
       </>
     )
   }
@@ -133,6 +144,8 @@ export default class SigninSignupModal extends Component {
         <Form.Group>
           <Form.Label>Username</Form.Label>
           <Form.Control
+            minLength={4}
+            maxLength={12}
             type="text"
             onChange={(e) => this.setState({ signin: { ...this.state.signin, username: e.currentTarget.value } })}
             placeholder="Username"
@@ -141,6 +154,8 @@ export default class SigninSignupModal extends Component {
         <Form.Group>
           <Form.Label>Password</Form.Label>
           <Form.Control
+            minLength={4}
+            maxLength={12}
             type="password"
             onChange={(e) => this.setState({ signin: { ...this.state.signin, password: e.currentTarget.value } })}
             placeholder="Password"
@@ -161,6 +176,8 @@ export default class SigninSignupModal extends Component {
           <Form.Group as={Col}>
             <Form.Label>Username</Form.Label>
             <Form.Control
+              minLength={4}
+              maxLength={12}
               type="text"
               onChange={(e) => this.setState({ signup: { ...this.state.signup, username: e.currentTarget.value } })}
               placeholder="Username"
@@ -169,6 +186,8 @@ export default class SigninSignupModal extends Component {
           <Form.Group as={Col}>
             <Form.Label>Password</Form.Label>
             <Form.Control
+              minLength={4}
+              maxLength={12}
               type="password"
               onChange={(e) => this.setState({ signup: { ...this.state.signup, password: e.currentTarget.value } })}
               placeholder="Password"
@@ -251,10 +270,12 @@ export default class SigninSignupModal extends Component {
           <Form.Group as={Col}>
             <Form.Label>Phone</Form.Label>
             <Form.Control
+              pattern="^0[0-9]{9}&"
               type="tel"
               onChange={(e) => this.setState({ signup: { ...this.state.signup, phone_num: e.currentTarget.value } })}
               placeholder="Phone"
               required />
+            <Form.Text className={"text-danger " + (!this.state.signup.phone_num || /^0[0-9]{9}&/.test(this.state.signup.phone_num) ? "d-none" : "")}>Format: 0 followed by 9 digits</Form.Text>
           </Form.Group>
         </Form.Row>
         <br />

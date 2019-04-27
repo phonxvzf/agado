@@ -20,8 +20,9 @@ export default class RoomSelection extends Component {
   }
 
   render() {
+    const rooms = this.props.rooms.filter(room => room.available_room > 0);
     return (
-      this.props.rooms.length === 0 ? "" :
+      rooms.length === 0 ? "" :
         <div>
           <h3 className="scroll-snap-child px-content">Select your room style</h3>
           <ItemsCarousel
@@ -30,10 +31,7 @@ export default class RoomSelection extends Component {
             numberOfCards={1}
             gutter={-0.05 * window.innerWidth}>
             {
-              this.props.rooms.map(room => {
-                if (room.available_room === 0) {
-                  return <></>;
-                }
+              rooms.map(room => {
                 return (
                   <Row className="my-4 ml-2 w-90" key={room.room_id}>
                     <RoomCard search={this.props.search} currentUser={this.props.currentUser} room={room} room_id={room.room_id} interval={this.state.interval} />

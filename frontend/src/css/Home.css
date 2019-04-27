@@ -250,3 +250,7 @@ input::-webkit-calendar-picker-indicator{
 .bg-lightgray {
   background-color: var(--lightgray);
 }
+
+.text-transparent {
+  color: transparent !important;
+}

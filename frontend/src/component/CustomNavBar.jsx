@@ -77,10 +77,10 @@ export default class CustomNavBar extends Component {
   }
 
   getAmenitiesQs = () => {
-    let amenities = [];
-    for (let i = 0; i < this.state.amenities.length; i++) {
+    let amenities = [this.state.amenities[0] ? 0 : 1];
+    for (let i = 1; i < this.state.amenities.length; i++) {
       if (this.state.amenities[i]) {
-        amenities.push(i);
+        amenities.push(i + 1);
       }
     }
     return amenities;
@@ -159,10 +159,12 @@ export default class CustomNavBar extends Component {
   loadPrice = (priceRange) => {
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     priceRange = priceRange ? priceRange : this.props.priceRange;
+    const minPrice = Math.max(Number(search.min_price).toFixed(0), priceRange.min);
+    const maxPrice = Math.min(Number(search.max_price).toFixed(0), priceRange.max);
     this.setState({
       price: {
-        min: search.min_price ? Number(search.min_price) : priceRange.min,
-        max: search.max_price ? Number(search.max_price) : priceRange.max
+        min: minPrice < maxPrice ? minPrice : priceRange.min,
+        max: minPrice < maxPrice ? maxPrice : priceRange.max
       }
     });
   }
@@ -186,7 +188,12 @@ export default class CustomNavBar extends Component {
 
     let amenities = []
     for (let i = 0; i < search.amenities.length; i++) {
-      amenities[Number(search.amenities[i])] = true;
+      const num = Number(search.amenities[i]);
+      if (num === 0) {
+        amenities[0] = true;
+      } else if (num >= 2) {
+        amenities[num - 1] = true;
+      }
     }
     this.setState({
       amenities: amenities
@@ -902,7 +909,7 @@ export default class CustomNavBar extends Component {
           </div>
           <Navbar.Text className="ml-md-5">sort by:</Navbar.Text>
           <div>
-            <Button variant="light" className={"mx-2 my-2 text-dark bold" + (this.state.sortBy === "price" ? " highlight" : "")} onClick={() => { this.state.sortBy = "price"; window.location.href = this.getSearchLink(); }}><i className="fas fa-coins" />&nbsp;&nbsp;LOWEST PRICE FIRST</Button>
+            <Button variant="light" className={"mx-2 my-2 text-dark bold" + (this.state.sortBy !== "rating" ? " highlight" : "")} onClick={() => { this.state.sortBy = "price"; window.location.href = this.getSearchLink(); }}><i className="fas fa-coins" />&nbsp;&nbsp;LOWEST PRICE FIRST</Button>
           </div>
           <div>
             <Button variant="light" className={"mx-2 my-2 text-dark bold" + (this.state.sortBy === "rating" ? " highlight" : "")} onClick={() => { this.state.sortBy = "rating"; window.location.href = this.getSearchLink(); }}><i className="fas fa-award" />&nbsp;&nbsp;TOP RATING</Button>

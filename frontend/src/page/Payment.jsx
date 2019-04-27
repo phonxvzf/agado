@@ -6,6 +6,7 @@ import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
+import CustomModal from '../component/CustomModal';
 import '../css/Payment.css';
 import { hotelService } from '../service/hotelService';
 import { reservationService } from '../service/reservationService';
@@ -59,6 +60,15 @@ export default class Payment extends Component {
       room_id: Number(search.room_id),
       num: Number(search.num)
     }
+    const hotel = await hotelService.getHotel(reservation.hotel_id, reservation.checkin, reservation.checkout);
+    const room = hotel ? hotel.rooms.filter(room => room.room_id === reservation.room_id)[0] : null;
+    if (!hotel || !room || room.available_room < reservation.num) {
+      this.setState({
+        showModal: "not_available_room"
+      });
+      return;
+    }
+
     if (await reservationService.createReservation(reservation)) {
       this.props.setPreventLeavePage(false);
       this.setState({
@@ -70,20 +80,32 @@ export default class Payment extends Component {
   render() {
     if (!this.state) {
       return <></>;
-    }
-    if (!this.state.validUser) {
+    } else if (!this.state.validUser) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>Permission denied</h1>
           <h4>You have to be a Traveler to access this page.</h4>
         </div>
       )
+    } else if (!this.state.hotel || !this.state.hotel.rooms.map(room => room.room_id).includes(Number(this.state.search.room_id))) {
+      return (
+        <div className="error-bg px-auto hotel-info scroll-snap-child">
+          <h1>This page is not exist</h1>
+        </div>
+      )
     }
     return (
-      <div className="hotel-bg px-auto hotel-info">
-        {this.getProgressComponent()}
-        {this.getContentComponent()}
-      </div>
+      <>
+        <div className="hotel-bg px-auto hotel-info">
+          {this.getProgressComponent()}
+          {this.getContentComponent()}
+        </div>
+        <CustomModal
+          showModal={this.state.showModal === "not_available_room"}
+          closeModal={() => window.location.href = "/search"}
+          title="These rooms are not available now"
+          body="Please try again later with other rooms." />
+      </>
     )
   }
 
@@ -171,7 +193,15 @@ export default class Payment extends Component {
             <Row className="align-items-center">
               <Col><h6>Number of credit/debit card: </h6></Col>
               <Col xs={12}>
-                <Form.Control type="number" onChange={(e) => this.setState({ payment: { ...payment, number: e.currentTarget.value } })} required />
+                <Form.Control
+                  pattern="^[0-9]{16}$"
+                  type="text"
+                  onChange={(e) => this.setState({ payment: { ...payment, number: e.currentTarget.value.substr(0, 16) } })}
+                  value={this.state.payment ? this.state.payment.number : ""}
+                  required />
+                <Form.Text className={"text-danger " + (!this.state.payment || !this.state.payment.number || /^[0-9]{16}$/.test(this.state.payment.number) ? "d-none" : "")}>
+                  Format: contains 16 digits
+                </Form.Text>
               </Col>
             </Row>
             <br />
@@ -182,16 +212,31 @@ export default class Payment extends Component {
               </Col>
             </Row>
             <br />
-            <Row className="align-items-center">
+            <Row className="align-items-start">
               <Col><h6>Expired date:</h6></Col>
               <Col><h6>CVC/CVV code:</h6></Col>
             </Row>
-            <Row className="align-items-center">
+            <Row className="align-items-start">
               <Col>
-                <Form.Control type="text" onChange={(e) => this.setState({ payment: { ...payment, exp: e.currentTarget.value } })} required />
+                <Form.Control
+                  pattern="^[0-9]{2}\/[0-9]{2}$"
+                  type="text"
+                  onChange={(e) => this.setState({ payment: { ...payment, exp: e.currentTarget.value } })}
+                  required />
+                <Form.Text className={"text-danger " + (!this.state.payment || !this.state.payment.exp || /^[0-9]{2}\/[0-9]{2}$/.test(this.state.payment.exp) ? "text-transparent" : "")}>
+                  Format: MM/YY
+                </Form.Text>
               </Col>
               <Col>
-                <Form.Control type="number" onChange={(e) => this.setState({ payment: { ...payment, cvc: e.currentTarget.value } })} required />
+                <Form.Control
+                  pattern="^[0-9]{3}$"
+                  type="text"
+                  onChange={(e) => this.setState({ payment: { ...payment, cvc: e.currentTarget.value.substr(0, 3) } })}
+                  value={this.state.payment ? this.state.payment.cvc : ""}
+                  required />
+                <Form.Text className={"text-danger " + (!this.state.payment || !this.state.payment.cvc || /^[0-9]{3}$/.test(this.state.payment.cvc) ? "text-transparent" : "")}>
+                  Format: contains 3 digits
+                </Form.Text>
               </Col>
             </Row>
           </div>

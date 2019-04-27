@@ -190,6 +190,7 @@ export default class RoomCard extends Component {
                           <Form.Control
                             className="border-dark"
                             type="number"
+                            step={1}
                             onChange={this._onChange}
                             placeholder="0"
                             min={0}
@@ -201,6 +202,7 @@ export default class RoomCard extends Component {
                             <Form.Control
                               className="border-dark"
                               type="number"
+                              step={1}
                               onChange={this._onChange}
                               placeholder="0"
                               min={0}
