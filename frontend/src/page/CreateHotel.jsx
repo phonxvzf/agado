@@ -258,14 +258,20 @@ export default class CreateHotel extends Component {
               </div>
               <div className="position-relative">
                 <Form.Control
-                  type="text"
+                  as="textarea"
+                  rows={3}
                   className="custom-form-control w-100 h3"
                   onChange={(e) => this.setState({ hotel: { ...hotel, desc: e.currentTarget.value } })}
+                  onClick={() => this.setState({ focus: "desc" })}
                   onBlur={() => this.setState({ focus: null })}
                   placeholder=" "
                   defaultValue={hotel.desc}
                   required />
-                <span className="hotel-desc h3">Description</span>
+                <span className={"hotel-desc h3 " +
+                  (this.state.hotel.desc ? "medium" :
+                    this.state.focus === "desc" ? "small" : "")}>
+                  Description
+                </span>
               </div>
               {/* <h3 className="d-inline" onClick={() => this.setState({ focus: "name" })}>{hotel.name ? hotel.name : "Hotel's name"}</h3>
               <Button variant="link" className="text-dark px-0 align-top" onClick={() => this.setState({ focus: "name" })}>

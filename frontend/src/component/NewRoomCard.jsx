@@ -256,7 +256,7 @@ export default class NewRoomCard extends Component {
                     </Row>
                   </Collapse>
                   <Collapse in={!this.state.collapse}>
-                    <Row noGutters>
+                    <Row className="align-items-start" noGutters>
                       <Col xs={3} sm={2} md={3} lg={2}>
                         <Button
                           variant="light"
@@ -275,7 +275,7 @@ export default class NewRoomCard extends Component {
                             this.onChange({ ...room, amenities: amenities });
                           }}>
                           <p dangerouslySetInnerHTML={{ __html: room.amenities.includes(0) ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
-                          {room.amenities.includes(0) ? hotelService.amenities[0].name : hotelService.amenities[1].name}
+                          {room.amenities.includes(0) ? <>{hotelService.amenities[0].name}<br />&nbsp;&nbsp;&nbsp;</> : hotelService.amenities[1].name}
                         </Button>
                       </Col>
                       {
@@ -297,7 +297,7 @@ export default class NewRoomCard extends Component {
                                   this.onChange({ ...room, amenities: amenities });
                                 }}>
                                 <p dangerouslySetInnerHTML={{ __html: amenity.tag }} />
-                                {amenity.name}
+                                {idx + 2 === 7 ? amenity.name : <>{amenity.name}<br />&nbsp;&nbsp;&nbsp;</>}
                               </Button>
                             </Col>
                           )
