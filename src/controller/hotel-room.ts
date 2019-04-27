@@ -32,7 +32,33 @@ const ctrlHotelRoom = {
           return reserveCheckIn < checkOut && reserveCheckOut > checkIn;
         });
 
-        const availableRoom = room['total_room'] - intersectReservation.length;
+        const engagementInfo = {};
+        const dateInfo: Date[] = [];
+
+        for (const reserve of intersectReservation) {
+          if (engagementInfo[reserve['checkin'].toString()] === undefined) {
+            engagementInfo[reserve['checkin'].toString()] = 0;
+            dateInfo.push(reserve['checkin']);
+          }
+          if (engagementInfo[reserve['checkout'].toString()] === undefined) {
+            engagementInfo[reserve['checkout'].toString()] = 0;
+            dateInfo.push(reserve['checkout']);
+          }
+
+          engagementInfo[reserve['checkin'].toString()] += reserve['num'];
+          engagementInfo[reserve['checkout'].toString()] -= reserve['num'];
+        }
+
+        dateInfo.sort();
+        let maxEngagement = 0;
+        let currentEngagement = 0;
+        for (const date of dateInfo) {
+          const dateString = date.toString();
+          currentEngagement += engagementInfo[dateString];
+          maxEngagement = (maxEngagement > currentEngagement ? maxEngagement : currentEngagement);
+        }
+
+        const availableRoom = room['total_room'] - maxEngagement;
         room['available_room'] = availableRoom;
       }
     }
