@@ -6,6 +6,10 @@ const hotelManagerRepo = {
     return database.insert(hotelManagerData).into('hotel_manager');
   },
 
+  getAllHotelManager: async (): Promise<HotelManager[]> => {
+    return database.select('*').from('hotel_manager');
+  },
+
   getHotelManagerByUserId: async (userId: number): Promise<HotelManager[]> => {
     return database.select('*').from('hotel_manager').where('user_id', '=', userId);
   },
