@@ -50,7 +50,7 @@ jobs:
         # Frontend
         - cd frontend
         - npm install
-        - SKIP_PREFLIGHT_CHECK=true npm run build
+        - CI=false SKIP_PREFLIGHT_CHECK=true npm run build
         - docker build .
         - cd ..
       after_success:

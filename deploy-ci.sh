@@ -13,7 +13,7 @@ docker build -t asia.gcr.io/${PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$TRAVIS_COMMIT 
 # Build frontend image
 cd frontend
 npm install
-SKIP_PREFLIGHT_CHECK=true npm run build
+CI=false SKIP_PREFLIGHT_CHECK=true npm run build
 docker build -t asia.gcr.io/${PROJECT_NAME}/${DOCKER_FRONTEND_IMAGE_NAME}:$TRAVIS_COMMIT .
 
 echo $GCLOUD_SERVICE_KEY | base64 --decode -i > ${HOME}/gcloud-service-key.json
