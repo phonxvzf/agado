@@ -41,7 +41,10 @@ const ctrlSearch = {
     }
 
     // Get all hotels
+    function compare(a: any, b: any) { return a['hotel_id'] - b['hotel_id']; }
+
     const allHotels: Hotel[] = await search.searchByHotelName('');
+    allHotels.sort(compare);
     const allHotelIds = allHotels.map(h => h.hotel_id);
     const allReservations = await reservation.getByHotelIds(allHotelIds);
 
@@ -117,7 +120,6 @@ const ctrlSearch = {
     const availableHotels = allHotels.filter(h => availableHotelIds.includes(h.hotel_id));
 
     // Join stuff
-    function compare(a: any, b: any) { return a['hotel_id'] - b['hotel_id']; }
 
     availableHotels.sort(compare);
     const [
