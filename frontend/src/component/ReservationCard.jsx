@@ -75,7 +75,7 @@ export default class ReservationCard extends Component {
             <Card.Header className="py-4">
               <Row className="align-items-end" noGutters={true}>
                 <Col xs={8}>
-                  <Card.Title as="h6">{hotel.name.length < 20 ? hotel.name : hotel.name.slice(0, 20) + "..."}</Card.Title>
+                  <Card.Title as="h6">{hotel.name.length < 16 ? hotel.name : hotel.name.slice(0, 16) + "..."}</Card.Title>
                   <Card.Subtitle as="h6">{moment(reservation.checkin).format("D MMM YYYY") + " - " + moment(reservation.checkout).format("D MMM YYYY")}</Card.Subtitle>
                 </Col>
                 <Col xs={4} className="text-center">

@@ -197,7 +197,7 @@ export default class HotelInfo extends Component {
   getInfoSection = () => {
     const hotel = this.state.hotel;
     return (
-      <>
+      <div className="break-all-word">
         <h2 className="mt-5 scroll-snap-child">{hotel.name}</h2>
         <h4 className="">{hotel.city}</h4>
         <hr />
@@ -228,7 +228,7 @@ export default class HotelInfo extends Component {
             </>
         }
         <hr className="mb-5" />
-      </>
+      </div>
     )
   }
 
