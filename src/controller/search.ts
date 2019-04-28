@@ -56,16 +56,6 @@ const ctrlSearch = {
         iHotelRooms < hotelRooms.length &&
         allHotels[i].hotel_id === hotelRooms[iHotelRooms].hotel_id;
         iHotelRooms += 1) {
-        // delete hotelRooms[iHotelRooms]['hotel_id'];
-        // hotelRooms[iHotelRooms]['amenities'] = hotelAmenities
-        //   .filter(am => am.room_id === hotelRooms[iHotelRooms].room_id)
-        //   .map(am => am.amenity_id);
-        // hotelRooms[iHotelRooms]['amenities'].sort();
-        // hotelRooms[iHotelRooms]['imgs'] = hotelRoomImages
-        //   .filter(img => img.room_id === hotelRooms[iHotelRooms].room_id)
-        //   .map(img => img.img);
-        // hotelRooms[iHotelRooms]['price'] =
-        //   Number(String(hotelRooms[iHotelRooms]['price']).replace(/[,$]/g, ''));
         allHotels[i]['rooms'].push(hotelRooms[iHotelRooms]);
       }
     }
@@ -83,32 +73,31 @@ const ctrlSearch = {
           const reserveCheckIn = new Date(reserve['checkin']);
           const reserveCheckOut = new Date(reserve['checkout']);
 
-          return reserveCheckIn < checkout && reserveCheckOut > checkin;
+          return intersect(checkin, checkout, reserveCheckIn, reserveCheckOut);
         });
 
         const engagementInfo = {};
         const dateInfo: Date[] = [];
 
         for (const reserve of intersectReservation) {
-          if (engagementInfo[reserve['checkin'].toString()] === undefined) {
-            engagementInfo[reserve['checkin'].toString()] = 0;
+          if (engagementInfo[reserve['checkin'].getTime()] == null) {
+            engagementInfo[reserve['checkin'].getTime()] = 0;
             dateInfo.push(reserve['checkin']);
           }
-          if (engagementInfo[reserve['checkout'].toString()] === undefined) {
-            engagementInfo[reserve['checkout'].toString()] = 0;
+          if (engagementInfo[reserve['checkout'].getTime()] == null) {
+            engagementInfo[reserve['checkout'].getTime()] = 0;
             dateInfo.push(reserve['checkout']);
           }
 
-          engagementInfo[reserve['checkin'].toString()] += reserve['num'];
-          engagementInfo[reserve['checkout'].toString()] -= reserve['num'];
+          engagementInfo[reserve['checkin'].getTime()] += reserve['num'];
+          engagementInfo[reserve['checkout'].getTime()] -= reserve['num'];
         }
 
         dateInfo.sort((date1, date2) => date1.getTime() - date2.getTime());
         let maxEngagement = 0;
         let currentEngagement = 0;
         for (const date of dateInfo) {
-          const dateString = date.toString();
-          currentEngagement += engagementInfo[dateString];
+          currentEngagement += engagementInfo[date.getTime()];
           maxEngagement = (maxEngagement > currentEngagement ? maxEngagement : currentEngagement);
         }
 
