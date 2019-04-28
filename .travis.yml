@@ -3,7 +3,7 @@ sudo: false
 language: node_js
 
 node_js:
-  - "lts/*"
+  - "11"
 
 install:
   - npm install
@@ -17,6 +17,7 @@ env:
   global:
     - GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
     - NODE_ENV=CI
+    - CXX=g++-4.8
 
 jobs:
   include:
@@ -26,6 +27,12 @@ jobs:
         - docker
       addons:
         postgresql: "9.6"
+        apt:
+          sources:
+            - ubuntu-toolchain-r-test
+          packages:
+            - g++-4.8
+            - bc
       before_script:
         - psql -c 'create database agado_test;' -U postgres
       env:
@@ -33,12 +40,19 @@ jobs:
         - DB_DATABASE=agado_test
         - DB_USER=postgres
         - DB_PASSWORD=
+        - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
       script: 
-        # - npm run lint
+        # Backend
+        - npm run lint
         - npm run migrate
         - npm run test-coverage-ci
         - docker build .
-        - docker build frontend
+        # Frontend
+        - cd frontend
+        - npm install
+        - CI=false SKIP_PREFLIGHT_CHECK=true npm run build
+        - docker build .
+        - cd ..
       after_success:
         - codecov
     - stage: deploy
@@ -49,3 +63,6 @@ jobs:
         - chmod +x ./deploy-ci.sh
         - ./deploy-ci.sh
       skip_cleanup: true
+
+before_install:
+  - eval "${MATRIX_EVAL}"

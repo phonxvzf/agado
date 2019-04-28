@@ -1,37 +1,20 @@
-import koaRouter from 'koa-router';
-import general from '../controller/general';
-import auth from '../controller/auth';
-import hotel from '../controller/hotel';
-import hotelManager from '../controller/hotel_manager';
-import search from '../controller/search';
+import koaCompose from 'koa-compose';
+import user from './user';
+import general from './general';
+import hotel from './hotel';
+import hotelManager from './hotel-manager';
+import search from './search';
+import request from './request';
+import reservation from './reservation';
+import review from './review';
 
-const router = new koaRouter();
-
-// Ping
-router.get('/ping', general.ping);
-router.post('/ping', general.ping);
-
-// User
-router.get('/user', auth.requireAuth, auth.getUser);
-router.post('/user', auth.createUser);
-router.post('/login', auth.login);
-router.post('/logout', auth.requireAuth, auth.logout);
-router.put('/user', auth.requireAuth, auth.updateUser);
-router.del('/user', auth.requireAuth, auth.deleteUser);
-
-// Hotel
-router.get('/hotel', auth.requireAuth, hotel.getHotel);
-router.post('/hotel', auth.requireAuth, auth.checkHotelManagerType, hotel.createHotel);
-router.put('/hotel', auth.requireAuth, auth.checkHotelManagerType, hotelManager.checkHotelManagerPermission, hotel.updateHotel);
-router.del('/hotel', auth.requireAuth, auth.checkHotelManagerType, hotelManager.checkHotelManagerPermission, hotel.deleteHotel);
-
-// Hotel Manager
-router.get('/hotelManager', auth.requireAuth, auth.checkHotelManagerType, hotelManager.getHotelManager);
-router.post('/hotelManager', auth.requireAuth, auth.checkHotelManagerType, hotelManager.createHotelManager);
-router.put('/hotelManager', auth.requireAuth, auth.checkHotelManagerType, hotelManager.checkHotelManagerPermission, hotelManager.createHotelManager);
-router.del('/hotelManager', auth.requireAuth, auth.checkHotelManagerType, hotelManager.checkHotelManagerPermission, hotelManager.deleteHotelManager);
-
-// Search
-router.get('/search', search.searchByHotelName);
-
-export default router;
+export default koaCompose([
+  user.routes(),
+  general.routes(),
+  hotel.routes(),
+  hotelManager.routes(),
+  search.routes(),
+  request.routes(),
+  reservation.routes(),
+  review.routes(),
+]);

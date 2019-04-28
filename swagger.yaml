@@ -1,0 +1,561 @@
+swagger: "2.0"
+info:
+  description: "Agado API"
+  version: "1.0.0"
+  title: "Agado API"
+host: "localhost"
+basePath: "/api"
+tags:
+- name: "general"
+  description: "General endpoints"
+- name: "user"
+  description: "Operations on user"
+- name: "hotel"
+  description: "Operations on hotel"
+- name: "hotelManager"
+  description: "Operations on hotel manager"
+schemes:
+- "http"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+paths:
+  /ping:
+    get:
+      tags:
+      - "general"
+      summary: "Ping the API server"
+      description: "Ping the API server (GET version)"
+      responses:
+        200:
+          description: "pong"
+    post:
+      tags:
+      - "general"
+      summary: "Ping the API server"
+      description: "Ping the API server (POST version)"
+      responses:
+        200:
+          description: "pong"
+  /hotel:
+    get:
+      security:
+        - Bearer: []
+      tags:
+      - "hotel"
+      summary: "Get hotel by ID"
+      description: "Get a hotel's data by specifying an ID"
+      operationId: "getHotelById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "A hotel's ID"
+        required: true
+        type: "number"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: object
+            properties:
+              id:
+                type: number
+              name:
+                type: string
+              desc:
+                type: string
+              addr:
+                type: string
+              prov:
+                type: string
+              lat:
+                type: number
+              long:
+                type: number
+              rating:
+                type: number
+        400:
+          description: "Invalid ID"
+        404:
+          description: "Hotel not found"
+    post:
+      tags:
+      - "hotel"
+      security:
+        - Bearer: []
+      summary: "Create a new hotel"
+      description: "Use JSON body"
+      consumes:
+        - "application/json"
+      parameters:
+        - in: body
+          name: hotel
+          description: hotel to create
+          schema:
+            type: object
+            required:
+              - name
+              - addr
+              - prov
+              - lat
+              - long
+            properties:
+              name:
+                type: string
+              desc:
+                type: string
+              addr:
+                type: string
+              prov:
+                type: string
+              lat:
+                type: number
+              long:
+                type: number
+              rating:
+                type: number
+      produces:
+        - "application/json"
+      responses:
+        201:
+          description: "hotel created"
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+        400:
+          description: "hotel already exists"
+    put:
+      tags:
+      - "hotel"
+      security:
+        - Bearer: []
+      summary: "Update an existing hotel"
+      description: "This operation is idempotent. One should provide all data field."
+      consumes:
+        - "application/json"
+      parameters:
+        - in: body
+          name: hotel
+          description: hotel to create
+          schema:
+            type: object
+            required:
+              - name
+              - addr
+              - prov
+              - lat
+              - long
+            properties:
+              name:
+                type: string
+              desc:
+                type: string
+              addr:
+                type: string
+              prov:
+                type: string
+              lat:
+                type: number
+              long:
+                type: number
+              rating:
+                type: number
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "hotel modified"
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+        404:
+          description: "hotel not found"
+    delete:
+      tags:
+      - "hotel"
+      security:
+      - Bearer: []
+      summary: "Delete an existing hotel"
+      description: "Delete a hotel specified by an ID"
+      parameters:
+      - name: "id"
+        in: "query"
+        description: "A hotel's ID"
+        required: true
+        type: "number"
+      responses:
+        204:
+          description: "hotel deleted"
+        404:
+          description: "hotel not found"
+  /user:
+    get:
+      tags:
+      - "user"
+      security:
+        - Bearer: []
+      summary: "Get a user's data by ID"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: body
+        name: "user id"
+        description: user's id
+        schema:
+          type: object
+          required:
+            - user_id
+          properties:
+            user_id:
+              type: string
+      responses:
+        200:
+          description: "user found"
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+              first_name:
+                type: string
+              last_name:
+                type: string
+              gender:
+                type: string
+              email:
+                type: string
+              phone_num:
+                type: string
+              user_type:
+                type: string
+              date_of_birth:
+                type: string
+    post:
+      tags:
+      - "user"
+      summary: "Create a new user"
+      description: "Use this for registration"
+      operationId: "createUser"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: body
+        name: user
+        description: user to create
+        schema:
+          type: object
+          required:
+            - username
+            - password
+            - first_name
+            - last_name
+            - gender
+            - email
+            - phone_num
+            - user_type
+            - date_of_birth
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+            gender:
+              type: string
+            email:
+              type: string
+            phone_num:
+              type: string
+            user_type:
+              type: string
+            date_of_birth:
+              type: string
+      responses:
+        201:
+          description: "user created"
+          schema:
+            type: object
+            properties:
+              id:
+                type: number
+        400:
+          description: "user already exists"
+    put:
+      tags:
+      - "user"
+      security:
+        - Bearer: []
+      summary: "Update an existing user"
+      description: "This operation is idempotent. One should provide all data field except the password field. If a new password is specified, the user's password will be updated."
+      operationId: "updateUser"
+      produces:
+      - "application/json"
+      consumes:
+      - "application/json"
+      parameters:
+      - in: body
+        name: user
+        description: user to create
+        schema:
+          type: object
+          required:
+            - username
+            - first_name
+            - last_name
+            - gender
+            - email
+            - phone_num
+            - user_type
+            - date_of_birth
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+            first_name:
+              type: string
+            last_name:
+              type: string
+            gender:
+              type: string
+            email:
+              type: string
+            phone_num:
+              type: string
+            user_type:
+              type: string
+            date_of_birth:
+              type: string
+      responses:
+        200:
+          description: "user modified"
+          schema:
+            type: object
+            properties:
+              id:
+                type: number
+    delete:
+      tags:
+      - "user"
+      security:
+      - Bearer: []
+      summary: "Delete an existing user"
+      description: "Delete a user who's identified by an ID"
+      parameters:
+      - in: "body"
+        name: "user id"
+        description: "A user's ID"
+        schema:
+          type: object
+          properties:
+            user_id:
+              type: number
+      produces:
+        - none
+      responses:
+        204:
+          description: "user deleted"
+  /user/login:
+    post:
+      tags:
+      - "user"
+      summary: "Log user into the system"
+      description: ""
+      operationId: "loginUser"
+      produces:
+      - "application/json"
+      parameters:
+      - in: body
+        name: credentials
+        description: the user's credentials
+        schema:
+          type: object
+          required:
+            - username
+            - password
+          properties:
+            username:
+              type: string
+            password:
+              type: string
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              first_name:
+                type: string
+              last_name:
+                type: string
+              gender:
+                type: string
+              email:
+                type: string
+              phone_num:
+                type: string
+              user_type:
+                type: string
+              date_of_birth:
+                type: string
+              token:
+                type: string
+        401:
+          description: "incorrect username or password"
+  /user/logout:
+    post:
+      tags:
+      - "user"
+      security:
+      - Bearer: []
+      summary: "Log out current logged in user session"
+      description: ""
+      operationId: "logoutUser"
+      responses:
+        204:
+          description: "user logged out"
+  /hotelManager:
+    get:
+      tags:
+      - "hotelManager"
+      summary: "Get a hotel manager's data"
+      description: "Specify user_id in json body and hotel_id in query string. Only accessible by a hotel manager."
+      security:
+      - Bearer: []
+      parameters:
+        - name: hotel_id
+          in: query
+          description: a hotel's id
+          type: number
+        - in: body
+          name: user id
+          description: the manager's user id
+          schema:
+            type: object
+            properties:
+              user_id:
+                type: number
+      responses:
+        200:
+          description: "hotel manager found"
+          schema:
+            type: object
+            properties:
+              uid:
+                type: number
+              hid:
+                type: number
+              permitted:
+                type: string
+        404:
+          description: "hotel manager not found"
+    post:
+      tags:
+      - "hotelManager"
+      summary: "Create a new hotel manager"
+      description: "Can only be operated by a hotel manager."
+      security:
+      - Bearer: []
+      parameters:
+        - in: body
+          name: hotel manager
+          description: new hotel manager's data
+          required: true
+          schema:
+            type: object
+            required:
+              - user_id
+              - hotel_id
+              - permission_type
+            properties:
+              user_id:
+                type: number
+              hotel_id:
+                type: number
+              permission_type:
+                type: string
+      produces:
+        - none
+      responses:
+        201:
+          description: "hotel manager created"
+        400:
+          description: "hotel manager already exists"
+    put:
+      tags:
+      - "hotelManager"
+      summary: "Update an existing hotel manager"
+      description: "Can only be operated by a permitted hotel manager. (permission_type = 'pmt')"
+      security:
+      - Bearer: []
+      parameters:
+        - in: body
+          name: hotel manager
+          description: new hotel manager's data
+          required: true
+          schema:
+            type: object
+            required:
+              - user_id
+              - hotel_id
+              - permission_type
+            properties:
+              user_id:
+                type: number
+              hotel_id:
+                type: number
+              permission_type:
+                type: string
+      produces:
+        - none
+      responses:
+        200:
+          description: "hotel manager modified"
+        404:
+          description: "hotel manager not found"
+    delete:
+      tags:
+      - "hotelManager"
+      summary: "Delete an existing hotel manager"
+      description: "Can only be operated by a permitted hotel manager. (permission_type = 'pmt')"
+      security:
+      - Bearer: []
+      parameters:
+        - in: body
+          name: hotel manager
+          description: new hotel manager's data
+          required: true
+          schema:
+            type: object
+            required:
+              - user_id
+              - hotel_id
+            properties:
+              user_id:
+                type: number
+              hotel_id:
+                type: number
+      responses:
+        204:
+          description: "hotel manager deleted"
+        404:
+          description: "hotel manager not found"

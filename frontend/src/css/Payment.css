@@ -1,0 +1,13 @@
+@media (max-width: 768px) {
+  .px-payment {
+    padding-left: 10%;
+    padding-right: 10%;
+  }
+}
+
+@media (min-width: 768px) {
+  .px-payment {
+    padding-left: 20%;
+    padding-right: 20%;
+  }
+}

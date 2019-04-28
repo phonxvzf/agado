@@ -33,6 +33,7 @@ const status = {
   NOT_ACCEPTABLE: new HttpStatus(406),
   PROXY_AUTH_REQUIRED: new HttpStatus(407),
   REQUEST_TIMEOUT: new HttpStatus(408),
+  CONFLICT: new HttpStatus(409, 'Conflict'),
   PAYLOAD_TOO_LARGE: new HttpStatus(413),
   URI_TOO_LONG: new HttpStatus(414, 'URI Too Long'),
   UNSUPPORTED_MEDIA_TYPE: new HttpStatus(415),

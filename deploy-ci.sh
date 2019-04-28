@@ -7,8 +7,14 @@ gcloud version
 yes | gcloud components update
 yes | gcloud components update kubectl
 
+# Build backend image
 docker build -t asia.gcr.io/${PROJECT_NAME}/${DOCKER_IMAGE_NAME}:$TRAVIS_COMMIT .
-docker build -t asia.gcr.io/${PROJECT_NAME}/${DOCKER_FRONTEND_IMAGE_NAME}:$TRAVIS_COMMIT frontend
+
+# Build frontend image
+cd frontend
+npm install
+CI=false SKIP_PREFLIGHT_CHECK=true npm run build
+docker build -t asia.gcr.io/${PROJECT_NAME}/${DOCKER_FRONTEND_IMAGE_NAME}:$TRAVIS_COMMIT .
 
 echo $GCLOUD_SERVICE_KEY | base64 --decode -i > ${HOME}/gcloud-service-key.json
 

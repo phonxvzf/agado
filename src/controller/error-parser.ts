@@ -1,5 +1,5 @@
 import koa from 'koa';
-import { ApiError, ErrorResponse, codes } from '../common/api-error';
+import { ApiError, ErrorResponse } from '../common/api-error';
 
 async function errorParser(ctx: koa.Context, next: Function) {
   try {

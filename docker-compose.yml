@@ -18,7 +18,7 @@ services:
       TZ: 'UTC'
       PGTZ: 'UTC'
 
-  app:
+  agado-api-svc:
     depends_on:
       - db
     build:
@@ -30,10 +30,20 @@ services:
     environment:
       NODE_ENV: development
       PORT: 3000
-      JWT_TTL: "15m"
+      JWT_TTL: "99999m"
       JWT_SECRET: "test_secret"
       DB_HOST: "db"
       DB_PORT: 5432
       DB_DATABASE: agado
       DB_USER: root
       DB_PASSWORD: test
+
+  agado-web-svc:
+    depends_on:
+      - agado-api-svc
+    build:
+      context: frontend
+    expose:
+      - "80"
+    ports:
+      - "8080:80"
