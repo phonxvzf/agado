@@ -9,7 +9,9 @@ const ctrlHotelRoom = {
     const hotelId = ctx.response.body['hotel_id'];
 
     const hotelRoomInfo = await hotelRoomRepo.getHotelRoomByHotelId(hotelId);
-    hotelRoomInfo.map(room => room['price'] = Number(String(room['price']).replace(/[,$]/g, '')));
+    hotelRoomInfo.forEach((room) => {
+      room['price'] = Number(room['price'].toString().replace(/[,$]/g, ''));
+    });
 
     ctx.response.body['rooms'] = hotelRoomInfo;
 
@@ -70,7 +72,7 @@ const ctrlHotelRoom = {
     const hotelIdList = ctx.response.body.map(hotel => hotel['hotel_id']);
     const hotelRoomInfo = await hotelRoomRepo.getByHotelIds(hotelIdList);
     hotelRoomInfo.forEach((room) => {
-      room['price'] = Number(room['price'].toString().replace('/[,$]/g', ''));
+      room['price'] = Number(room['price'].toString().replace(/[,$]/g, ''));
     });
 
     for (const each of ctx.response.body) {
