@@ -77,7 +77,7 @@ export default class CustomNavBar extends Component {
   }
 
   getAmenitiesQs = () => {
-    let amenities = [this.state.amenities[0] ? 0 : 1];
+    let amenities = this.state.amenities[0] === undefined ? [] : [this.state.amenities[0] ? 0 : 1];
     for (let i = 1; i < this.state.amenities.length; i++) {
       if (this.state.amenities[i]) {
         amenities.push(i + 1);
@@ -191,6 +191,8 @@ export default class CustomNavBar extends Component {
       const num = Number(search.amenities[i]);
       if (num === 0) {
         amenities[0] = true;
+      } else if (num === 1) {
+        amenities[0] = false;
       } else if (num >= 2) {
         amenities[num - 1] = true;
       }
@@ -209,7 +211,17 @@ export default class CustomNavBar extends Component {
 
   toggleAmenitiesFilter = (idx) => {
     let amenities = this.state.amenities;
-    amenities[idx] = !amenities[idx];
+    if (idx === 0) {
+      if (amenities[0] === undefined) {
+        amenities[0] = false;
+      } else if (amenities[0] === false) {
+        amenities[0] = true;
+      } else if (amenities[0] === true) {
+        amenities[0] = undefined;
+      }
+    } else {
+      amenities[idx] = !amenities[idx];
+    }
     this.setState({
       amenities: amenities
     })
@@ -230,7 +242,7 @@ export default class CustomNavBar extends Component {
         return true;
       }
     }
-    return false;
+    return this.state.amenities[0] !== undefined;
   }
 
   getDateString = () => {
@@ -938,7 +950,7 @@ export default class CustomNavBar extends Component {
                   <Col xs={4}>
                     <Button
                       variant="light"
-                      className="room-card-amenity text-center px-0 py-0 my-2 bold text-dark"
+                      className={"room-card-amenity text-center px-0 py-0 my-2 bold " + (this.state.amenities[0] === undefined ? "text-lightgray" : "text-dark")}
                       onClick={() => this.toggleAmenitiesFilter(0)}>
                       <p dangerouslySetInnerHTML={{ __html: this.state.amenities[0] ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
                       {this.state.amenities[0] ? <>{hotelService.amenities[0].name}<br />&nbsp;&nbsp;&nbsp;</> : hotelService.amenities[1].name}
