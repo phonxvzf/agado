@@ -140,7 +140,7 @@ export default class SigninSignupModal extends Component {
 
   getSigninForm = () => {
     return (
-      <Form validated onSubmit={this.signin} className="mx-5 my-5">
+      <Form onSubmit={this.signin} className="mx-5 my-5">
         <Form.Group>
           <Form.Label>Username</Form.Label>
           <Form.Control
@@ -171,7 +171,7 @@ export default class SigninSignupModal extends Component {
 
   getSignupForm = () => {
     return (
-      <Form validated onSubmit={(e) => { e.preventDefault(); this.setState({ showModal: "signup_confirm" }); }} className="mx-2">
+      <Form onSubmit={(e) => { e.preventDefault(); this.setState({ showModal: "signup_confirm" }); }} className="mx-2">
         <Form.Row>
           <Form.Group as={Col}>
             <Form.Label>Username</Form.Label>
@@ -271,8 +271,10 @@ export default class SigninSignupModal extends Component {
             <Form.Label>Phone</Form.Label>
             <Form.Control
               pattern="^0[0-9]{9}$"
+              maxLength={10}
               type="tel"
-              onChange={(e) => this.setState({ signup: { ...this.state.signup, phone_num: e.currentTarget.value } })}
+              onChange={(e) => this.setState({ signup: { ...this.state.signup, phone_num: e.currentTarget.value.replace(/\D/g, '') } })}
+              value={this.state.signup ? this.state.signup.phone_num : ""}
               placeholder="Phone"
               required />
             <Form.Text className={"text-danger " + (!this.state.signup.phone_num || /^0[0-9]{9}$/.test(this.state.signup.phone_num) ? "d-none" : "")}>Format: 0 followed by 9 digits</Form.Text>

@@ -873,15 +873,30 @@ export default class CustomNavBar extends Component {
                     maxValue={this.props.priceRange.max}
                     value={{
                       min: this.state.price.min,
-                      max: this.state.price.max
+                      max: this.state.price.min > this.state.price.max ? this.state.price.min : this.state.price.max
                     }}
                     step={100}
                     onChange={val => this.setState({ price: val })} />
                 </div>
                 <br />
                 <Row>
-                  <Col>MIN: ฿ {this.state.price.min.toFixed(0)}</Col>
-                  <Col>MAX: ฿ {this.state.price.max.toFixed(0)}</Col>
+                  <Col>
+                    MIN:
+                    <Form.Control
+                      className={this.state.price.min > this.state.price.max ? "border-danger" : ""}
+                      step={1}
+                      type="number"
+                      onChange={(e) => this.setState({ price: { ...this.state.price, min: e.currentTarget.value === "" ? "" : Number(e.currentTarget.value.replace(/\D/g,'')) } })}
+                      value={this.state.price.min} />
+                  </Col>
+                  <Col>MAX:
+                  <Form.Control
+                      className={this.state.price.min > this.state.price.max ? "border-danger" : ""}
+                      step={1}
+                      type="number"
+                      onChange={(e) => this.setState({ price: { ...this.state.price, max: e.currentTarget.value === "" ? "" : Number(e.currentTarget.value.replace(/\D/g,'')) } })}
+                      value={this.state.price.max} />
+                  </Col>
                 </Row>
                 <br />
                 <Button className="w-100" variant="dark" onClick={() => this.setState({ price: { min: this.props.priceRange.min, max: this.props.priceRange.max } })}><div className="fs-12">Clear</div></Button>

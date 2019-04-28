@@ -195,11 +195,12 @@ export default class Payment extends Component {
               <Col xs={12}>
                 <Form.Control
                   pattern="^[0-9]{16}$"
+                  maxLength={16}
                   type="text"
-                  onChange={(e) => this.setState({ payment: { ...payment, number: e.currentTarget.value.substr(0, 16) } })}
-                  value={this.state.payment ? this.state.payment.number : ""}
+                  onChange={(e) => this.setState({ payment: { ...payment, number: e.currentTarget.value.replace(/\D/g, '') } })}
+                  value={payment ? payment.number : ""}
                   required />
-                <Form.Text className={"text-danger " + (!this.state.payment || !this.state.payment.number || /^[0-9]{16}$/.test(this.state.payment.number) ? "d-none" : "")}>
+                <Form.Text className={"text-danger " + (!payment || !payment.number || /^[0-9]{16}$/.test(payment.number) ? "d-none" : "")}>
                   Format: contains 16 digits
                 </Form.Text>
               </Col>
@@ -218,23 +219,32 @@ export default class Payment extends Component {
             </Row>
             <Row className="align-items-start">
               <Col>
-                <Form.Control
-                  pattern="^[0-9]{2}\/[0-9]{2}$"
-                  type="text"
-                  onChange={(e) => this.setState({ payment: { ...payment, exp: e.currentTarget.value } })}
-                  required />
-                <Form.Text className={"text-danger " + (!this.state.payment || !this.state.payment.exp || /^[0-9]{2}\/[0-9]{2}$/.test(this.state.payment.exp) ? "text-transparent" : "")}>
+                <Row className="align-items-center">
+                  <Col>
+                    <Form.Control as="select">
+                      {Array(12).fill().map((_, i) => <option>{moment().month(i).format('MM')}</option>)}
+                    </Form.Control>
+                  </Col>
+                  /
+                  <Col>
+                    <Form.Control as="select">
+                      {Array(10).fill().map((_, i) => <option>{String(moment().year() + i).substr(2, 2)}</option>)}
+                    </Form.Control>
+                  </Col>
+                </Row>
+                <Form.Text className={"text-danger " + (!payment || !payment.exp || /^[0-9]{2}\/[0-9]{2}$/.test(payment.exp) ? "text-transparent" : "")}>
                   Format: MM/YY
                 </Form.Text>
               </Col>
               <Col>
                 <Form.Control
                   pattern="^[0-9]{3}$"
+                  maxLength={3}
                   type="text"
-                  onChange={(e) => this.setState({ payment: { ...payment, cvc: e.currentTarget.value.substr(0, 3) } })}
-                  value={this.state.payment ? this.state.payment.cvc : ""}
+                  onChange={(e) => this.setState({ payment: { ...payment, cvc: e.currentTarget.value.replace(/\D/g, '') } })}
+                  value={payment ? payment.cvc : ""}
                   required />
-                <Form.Text className={"text-danger " + (!this.state.payment || !this.state.payment.cvc || /^[0-9]{3}$/.test(this.state.payment.cvc) ? "text-transparent" : "")}>
+                <Form.Text className={"text-danger " + (!payment || !payment.cvc || /^[0-9]{3}$/.test(payment.cvc) ? "text-transparent" : "")}>
                   Format: contains 3 digits
                 </Form.Text>
               </Col>
