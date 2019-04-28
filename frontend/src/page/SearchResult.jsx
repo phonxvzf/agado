@@ -64,8 +64,7 @@ export default class SearchResult extends Component {
     if (!this.state) {
       return <></>;
     }
-    // const hotels = this.getFilteredHotels();
-    const hotels = this.state.hotels;
+    const hotels = this.getFilteredHotels();
     return (
       <div className="search-result-bg">
         <div className="scroll-snap-child" />
