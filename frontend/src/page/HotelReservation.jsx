@@ -11,13 +11,18 @@ export default class HotelReservation extends Component {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
-    const hotel = hotelService.getHotel(Number(search.hotel_id));
+    const hotel = await hotelService.getHotel(Number(search.hotel_id));
 
     let reservations = [];
     if (currentUser) {
       reservations = await reservationService.getReservationOfHotel(Number(search.hotel_id));
-      reservations = reservations.filter(reservation => new Date(reservation.checkin) > new Date());
-      reservations.sort((a, b) => new Date(a.checkin) < new Date(b.checkin));
+      reservations = reservations.filter(reservation => new Date(reservation.checkout) > new Date());
+      reservations.sort((a, b) => {
+        if (new Date(a.checkin) <= new Date() && new Date(b.checkin) <= new Date()) {
+          return new Date(a.checkout) - new Date(b.checkout);
+        }
+        return new Date(a.checkin) - new Date(b.checkin);
+      });
     }
 
     this.setState({

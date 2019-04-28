@@ -44,21 +44,21 @@ export default class HotelCard extends Component {
           <Card.Header>
             <Row className="align-items-center text-dark" noGutters={true}>
               <Col className="mr-auto">
-                <Card.Title as="h5">{hotel.name}</Card.Title>
-                <Card.Subtitle as="h6">{hotel.city}</Card.Subtitle>
+                <Card.Title as="h5">{hotel.name.length < 16 ? hotel.name : hotel.name.slice(0, 16) + "..."}</Card.Title>
+                <Card.Subtitle as="h6">{hotel.city.length < 16 ? hotel.city : hotel.city.slice(0, 16) + "..."}</Card.Subtitle>
               </Col>
               <OverlayTrigger overlay={<Tooltip>{hotel.total_review} review{hotel.total_review > 1 ? "s" : ""}</Tooltip>}>
-                  <Button variant="link" className="link-only px-0" href={this.getHotelLink() + "#hotel_reviews"}>
-                    {this.getRatingStar(hotel.rating)}
-                    <br />
-                    <strong>Rating {hotel.rating.toFixed(1)}</strong>
-                  </Button>
-                </OverlayTrigger>
+                <Button variant="link" className="link-only px-0" href={this.getHotelLink() + "#hotel_reviews"}>
+                  {this.getRatingStar(hotel.rating)}
+                  <br />
+                  <strong>Rating {hotel.rating.toFixed(1)}</strong>
+                </Button>
+              </OverlayTrigger>
             </Row>
           </Card.Header>
           <div className="ratio4-3">
             {
-              hotel.imgs[0] === "" ?
+              !hotel.imgs[0] ?
                 <div className="bg-dark abs-center border-none" />
                 : <Card.Img className="absolute border-rad-none" src={hotel.imgs[0]} />
             }

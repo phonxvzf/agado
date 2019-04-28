@@ -17,7 +17,7 @@ const reservationRepo = {
       .whereIn('hotel_id', hotelIds);
   },
 
-  createReservation: async (reservation: Reservation): Promise<number> => {
+  createReservation: async (reservation: Reservation): Promise<number[]> => {
     return database('reservation').insert(reservation, 'reservation_id');
   },
 

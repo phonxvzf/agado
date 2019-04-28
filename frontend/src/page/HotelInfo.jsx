@@ -18,25 +18,19 @@ export default class HotelInfo extends Component {
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
     let oldReview = null;
+    let isRequestPending = false;
     if (currentUser) {
-      oldReview = reviewService.getOldReview(currentUser.user_id, Number(search.hotel_id));
+      oldReview = await reviewService.getOldReview(Number(search.hotel_id));
+      isRequestPending = await requestService.isRequestPending(Number(search.hotel_id), currentUser.user_id);
     }
-    let hotel = hotelService.getHotel(Number(search.hotel_id));
-    if (hotel) {
-      hotel.reviews = await Promise.all(hotel.reviews.map(async review => {
-        return {
-          ...review,
-          user: await userService.getUser(review.user_id)
-        };
-      }));
-      hotel.managersInfo = await Promise.all(hotel.managers.map(async user_id => await userService.getUser(user_id)));
-    }
+    const hotel = await hotelService.getHotel(Number(search.hotel_id), search.checkin, search.checkout);
     this.setState({
       pathname: pathname,
       search: search,
       currentUser: currentUser,
       hotel: hotel,
-      oldReview: oldReview
+      oldReview: oldReview,
+      isRequestPending: isRequestPending
     });
   }
 
@@ -48,12 +42,12 @@ export default class HotelInfo extends Component {
     return pathname + search;
   }
 
-  requestPermission = () => {
+  requestPermission = async () => {
     const request = {
       hotel_id: Number(this.state.search.hotel_id),
       user_id: this.state.currentUser.user_id
     }
-    if (requestService.createRequest(request)) {
+    if (await requestService.createRequest(request)) {
       window.history.go();
     }
   }
@@ -87,7 +81,9 @@ export default class HotelInfo extends Component {
                   {this.getInfoSection()}
                 </div>
                 <div id="hotel_rooms">
-                  <RoomSelection search={this.state.search} currentUser={this.state.currentUser} rooms={this.state.hotel.rooms} />
+                  {
+                    <RoomSelection search={this.state.search} currentUser={this.state.currentUser} rooms={this.state.hotel.rooms} />
+                  }
                 </div>
               </>
           }
@@ -179,7 +175,7 @@ export default class HotelInfo extends Component {
   getInfoSection = () => {
     const hotel = this.state.hotel;
     return (
-      <>
+      <div className="break-all-word">
         <h2 className="mt-5 scroll-snap-child">{hotel.name}</h2>
         <h4 className="">{hotel.city}</h4>
         <hr />
@@ -196,7 +192,7 @@ export default class HotelInfo extends Component {
               <Row className="align-items-center mb-4" noGutters>
                 <Col className="text-center">
                   {
-                    requestService.isRequestPending(Number(this.state.search.hotel_id), this.state.currentUser.user_id) ?
+                    this.state.isRequestPending ?
                       <Button disabled variant="secondary" className="bg-requestpx-4">
                         <i className="fas fa-paper-plane" /> Request is pending
                           </Button>
@@ -210,7 +206,7 @@ export default class HotelInfo extends Component {
             </>
         }
         <hr className="mb-5" />
-      </>
+      </div>
     )
   }
 
@@ -278,7 +274,7 @@ export default class HotelInfo extends Component {
   getReviewsComponent = () => {
     return this.state.hotel.reviews.map(review => {
       const user = review.user;
-      if (!user) return;
+      if (!user) return <></>;
       return (
         <>
           <hr className="my-2" />
@@ -333,8 +329,8 @@ export default class HotelInfo extends Component {
         </Row>
         <Row>
           {
-            hotel.managersInfo.map(user => {
-              if (!user) return;
+            hotel.managers_info.map(user => {
+              if (!user) return <></>;
               return (
                 <Col xs={12} sm={6} md={4} lg={4} className="my-3">
                   <a className="text-dark" href={this.getProfileLink(user.user_id)}>

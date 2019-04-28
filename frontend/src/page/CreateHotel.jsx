@@ -1,7 +1,6 @@
 import qs from 'qs';
 import React, { Component } from 'react';
 import { Button, Col, Form, Image, Row } from 'react-bootstrap';
-import ItemsCarousel from 'react-items-carousel';
 import CustomModal from '../component/CustomModal';
 import NewRoomCard from '../component/NewRoomCard';
 import '../css/CreateHotel.css';
@@ -95,20 +94,20 @@ export default class CreateHotel extends Component {
     }
   }
 
-  createHotel = () => {
+  createHotel = async () => {
     this.props.setPreventLeavePage(false);
     let hotel = this.state.hotel;
     hotel.managers = [this.state.currentUser.user_id];
-    if (hotelService.createHotel(hotel)) {
+    if (await hotelService.createHotel(hotel)) {
       window.location.href = "/myhotel";
       // this.setState({ showModal: "create_hotel_completed" });
     }
   }
 
-  editHotel = () => {
+  editHotel = async () => {
     this.props.setPreventLeavePage(false);
     const hotel = this.state.hotel;
-    if (hotelService.editHotel(hotel.hotel_id, hotel)) {
+    if (await hotelService.editHotel(hotel)) {
       // this.setState({ showModal: "edit_hotel_completed" });
       window.location.href = this.getHotelLink()
     }
@@ -258,14 +257,20 @@ export default class CreateHotel extends Component {
               </div>
               <div className="position-relative">
                 <Form.Control
-                  type="text"
+                  as="textarea"
+                  rows={3}
                   className="custom-form-control w-100 h3"
                   onChange={(e) => this.setState({ hotel: { ...hotel, desc: e.currentTarget.value } })}
+                  onClick={() => this.setState({ focus: "desc" })}
                   onBlur={() => this.setState({ focus: null })}
                   placeholder=" "
                   defaultValue={hotel.desc}
                   required />
-                <span className="hotel-desc h3">Description</span>
+                <span className={"hotel-desc h3 " +
+                  (this.state.hotel.desc ? "medium" :
+                    this.state.focus === "desc" ? "small" : "")}>
+                  Description
+                </span>
               </div>
               {/* <h3 className="d-inline" onClick={() => this.setState({ focus: "name" })}>{hotel.name ? hotel.name : "Hotel's name"}</h3>
               <Button variant="link" className="text-dark px-0 align-top" onClick={() => this.setState({ focus: "name" })}>
@@ -339,15 +344,15 @@ export default class CreateHotel extends Component {
             <div id="hotel_rooms" className="mb-5">
               <div>
                 <h3 className="scroll-snap-child px-content bold">Rooms</h3>
-                <ItemsCarousel
+                {/* <ItemsCarousel
                   className="scroll-snap-child"
                   freeScrolling
                   numberOfCards={1}
-                  gutter={-0.05 * window.innerWidth}>
+                  gutter={-0.05 * window.innerWidth}> */}
                   {
                     hotel.rooms.map((room, idx) => {
                       return (
-                        <Row className="my-4 ml-2 w-90">
+                        <Row className="my-4 mx-1 scroll-snap-child px-content">
                           <NewRoomCard room={room}
                             idx={idx}
                             setRoom={(idx, room) => {
@@ -363,7 +368,7 @@ export default class CreateHotel extends Component {
                         </Row>
                       );
                     }).concat(
-                      <Row className="my-4 ml-2 w-90">
+                      <Row className="my-4 mx-1 scroll-snap-child px-content">
                         <NewRoomCard
                           addNewRoom={(room) => {
                             let rooms = JSON.parse(JSON.stringify(hotel.rooms));
@@ -373,7 +378,7 @@ export default class CreateHotel extends Component {
                       </Row>
                     )
                   }
-                </ItemsCarousel>
+                {/* </ItemsCarousel> */}
               </div>
             </div>
           </Form>

@@ -17,7 +17,7 @@ export default class RoomCard extends Component {
   _onChange = (e) => {
     const target = e.currentTarget;
     this.setState({
-      num: target.value === "" ? "" : Math.min(target.max, Math.max(target.value, target.min))
+      num: !target.value ? "" : Math.min(target.max, Math.max(target.value, target.min))
     });
   }
 
@@ -79,7 +79,7 @@ export default class RoomCard extends Component {
                           <Carousel.Item>
                             <div className="ratio4-3">
                               {
-                                img === "" ?
+                                !img ?
                                   <div className="bg-dark abs-center border-none" />
                                   : <Image className="absolute" src={img} fluid />
                               }
@@ -140,7 +140,9 @@ export default class RoomCard extends Component {
           {
             this.props.interval <= 0 && (!currentUser || currentUser.user_type !== "hotel_manager") ?
               <>
-                <Alert variant="danger">Please enter dates to see prices.</Alert>
+                <a onClick={() => document.querySelector('#date-picker').click()}>
+                  <Alert variant="danger">Please enter dates to see prices.</Alert>
+                </a>
                 <div className="d-md-none">
                   <DateRangePicker
                     minDate={moment()}
@@ -190,6 +192,7 @@ export default class RoomCard extends Component {
                           <Form.Control
                             className="border-dark"
                             type="number"
+                            step={1}
                             onChange={this._onChange}
                             placeholder="0"
                             min={0}
@@ -201,6 +204,7 @@ export default class RoomCard extends Component {
                             <Form.Control
                               className="border-dark"
                               type="number"
+                              step={1}
                               onChange={this._onChange}
                               placeholder="0"
                               min={0}

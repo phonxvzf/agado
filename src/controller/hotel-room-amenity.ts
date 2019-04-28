@@ -18,15 +18,17 @@ const ctrlHotelRoomAmenity = {
   },
 
   getUserHotelRoomAmenity: async(ctx: koa.Context, next: () => Promise<any>) => {
+    const hotelIdList = ctx.response.body.map(hotel => hotel['hotel_id']);
+    const hotelRoomAmenityInfo = await hotelRoomAmenityRepo.getByHotelIds(hotelIdList);
     for (const each of ctx.response.body) {
       const hotelId = each['hotel_id'];
 
       for (let i = 0; i < each['rooms'].length; i += 1) {
         const roomId = each['rooms'][i]['room_id'];
-        const hotelRoomAmenityInfo =
-          await hotelRoomAmenityRepo.getHotelRoomAmenity(hotelId, roomId);
+        const currentHotelRoomAmenity = hotelRoomAmenityInfo.filter(amenity =>
+          amenity['hotel_id'] === hotelId && amenity['room_id'] === roomId);
         each['rooms'][i]['amenities'] =
-          hotelRoomAmenityInfo.map(amenity => amenity['amenity_id']);
+        currentHotelRoomAmenity.map(amenity => amenity['amenity_id']);
       }
     }
 

@@ -41,32 +41,98 @@ const ctrlSearch = {
     }
 
     // Get all hotels
-    let availableHotels: Hotel[] = await search.searchByHotelName('');
-    const availableHotelIds = availableHotels.map(h => h.hotel_id);
-    const allReservations = await reservation.getByHotelIds(availableHotelIds);
+    function compare(a: any, b: any) { return a['hotel_id'] - b['hotel_id']; }
+
+    const allHotels: Hotel[] = await search.searchByHotelName('');
+    allHotels.sort(compare);
+    const allHotelIds = allHotels.map(h => h.hotel_id);
+    const allReservations = await reservation.getByHotelIds(allHotelIds);
+
+    // Merge with hotel_room
+    const hotelRooms = await hotelRoomRepo.getByHotelIds(allHotelIds);
+    hotelRooms.sort(compare);
+
+    let iHotelRooms = 0;
+    for (let i = 0; i < allHotels.length; i += 1) {
+      allHotels[i]['rooms'] = [];
+      for (;
+        iHotelRooms < hotelRooms.length &&
+        allHotels[i].hotel_id === hotelRooms[iHotelRooms].hotel_id;
+        iHotelRooms += 1) {
+        allHotels[i]['rooms'].push(hotelRooms[iHotelRooms]);
+      }
+    }
 
     // Filter by checkin & checkout time
-    const reservedHotelIds: Set<number> = new Set(allReservations.filter(
-      rsv => intersect(checkin, checkout, new Date(rsv.checkin), new Date(rsv.checkout)),
-    ).map(rsv => rsv.hotel_id));
+    const availableHotelIds: number[] = [];
+    for (const hotel of allHotels) {
+      let isAvailable: boolean = false;
 
-    availableHotels = availableHotels.filter(h => !reservedHotelIds.has(h.hotel_id));
+      for (const room of hotel['rooms']) {
+        const roomId = room['room_id'];
+        const currentReservationInfo = allReservations.filter(reserve =>
+          reserve['hotel_id'] === hotel['hotel_id'] && reserve['room_id'] === roomId);
+        const intersectReservation = currentReservationInfo.filter((reserve) => {
+          const reserveCheckIn = new Date(reserve['checkin']);
+          const reserveCheckOut = new Date(reserve['checkout']);
+
+          return intersect(checkin, checkout, reserveCheckIn, reserveCheckOut);
+        });
+
+        const engagementInfo = {};
+        const dateInfo: Date[] = [];
+
+        for (const reserve of intersectReservation) {
+          if (engagementInfo[reserve['checkin'].getTime()] == null) {
+            engagementInfo[reserve['checkin'].getTime()] = 0;
+            dateInfo.push(reserve['checkin']);
+          }
+          if (engagementInfo[reserve['checkout'].getTime()] == null) {
+            engagementInfo[reserve['checkout'].getTime()] = 0;
+            dateInfo.push(reserve['checkout']);
+          }
+
+          engagementInfo[reserve['checkin'].getTime()] += reserve['num'];
+          engagementInfo[reserve['checkout'].getTime()] -= reserve['num'];
+        }
+
+        dateInfo.sort((date1, date2) => date1.getTime() - date2.getTime());
+        let maxEngagement = 0;
+        let currentEngagement = 0;
+        for (const date of dateInfo) {
+          currentEngagement += engagementInfo[date.getTime()];
+          maxEngagement = (maxEngagement > currentEngagement ? maxEngagement : currentEngagement);
+        }
+
+        const availableRoom = room['total_room'] - maxEngagement;
+        room['available_room'] = availableRoom;
+
+        if (availableRoom > 0) {
+          isAvailable = true;
+        }
+      }
+
+      if (isAvailable) {
+        availableHotelIds.push(hotel['hotel_id']);
+      }
+    }
+
+    const availableHotels = allHotels.filter(h => availableHotelIds.includes(h.hotel_id));
 
     // Join stuff
-    function compare(a: any, b: any) { return a['hotel_id'] - b['hotel_id']; }
 
     availableHotels.sort(compare);
     const [
       hotelImgs,
       hotelManagers,
-      hotelRooms,
+      // hotelRooms,
       hotelReviews,
       hotelAmenities,
       hotelRoomImages,
     ] = await Promise.all([
       hotelImageRepo.getByHotelIds(availableHotelIds),
       hotelManagerRepo.getByHotelIds(availableHotelIds),
-      hotelRoomRepo.getByHotelIds(availableHotelIds),
+      // hotelRoomRepo.getByHotelIds(availableHotelIds),
       review.getByHotelIds(availableHotelIds),
       hotelRoomAmenityRepo.getByHotelIds(availableHotelIds),
       hotelRoomImageRepo.getByHotelIds(availableHotelIds),
@@ -74,12 +140,13 @@ const ctrlSearch = {
 
     hotelImgs.sort(compare);
     hotelManagers.sort(compare);
-    hotelRooms.sort(compare);
+    // hotelRooms.sort(compare);
     hotelReviews.sort(compare);
 
     let iHotelImgs = 0;
     let iHotelManagers = 0;
-    let iHotelRooms = 0;
+    // let iHotelRooms = 0;
+    iHotelRooms = 0;
     let iHotelReviews = 0;
     for (let i = 0; i < availableHotels.length; i += 1) {
       availableHotels[i]['imgs'] = [];
@@ -117,9 +184,8 @@ const ctrlSearch = {
         hotelRooms[iHotelRooms]['imgs'] = hotelRoomImages
           .filter(img => img.room_id === hotelRooms[iHotelRooms].room_id)
           .map(img => img.img);
-        hotelRooms[iHotelRooms]['price'] = Number(
-          hotelRooms[iHotelRooms]['price'].toString().substr(1),
-        );
+        hotelRooms[iHotelRooms]['price'] =
+          Number(String(hotelRooms[iHotelRooms]['price']).replace(/[,$]/g, ''));
         availableHotels[i]['rooms'].push(hotelRooms[iHotelRooms]);
       }
 

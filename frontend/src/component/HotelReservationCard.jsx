@@ -18,7 +18,13 @@ export default class HotelReservationCard extends Component {
 
   getDayleft = () => {
     const checkin = this.props.reservation.checkin;
+    const checkout = this.props.reservation.checkout;
     const dayLeft = Math.max(0, (new Date(checkin) - new Date()) / 24 / 60 / 60 / 1000);
+    if (new Date(checkout) <= new Date()) {
+      return "Passed";
+    } else if (new Date(checkin) <= new Date()) {
+      return "During";
+    } 
     return dayLeft.toFixed(0) > 1 ? dayLeft.toFixed(0) + " days left" :
       dayLeft.toFixed(0) === 1 ? "1 day left" :
         (dayLeft * 24).toFixed(0) > 1 ? (dayLeft * 24).toFixed(0) + " hours left" :
@@ -47,9 +53,9 @@ export default class HotelReservationCard extends Component {
   render() {
     const reservation = this.props.reservation;
     const hotel = this.props.hotel;
-    // const room = hotel.rooms.filter(room => room.room_id === Number(reservation.room_id))[0];
-    const room = hotel.rooms[Number(reservation.room_id)];
+    const room = hotel.rooms.filter(room => room.room_id === Number(reservation.room_id))[0];
     const user = this.state.user;
+    const days = this.getDayleft();
     if (!user) {
       return <></>;
     }
@@ -62,7 +68,7 @@ export default class HotelReservationCard extends Component {
               <Card.Subtitle as="h6">{moment(reservation.checkin).format("D MMM YYYY") + " - " + moment(reservation.checkout).format("D MMM YYYY")}</Card.Subtitle>
             </Col>
             <Col xs={4} className="text-center">
-              <Badge variant="dark">{this.getDayleft()}</Badge>
+            <Badge variant={(days === "Passed" ? "secondary" : days === "During" ? "success" : "dark")}>{days}</Badge>
             </Col>
           </Row>
         </Card.Header>

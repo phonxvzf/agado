@@ -31,7 +31,7 @@ export default class ReviewModal extends Component {
     }
   }
 
-  createReview = (e) => {
+  createReview = async (e) => {
     e.preventDefault();
     const review = {
       hotel_id: this.props.hotel_id,
@@ -41,27 +41,28 @@ export default class ReviewModal extends Component {
       rating: this.state.review.rating,
       comment: this.state.review.comment
     }
-    if (reviewService.createReview(review)) {
+    if (await reviewService.createReview(review)) {
       this.setState({ showModal: "create_completed" });
     }
   }
 
-  editReview = (e) => {
+  editReview = async (e) => {
     e.preventDefault();
     const editedReview = {
+      hotel_id: this.props.hotel_id,
       title: this.state.review.title,
       date: new Date(),
       rating: this.state.review.rating,
       comment: this.state.review.comment
     }
-    if (reviewService.editReview(this.props.oldReview.review_id, editedReview)) {
+    if (await reviewService.editReview(this.props.oldReview.review_id, editedReview)) {
       this.setState({ showModal: "edit_completed" });
     }
   }
 
-  deleteReview = (e) => {
+  deleteReview = async (e) => {
     e.preventDefault();
-    if (reviewService.deleteReview(this.props.oldReview.review_id)) {
+    if (await reviewService.deleteReview(this.props.oldReview.review_id)) {
       window.history.go();
     }
   }

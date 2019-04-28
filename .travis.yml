@@ -42,11 +42,17 @@ jobs:
         - DB_PASSWORD=
         - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
       script: 
-        # - npm run lint
+        # Backend
+        - npm run lint
         - npm run migrate
         - npm run test-coverage-ci
         - docker build .
-        - docker build frontend
+        # Frontend
+        - cd frontend
+        - npm install
+        - CI=false SKIP_PREFLIGHT_CHECK=true npm run build
+        - docker build .
+        - cd ..
       after_success:
         - codecov
     - stage: deploy

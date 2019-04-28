@@ -49,18 +49,6 @@ class App extends Component {
 
   componentDidMount() {
     const pathname = window.location.pathname;
-    const hash = window.location.hash;
-
-    window.onload = () => {
-      if (!hash) {
-        return;
-      }
-      const tag = document.querySelector(hash);
-      if (tag) {
-        tag.scrollIntoView({ behavior: 'smooth' });
-      }
-    }
-
     window.onbeforeunload = () => {
       if (this.state.preventLeavePage) {
         if (pathname === "/payment" || pathname === "/hotel/create" || (pathname === "/hotel" && this.state.mode === "edit")) {
@@ -70,8 +58,23 @@ class App extends Component {
       return;
     };
 
+    const hash = window.location.hash;
+    if (hash) {
+      const gotoHash = setInterval(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          clearInterval(gotoHash);
+        }
+      }, 100);
+    }
+
     document.onclick = (e) => {
-      if (e.target && !e.target.classList.contains('navbar-collapse') && document.querySelector('.navbar-collapse').classList.contains('show')) {
+      if (e.target &&
+        e.target !== document.querySelector('.navbar-toggler') &&
+        e.target !== document.querySelector('.navbar-toggler-icon') &&
+        !e.target.classList.contains('navbar-collapse') &&
+        document.querySelector('.navbar-collapse').classList.contains('show')) {
         document.querySelector('.navbar-toggler').click();
       }
     }

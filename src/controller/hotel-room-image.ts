@@ -17,14 +17,17 @@ const ctrlHotelRoomImage = {
   },
 
   getUserHotelRoomImage: async(ctx: koa.Context, next: () => Promise<any>) => {
+    const hotelIdList = ctx.response.body.map(hotel => hotel['hotel_id']);
+    const hotelRoomImageInfo = await hotelRoomImageRepo.getByHotelIds(hotelIdList);
+
     for (const each of ctx.response.body) {
       const hotelId = each['hotel_id'];
 
       for (let i = 0; i < each['rooms'].length; i += 1) {
         const roomId = each['rooms'][i]['room_id'];
-        const hotelRoomImageInfo =
-          await hotelRoomImageRepo.getHotelRoomImage(hotelId, roomId);
-        each['rooms'][i]['imgs'] = hotelRoomImageInfo.map(image => image['img']);
+        const currentHotelRoomImageInfo = hotelRoomImageInfo.filter(image =>
+          image['hotel_id'] === hotelId && image['room_id'] === roomId);
+        each['rooms'][i]['imgs'] = currentHotelRoomImageInfo.map(image => image['img']);
       }
     }
 

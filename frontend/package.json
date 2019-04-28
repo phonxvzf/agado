@@ -1,11 +1,12 @@
 {
   "name": "react-bootstrap",
   "version": "0.1.0",
-  "private": true,
   "dependencies": {
     "@material-ui/core": "^3.9.3",
     "@material-ui/styles": "^3.0.0-alpha.10",
-    "bootstrap-daterangepicker": "^3.0.4",
+    "axios": "^0.18.0",
+    "bootstrap-daterangepicker": "^3.0.5",
+    "bufferutil": "^4.0.1",
     "create-react-class": "^15.6.3",
     "inspector": "^0.5.0",
     "ion-rangeslider": "^2.3.0",
@@ -26,7 +27,7 @@
     "react-items-carousel": "^2.3.2",
     "react-rangeslider": "^2.2.0",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "2.1.8"
+    "react-scripts": "^3.0.0"
   },
   "scripts": {
     "start": "react-scripts start",

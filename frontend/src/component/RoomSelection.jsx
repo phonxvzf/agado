@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Row } from 'react-bootstrap';
-import ItemsCarousel from 'react-items-carousel';
 import '../css/RoomSelection.css';
 import RoomCard from './RoomCard';
 
@@ -20,27 +19,28 @@ export default class RoomSelection extends Component {
   }
 
   render() {
+    const rooms = this.props.rooms.filter(room => room.available_room > 0);
     return (
-      this.props.rooms.length === 0 ? "" :
-        <div>
-          <h3 className="scroll-snap-child px-content">Select your room style</h3>
-          <ItemsCarousel
-            className="scroll-snap-child"
-            freeScrolling
-            numberOfCards={1}
-            gutter={-0.05 * window.innerWidth}>
-            {
-              this.props.rooms.map((room, idx) => {
-                return (
-                  <Row className="my-4 ml-2 w-90" key={room.room_id}>
-                    <RoomCard search={this.props.search} currentUser={this.props.currentUser} room={room} room_id={idx} interval={this.state.interval} />
-                  </Row>
-                );
-              })
-            }
-          </ItemsCarousel>
-          <hr className="mb-5" />
-        </div>
+      <div className="px-content">
+        {
+          rooms.length === 0 ?
+            <h3 className="scroll-snap-child text-secondary">No rooms available now</h3>
+            :
+            <>
+              <h3 className="scroll-snap-child">Select your room style</h3>
+              {
+                rooms.map(room => {
+                  return (
+                    <Row className="my-4 mx-1 scroll-snap-child" key={room.room_id}>
+                      <RoomCard search={this.props.search} currentUser={this.props.currentUser} room={room} room_id={room.room_id} interval={this.state.interval} />
+                    </Row>
+                  );
+                })
+              }
+              <hr className="mb-5" />
+            </>
+        }
+      </div>
     )
   }
 }

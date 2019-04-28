@@ -6,6 +6,7 @@ import { validator } from '../common/validator';
 import { hotelManagerRepo } from '../model/hotel-manager';
 import review from '../model/review';
 import { userRepo } from '../model/user';
+import { COPYFILE_EXCL } from 'constants';
 
 const reviewRepo = review;
 
@@ -18,9 +19,28 @@ const ctrlHotel = {
       throw new ApiError('Hotel not found', codes.HOTEL_NOT_FOUND, 404);
     }
 
+    const userInfo = await userRepo.getAllUsers();
+    userInfo.map((user) => {
+      delete user['token'];
+      delete user['password'];
+    });
+
+    const hotelManagerTable = await hotelManagerRepo.getHotelManagerByHotelId(hotelId);
+    const hotelManagerList = hotelManagerTable.map(hotelManager => hotelManager['user_id']);
+
+    const hotelManagerInfo = [];
+    for (const userId of hotelManagerList) {
+      hotelManagerInfo.push(userInfo.filter(user => user['user_id'] === userId)[0]);
+    }
+
     const reviewInfo = await reviewRepo.getByHotel(hotelId);
+    for (const review of reviewInfo) {
+      review['user'] = userInfo.filter(user => user['user_id'] === review['user_id'])[0];
+    }
 
     ctx.response.body = hotelInfo;
+    ctx.response.body['managers'] = hotelManagerList;
+    ctx.response.body['managers_info'] = hotelManagerInfo;
     ctx.response.body['reviews'] = reviewInfo;
     ctx.response.status = httpStatus.OK.code;
     return next();
@@ -29,23 +49,43 @@ const ctrlHotel = {
   getUserHotel: async (ctx: koa.Context, next: () => Promise<any>) => {
     const userId = validator.validateId(ctx.request.query['user_id'], 'Please specify user_id');
 
-    const [userInfo] = await userRepo.getUser(userId);
+    const userInfo = await userRepo.getAllUsers();
+    userInfo.map((user) => {
+      delete user['password'];
+      delete user['token'];
+    });
 
-    if (userInfo == null) {
-      throw new ApiError('User not found', codes.USER_NOT_FOUND, 404);
-    } else if (userInfo['user_type'] !== 'hotel_manager') {
+    const [currentUserInfo] = userInfo.filter(user => user['user_id'] === userId);
+
+    if (currentUserInfo == null) {
+      throw new ApiError('User does not exist', codes.USER_NOT_FOUND, httpStatus.NOT_FOUND.code);
+    } else if (currentUserInfo['user_type'] !== 'hotel_manager') {
       throw new ApiError('Not a hotel manager', codes.BAD_VALUE, httpStatus.BAD_REQUEST.code);
     }
 
-    const hotelIdList = await hotelManagerRepo.getHotelManagerByUserId(userId);
+    const hotelManagerInfo = await hotelManagerRepo.getAllHotelManager();
 
-    ctx.response.body = [];
+    const userHotelManagerList = hotelManagerInfo.filter(each => each['user_id'] === userId);
+    const hotelIdList = userHotelManagerList.map(manager => manager['hotel_id']);
 
-    for (let i = 0; i < hotelIdList.length; i += 1) {
-      const hotelId = hotelIdList[i]['hotel_id'];
-      const reviewInfo = await reviewRepo.getByHotel(hotelId);
+    const reviewInfo = await reviewRepo.getByHotelIds(hotelIdList);
 
-      ctx.response.body.push({ hotel_id: hotelId, reviews: reviewInfo });
+    ctx.response.body = await hotelRepo.getHotelsByHotelId(hotelIdList);
+
+    for (const hotel of ctx.response.body) {
+      const hotelHotelManagerInfo = hotelManagerInfo.filter(
+        hotelManager => hotelManager['hotel_id'] === hotel['hotel_id']);
+      hotel['managers'] = hotelHotelManagerInfo.map(hotelManager => hotelManager['user_id']);
+
+      hotel['managers_info'] = [];
+      for (const userId of hotel['managers']) {
+        hotel['managers_info'].push(userInfo.filter(user => user['user_id'] === userId)[0]);
+      }
+
+      hotel['reviews'] = reviewInfo.filter(review => review['hotel_id'] === hotel['hotel_id']);
+      for (const review of hotel['reviews']) {
+        review['user'] = userInfo.filter(user => user['user_id'] === review['user_id'])[0];
+      }
     }
 
     ctx.response.status = httpStatus.OK.code;

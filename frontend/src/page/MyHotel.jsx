@@ -7,22 +7,18 @@ import { hotelService } from '../service/hotelService';
 import { userService } from '../service/userService';
 
 export default class MyHotel extends Component {
-  componentWillMount() {
+  async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
+    const hotels = currentUser ? await hotelService.getHotelOf(currentUser.user_id) : [];
     this.setState({
       pathname: pathname,
       search: search,
       currentUser: currentUser,
-      validUser: currentUser && currentUser.user_type === "hotel_manager"
-    });
-
-    const hotels = currentUser ? hotelService.getHotelOf(currentUser.user_id) : [];
-
-    this.setState({
+      validUser: currentUser && currentUser.user_type === "hotel_manager",
       hotels: hotels
-    })
+    });
   }
 
   getSearchLink = () => {
@@ -34,6 +30,9 @@ export default class MyHotel extends Component {
   }
 
   render() {
+    if (!this.state) {
+      return <></>;
+    }
     if (!this.state.validUser) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">

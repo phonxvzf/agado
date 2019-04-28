@@ -12,7 +12,7 @@ const ctrl = {
   },
 
   getReservationOfHotel: async (ctx: koa.Context, next: () => Promise<any>) => {
-    const hotelId = validator.validateId(ctx.request.query['of_hotel'], 'invalid hotel id');
+    const hotelId = validator.validateId(ctx.request.query['hotel_id'], 'invalid hotel id');
     ctx.response.body = await reservation.getByHotelId(hotelId);
     ctx.response.status = 200;
     return next();
@@ -29,7 +29,7 @@ const ctrl = {
 
     const reservationInst: Reservation = ctx.request.body as Reservation;
     try {
-      const reservationId = await reservation.createReservation(reservationInst);
+      const [reservationId] = await reservation.createReservation(reservationInst);
       ctx.response.body = { reservation_id: reservationId };
       ctx.response.status = 201;
     } catch (e) {
