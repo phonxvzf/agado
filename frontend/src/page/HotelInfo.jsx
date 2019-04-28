@@ -82,8 +82,7 @@ export default class HotelInfo extends Component {
                 </div>
                 <div id="hotel_rooms">
                   {
-                    this.state.hotel.room_left === 0 ? "" :
-                      <RoomSelection search={this.state.search} currentUser={this.state.currentUser} rooms={this.state.hotel.rooms} />
+                    <RoomSelection search={this.state.search} currentUser={this.state.currentUser} rooms={this.state.hotel.rooms} />
                   }
                 </div>
               </>
