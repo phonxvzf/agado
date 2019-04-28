@@ -15,18 +15,36 @@ export default class Reservation extends Component {
     if (currentUser && currentUser.user_type === "traveler") {
       reservations = await reservationService.getReservationOf(currentUser.user_id);
       reservations.sort((a, b) => {
-        const x = new Date(a.checkin);
-        const y = new Date(b.checkin);
+        const x1 = new Date(a.checkin);
+        const x2 = new Date(a.checkout);
+        const y1 = new Date(b.checkin);
+        const y2 = new Date(b.checkout);
         const now = new Date();
-        if (x > now && y > now) {
-          return x > y ? 1 : -1;
-        } else if (x > now) {
-          return -1;
-        } else if (y > now) {
-          return 1;
+        let tx, ty;
+        if (x2 <= now) {
+          tx = 3;
+        } else if (x1 <= now) {
+          tx = 1;
         } else {
-          return x < y ? 1 : -1;
+          tx = 2;
         }
+        if (y2 <= now) {
+          ty = 3;
+        } else if (y1 <= now) {
+          ty = 1;
+        } else {
+          ty = 2;
+        }
+        if (tx === ty) {
+          if (tx === 3) {
+            return y2 - x2;
+          } else if (tx === 1) {
+            return x2 - y2;
+          } else {
+            return x1 - y1;
+          }
+        }
+        return tx - ty;
       });
     }
 

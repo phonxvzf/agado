@@ -10,19 +10,17 @@ export default class SearchResult extends Component {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const hotels = await hotelService.getHotels(search.checkin, search.checkout);
-
     let min = hotels.map(hotel => hotel.start_price).reduce((a, b) => Math.min(a, b), Infinity);
     min = min === Infinity ? 0 : min;
     let max = hotels.map(hotel => hotel.start_price).reduce((a, b) => Math.max(a, b), 0);
-    max = max < min + 1000 ? min + 1000 : max;
     const priceRange = {
       min: min,
       max: max
     }
     this.props.setPriceRange(priceRange);
 
-    const minPrice = Math.max(Number(search.min_price).toFixed(0), priceRange.min);
-    const maxPrice = Math.min(Number(search.max_price).toFixed(0), priceRange.max);
+    const minPrice = search.min_price ? Math.max(Number(search.min_price).toFixed(0), priceRange.min) : priceRange.min;
+    const maxPrice = search.max_price ? Math.min(Number(search.max_price).toFixed(0), priceRange.max) : priceRange.max;
 
     this.setState({
       pathname: pathname,
@@ -30,8 +28,8 @@ export default class SearchResult extends Component {
       hotels: hotels,
       filters: {
         hotel_name: search.hotel_name ? search.hotel_name : "",
-        min_price: minPrice < maxPrice ? minPrice : priceRange.min,
-        max_price: minPrice < maxPrice ? maxPrice : priceRange.max,
+        min_price: minPrice <= maxPrice ? minPrice : priceRange.min,
+        max_price: minPrice <= maxPrice ? maxPrice : priceRange.max,
         rating: search.rating ? Number(search.rating) : 0,
         amenities: search.amenities ? Array.isArray(search.amenities) ? search.amenities.map(amenity => Number(amenity)) : [Number(search.amenities)] : [],
         sort_by: search.sort_by === "rating" ? "rating" : "price"
@@ -54,13 +52,10 @@ export default class SearchResult extends Component {
         (hotel.name.toLowerCase().includes(name) || hotel.city.toLowerCase().includes(name) || hotel.address.toLowerCase().includes(name)) &&
         (hotel.start_price >= minPrice && hotel.start_price <= maxPrice) &&
         (hotel.rating >= rating) &&
-        (hotel.rooms.some(room => amenities.every(amenity => room.amenities.includes(amenity))))
+        (hotel.rooms.some(room => (room.available_room === undefined || room.available_room > 0) && amenities.every(amenity => room.amenities.includes(amenity))))
       ).sort((a, b) => {
-        if (sort_by === "price") {
-          return a.start_price - b.start_price;
-        } else if (sort_by === "rating") {
-          return a.rating - b.rating;
-        }
+        if (sort_by === "price") return a.start_price - b.start_price;
+        else if (sort_by === "rating") return b.rating - a.rating;
       })
     );
   }

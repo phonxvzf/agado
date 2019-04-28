@@ -21,7 +21,13 @@ export default class ReservationCard extends Component {
 
   getDayleft = () => {
     const checkin = this.props.reservation.checkin;
+    const checkout = this.props.reservation.checkout;
     const dayLeft = Math.max(0, (new Date(checkin) - new Date()) / 24 / 60 / 60 / 1000);
+    if (new Date(checkout) <= new Date()) {
+      return "Passed";
+    } else if (new Date(checkin) <= new Date) {
+      return "During";
+    }
     return dayLeft.toFixed(0) > 1 ? dayLeft.toFixed(0) + " days left" :
       dayLeft.toFixed(0) === 1 ? "1 day left" :
         (dayLeft * 24).toFixed(0) > 1 ? (dayLeft * 24).toFixed(0) + " hours left" :
@@ -79,7 +85,7 @@ export default class ReservationCard extends Component {
                   <Card.Subtitle as="h6">{moment(reservation.checkin).format("D MMM YYYY") + " - " + moment(reservation.checkout).format("D MMM YYYY")}</Card.Subtitle>
                 </Col>
                 <Col xs={4} className="text-center">
-                  <Badge variant={(days === "Passed" ? "secondary" : "dark")}>{days}</Badge>
+                  <Badge variant={(days === "Passed" ? "secondary" : days === "During" ? "success" : "dark")}>{days}</Badge>
                 </Col>
               </Row>
             </Card.Header>
@@ -100,11 +106,15 @@ export default class ReservationCard extends Component {
             <Row className="align-items-center text-center" noGutters={true}>
               <Col>
                 {
-                  this.isPassed() ?
+                  days === "Passed" ?
                     <Button variant="info" onClick={() => this.setState({ showModal: "review" })}>
                       {this.state.oldReview ? "Edit review" : "Write a review"}
-                    </Button>
-                    : <Button variant="danger" onClick={() => this.setState({ showModal: "cancel_reservation_confirm" })}>Cancel</Button>
+                    </Button> :
+                    days === "During" ?
+                      // <Button disabled variant="success">Have a nice trip</Button>
+                      <Button variant="link" disabled className="text-dark">Have a nice trip</Button>
+                      :
+                      <Button variant="danger" onClick={() => this.setState({ showModal: "cancel_reservation_confirm" })}>Cancel</Button>
                 }
               </Col>
             </Row>

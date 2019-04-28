@@ -257,3 +257,7 @@ input::-webkit-calendar-picker-indicator{
 .text-transparent {
   color: transparent !important;
 }
+
+a {
+  cursor: pointer;
+}

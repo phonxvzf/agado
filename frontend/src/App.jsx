@@ -58,6 +58,17 @@ class App extends Component {
       return;
     };
 
+    const hash = window.location.hash;
+    if (hash) {
+      const gotoHash = setInterval(() => {
+        const element = document.querySelector(hash);
+        if (element) {
+          element.scrollIntoView({ behavior: 'smooth' });
+          clearInterval(gotoHash);
+        }
+      }, 100);
+    }
+
     document.onclick = (e) => {
       if (e.target &&
         e.target !== document.querySelector('.navbar-toggler') &&

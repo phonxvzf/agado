@@ -14,7 +14,7 @@
   }
 
   .scroll-snap-container {
-    /* scroll-padding: 80px; */
+    scroll-padding: 80px;
   }
 }
 
@@ -24,7 +24,7 @@
   }
 
   .scroll-snap-container {
-    /* scroll-padding: 145px; */
+    scroll-padding: 145px;
   }
 }
 
@@ -34,7 +34,7 @@
   }
 
   .scroll-snap-container {
-    /* scroll-padding: 145px; */
+    scroll-padding: 145px;
     /* scroll-snap-type: y proximity; */
   }
 }
@@ -42,6 +42,7 @@
 .scroll-snap-container {
   height: 100vh;
   overflow: auto;
+  /* scroll-snap-type: y proximity; */
 }
 
 .scroll-snap-child {

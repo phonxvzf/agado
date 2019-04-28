@@ -20,10 +20,10 @@ export default class CustomNavBar extends Component {
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
     let hotel = null;
-    if (search.hotel_id) {
+    if (pathname === "/hotel" && search.hotel_id) {
       hotel = await hotelService.getHotel(search.hotel_id);
     }
-    const requests = currentUser ? await requestService.getRequestOf() : "";
+    const requests = currentUser && currentUser.user_type === "hotel_manager" ? await requestService.getRequestOf() : "";
     const isRequestPending = currentUser && search.hotel_id ? await requestService.isRequestPending(Number(search.hotel_id), currentUser.user_id) : null;
     this.setState({
       pathname: pathname,
@@ -92,11 +92,11 @@ export default class CustomNavBar extends Component {
       hotel_name: this.state.search.hotel_name,
       checkin: this.state.search.checkin,
       checkout: this.state.search.checkout,
-      min_price: this.state.price.min === -Infinity ? null : this.state.price.min,
-      max_price: this.state.price.max === Infinity ? null : this.state.price.max,
-      rating: this.state.rating,
+      min_price: this.state.price.min === -Infinity || this.state.price.min === this.props.priceRange.min ? undefined : this.state.price.min,
+      max_price: this.state.price.max === Infinity || this.state.price.max === this.props.priceRange.max ? undefined : this.state.price.max,
+      rating: this.state.rating === 0 ? undefined : this.state.rating,
       amenities: this.getAmenitiesQs(),
-      sort_by: this.state.sortBy
+      sort_by: this.state.sortBy === "price" ? undefined : this.state.sortBy
     }, { addQueryPrefix: true, indices: false });
     return pathname + search;
   }
@@ -159,12 +159,12 @@ export default class CustomNavBar extends Component {
   loadPrice = (priceRange) => {
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     priceRange = priceRange ? priceRange : this.props.priceRange;
-    const minPrice = Math.max(Number(search.min_price).toFixed(0), priceRange.min);
-    const maxPrice = Math.min(Number(search.max_price).toFixed(0), priceRange.max);
+    const minPrice = search.min_price ? Math.max(Number(search.min_price).toFixed(0), priceRange.min) : priceRange.min;
+    const maxPrice = search.max_price ? Math.min(Number(search.max_price).toFixed(0), priceRange.max) : priceRange.max;
     this.setState({
       price: {
-        min: minPrice < maxPrice ? minPrice : priceRange.min,
-        max: minPrice < maxPrice ? maxPrice : priceRange.max
+        min: minPrice <= maxPrice ? minPrice : priceRange.min,
+        max: minPrice <= maxPrice ? maxPrice : priceRange.max
       }
     });
   }
@@ -379,11 +379,12 @@ export default class CustomNavBar extends Component {
                         }
                         this.state.search.checkin = moment(picker.startDate).format('YYYY-MM-DD');
                         this.state.search.checkout = moment(picker.endDate).format('YYYY-MM-DD');
-                        window.location.href = this.getHotelLink();
+                        window.location.href = this.getHotelLink() + "#hotel_rooms";
                       }}>
                       <Form>
                         <InputGroup>
                           <Form.Control
+                            id="date-picker"
                             type="text"
                             value={this.getDateString()} />
                           <InputGroup.Append>
@@ -874,13 +875,13 @@ export default class CustomNavBar extends Component {
                       min: this.state.price.min,
                       max: this.state.price.max
                     }}
-                    step={(this.props.priceRange.max - this.props.priceRange.min) / 10}
+                    step={100}
                     onChange={val => this.setState({ price: val })} />
                 </div>
                 <br />
                 <Row>
-                  <Col>MIN: ฿ {this.state.price.min}</Col>
-                  <Col>MAX: ฿ {this.state.price.max}</Col>
+                  <Col>MIN: ฿ {this.state.price.min.toFixed(0)}</Col>
+                  <Col>MAX: ฿ {this.state.price.max.toFixed(0)}</Col>
                 </Row>
                 <br />
                 <Button className="w-100" variant="dark" onClick={() => this.setState({ price: { min: this.props.priceRange.min, max: this.props.priceRange.max } })}><div className="fs-12">Clear</div></Button>

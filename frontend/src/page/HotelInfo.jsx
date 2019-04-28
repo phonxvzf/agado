@@ -23,16 +23,7 @@ export default class HotelInfo extends Component {
       oldReview = await reviewService.getOldReview(Number(search.hotel_id));
       isRequestPending = await requestService.isRequestPending(Number(search.hotel_id), currentUser.user_id);
     }
-    let hotel = await hotelService.getHotel(Number(search.hotel_id), search.checkin, search.checkout);
-    // if (hotel) {
-    //   hotel.reviews = await Promise.all(hotel.reviews.map(async review => {
-    //     return {
-    //       ...review,
-    //       user: await userService.getUser(review.user_id)
-    //     };
-    //   }));
-    //   hotel.managers_info = await Promise.all(hotel.managers.map(async user_id => await userService.getUser(user_id)));
-    // }
+    const hotel = await hotelService.getHotel(Number(search.hotel_id), search.checkin, search.checkout);
     this.setState({
       pathname: pathname,
       search: search,
@@ -41,18 +32,6 @@ export default class HotelInfo extends Component {
       oldReview: oldReview,
       isRequestPending: isRequestPending
     });
-  }
-
-  componentDidUpdate() {
-    if (!this.state.scrolled) {
-      this.setState({
-        scrolled: true
-      });
-      if (window.location.hash === "#hotel_reviews") {
-        const reviewBtn = document.querySelector('.review-btn');
-        setTimeout(() => reviewBtn && reviewBtn.click(), 500);
-      }
-    }
   }
 
   getProfileLink = (user_id) => {

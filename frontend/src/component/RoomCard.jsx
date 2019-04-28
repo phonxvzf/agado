@@ -79,7 +79,7 @@ export default class RoomCard extends Component {
                           <Carousel.Item>
                             <div className="ratio4-3">
                               {
-                               !img ?
+                                !img ?
                                   <div className="bg-dark abs-center border-none" />
                                   : <Image className="absolute" src={img} fluid />
                               }
@@ -140,7 +140,9 @@ export default class RoomCard extends Component {
           {
             this.props.interval <= 0 && (!currentUser || currentUser.user_type !== "hotel_manager") ?
               <>
-                <Alert variant="danger">Please enter dates to see prices.</Alert>
+                <a onClick={() => document.querySelector('#date-picker').click()}>
+                  <Alert variant="danger">Please enter dates to see prices.</Alert>
+                </a>
                 <div className="d-md-none">
                   <DateRangePicker
                     minDate={moment()}

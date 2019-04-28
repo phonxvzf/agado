@@ -1,7 +1,6 @@
 import qs from 'qs';
 import React, { Component } from 'react';
 import { Button, Col, Form, Image, Row } from 'react-bootstrap';
-import ItemsCarousel from 'react-items-carousel';
 import CustomModal from '../component/CustomModal';
 import NewRoomCard from '../component/NewRoomCard';
 import '../css/CreateHotel.css';
@@ -345,15 +344,15 @@ export default class CreateHotel extends Component {
             <div id="hotel_rooms" className="mb-5">
               <div>
                 <h3 className="scroll-snap-child px-content bold">Rooms</h3>
-                <ItemsCarousel
+                {/* <ItemsCarousel
                   className="scroll-snap-child"
                   freeScrolling
                   numberOfCards={1}
-                  gutter={-0.05 * window.innerWidth}>
+                  gutter={-0.05 * window.innerWidth}> */}
                   {
                     hotel.rooms.map((room, idx) => {
                       return (
-                        <Row className="my-4 ml-2 w-90">
+                        <Row className="my-4 mx-1 scroll-snap-child px-content">
                           <NewRoomCard room={room}
                             idx={idx}
                             setRoom={(idx, room) => {
@@ -369,7 +368,7 @@ export default class CreateHotel extends Component {
                         </Row>
                       );
                     }).concat(
-                      <Row className="my-4 ml-2 w-90">
+                      <Row className="my-4 mx-1 scroll-snap-child px-content">
                         <NewRoomCard
                           addNewRoom={(room) => {
                             let rooms = JSON.parse(JSON.stringify(hotel.rooms));
@@ -379,7 +378,7 @@ export default class CreateHotel extends Component {
                       </Row>
                     )
                   }
-                </ItemsCarousel>
+                {/* </ItemsCarousel> */}
               </div>
             </div>
           </Form>
