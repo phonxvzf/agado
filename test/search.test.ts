@@ -130,6 +130,142 @@ const hotelData3 = {
   ],
 };
 
+const hotelData4 = {
+  hotel_id: undefined,
+  name: 'hotel4',
+  city: 'city4',
+  address: 'address4',
+  desc: 'desc4',
+  imgs: ['img1', 'img2', 'img3', 'img4', 'img5'],
+  rooms: [
+    {
+      name: 'h4_room1',
+      num_bed: 1,
+      max_person: 1,
+      price: 1,
+      total_room: 1,
+      amenities: [1, 2],
+      imgs: ['r1img1'],
+    },
+    {
+      name: 'h4_room2',
+      num_bed: 2,
+      max_person: 2,
+      price: 2,
+      total_room: 2,
+      amenities: [3, 4],
+      imgs: ['r2img1', 'r2img2'],
+    },
+  ],
+};
+
+const hotelData5 = {
+  hotel_id: undefined,
+  name: 'hotel5',
+  city: 'city5',
+  address: 'address5',
+  desc: 'desc5',
+  imgs: ['img1', 'img2', 'img3', 'img5', 'img5'],
+  rooms: [
+    {
+      name: 'h5_room1',
+      num_bed: 1,
+      max_person: 1,
+      price: 1,
+      total_room: 1,
+      amenities: [1, 2],
+      imgs: ['r1img1'],
+    },
+    {
+      name: 'h5_room2',
+      num_bed: 2,
+      max_person: 2,
+      price: 2,
+      total_room: 2,
+      amenities: [3, 5],
+      imgs: ['r2img1', 'r2img2'],
+    },
+  ],
+};
+
+const hotelData6 = {
+  hotel_id: undefined,
+  name: 'hotel6',
+  city: 'city6',
+  address: 'address6',
+  desc: 'desc6',
+  imgs: ['img1', 'img2', 'img3', 'img6', 'img6'],
+  rooms: [
+    {
+      name: 'h6_room1',
+      num_bed: 1,
+      max_person: 1,
+      price: 1,
+      total_room: 1,
+      amenities: [1, 2],
+      imgs: ['r1img1'],
+    },
+    {
+      name: 'h6_room2',
+      num_bed: 2,
+      max_person: 2,
+      price: 2,
+      total_room: 2,
+      amenities: [3, 6],
+      imgs: ['r2img1', 'r2img2'],
+    },
+  ],
+};
+
+const hotelData7 = {
+  hotel_id: undefined,
+  name: 'hotel7',
+  city: 'city7',
+  address: 'address7',
+  desc: 'desc7',
+  imgs: ['img1', 'img2', 'img3', 'img7', 'img7'],
+  rooms: [
+    {
+      name: 'h7_room1',
+      num_bed: 1,
+      max_person: 1,
+      price: 1,
+      total_room: 1,
+      amenities: [1, 2],
+      imgs: ['r1img1'],
+    },
+    {
+      name: 'h7_room2',
+      num_bed: 2,
+      max_person: 2,
+      price: 2,
+      total_room: 2,
+      amenities: [3, 6],
+      imgs: ['r2img1', 'r2img2'],
+    },
+  ],
+};
+
+const hotelData8 = {
+  hotel_id: undefined,
+  name: 'hotel8',
+  city: 'city8',
+  address: 'address8',
+  desc: 'desc8',
+  imgs: [],
+  rooms: [
+    {
+      name: 'h8_room1',
+      num_bed: 0,
+      max_person: 0,
+      price: 0,
+      total_room: 1,
+      amenities: [],
+      imgs: ['r1img1'],
+    },
+  ],
+};
+
 let travelerToken: string;
 let travelerId: number;
 let hotelManagerToken: string;
@@ -175,6 +311,31 @@ beforeEach(async (done) => {
     .send(hotelData3);
   hotelIds.push(resHotel.body['hotel_id']);
 
+  resHotel = await request(server).post('/hotel')
+    .set('Authorization', `Bearer ${hotelManagerToken}`)
+    .send(hotelData4);
+  hotelIds.push(resHotel.body['hotel_id']);
+
+  resHotel = await request(server).post('/hotel')
+    .set('Authorization', `Bearer ${hotelManagerToken}`)
+    .send(hotelData5);
+  hotelIds.push(resHotel.body['hotel_id']);
+
+  resHotel = await request(server).post('/hotel')
+    .set('Authorization', `Bearer ${hotelManagerToken}`)
+    .send(hotelData6);
+  hotelIds.push(resHotel.body['hotel_id']);
+
+  resHotel = await request(server).post('/hotel')
+    .set('Authorization', `Bearer ${hotelManagerToken}`)
+    .send(hotelData7);
+  hotelIds.push(resHotel.body['hotel_id']);
+
+  resHotel = await request(server).post('/hotel')
+    .set('Authorization', `Bearer ${hotelManagerToken}`)
+    .send(hotelData8);
+  hotelIds.push(resHotel.body['hotel_id']);
+
   done();
 });
 
@@ -194,10 +355,10 @@ describe('Search for hotels', () => {
   it('[GET /search] without queries should return all hotels', async () => {
     const res = await request(server).get('/search');
     expect(res.status).toEqual(200);
-    expect(res.body.length).toEqual(3);
-    expect(res.body[0].hotel_id).toEqual(hotelIds[0]);
-    expect(res.body[1].hotel_id).toEqual(hotelIds[1]);
-    expect(res.body[2].hotel_id).toEqual(hotelIds[2]);
+    expect(res.body.length).toEqual(8);
+    for (let i = 0; i < hotelIds.length; i += 1) {
+      expect(res.body[i].hotel_id).toEqual(hotelIds[i]);
+    }
   });
 
   it('[GET /search] should filter correctly', async () => {
@@ -257,6 +418,12 @@ describe('Search for hotels', () => {
       });
     expect(res.status).toEqual(201);
 
+    let checkin = (new Date(60)).toISOString();
+    let checkout = (new Date(300)).toISOString();
+    res = await request(server).get(`/search?checkin=${checkin}&checkout=${checkout}`);
+    expect(res.status).toEqual(200);
+    expect(res.body.length).toEqual(8);
+
     res = await request(server).post('/reservation')
       .set('Authorization', `Bearer ${travelerToken}`)
       .send({
@@ -273,24 +440,19 @@ describe('Search for hotels', () => {
       .send({
         hotel_id: hotelIds[2],
         room_id: roomIds[2][1],
-        num: 1,
+        num: 2,
         checkin: (new Date(120)).toISOString(),
         checkout: (new Date(130)).toISOString(),
       });
     expect(res.status).toEqual(201);
 
-    let checkin = (new Date(60)).toISOString();
-    let checkout = (new Date(300)).toISOString();
-    res = await request(server).get(`/search?checkin=${checkin}&checkout=${checkout}`);
-    expect(res.status).toEqual(200);
-    expect(res.body.length).toEqual(3);
-    expect(res.body[0].hotel_id).toEqual(hotelIds[0]);
-    expect(res.body[1].hotel_id).toEqual(hotelIds[1]);
-
-    checkin = (new Date(0)).toISOString();
+    checkin = (new Date(60)).toISOString();
     checkout = (new Date(300)).toISOString();
     res = await request(server).get(`/search?checkin=${checkin}&checkout=${checkout}`);
     expect(res.status).toEqual(200);
-    expect(res.body.length).toEqual(3);
+    expect(res.body.length).toEqual(7);
+    expect(res.body[0].hotel_id).toEqual(hotelIds[0]);
+    expect(res.body[1].hotel_id).toEqual(hotelIds[1]);
+    expect(res.body[2].hotel_id).toEqual(hotelIds[3]);
   });
 });
