@@ -27,6 +27,7 @@
     "tslint-config-airbnb": "^5.11.1"
   },
   "dependencies": {
+    "@google-cloud/storage": "^2.5.0",
     "@koa/cors": "^2.2.3",
     "@types/bcrypt": "^3.0.0",
     "@types/jest": "^23.3.14",
@@ -41,6 +42,7 @@
     "axios": "^0.18.0",
     "bcrypt": "^3.0.4",
     "dotenv": "^6.2.0",
+    "fast-crc32c": "^1.0.4",
     "jsonwebtoken": "^8.5.0",
     "knex": "^0.15.2",
     "koa": "^2.7.0",

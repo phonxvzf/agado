@@ -1,5 +1,16 @@
 import koa from 'koa';
 import { hotelImageRepo, HotelImage }  from '../model/hotel-image';
+import { Storage, Bucket } from '@google-cloud/storage';
+
+let gcs = null;
+if (process.env.ENABLE_GCS) {
+  if (process.env.GCP_PROJECT_ID && process.env.GCS_SERVICE_KEY_PATH && process.env.GCS_BUCKET) {
+    gcs = new Storage({
+      projectId: process.env.GCP_PROJECT_ID,
+      keyFilename: process.env.GCS_SERVICE_KEY_PATH,
+    });
+  }
+}
 
 const ctrlHotelImage = {
   // After ctrlHotel.getHotel
@@ -33,14 +44,30 @@ const ctrlHotelImage = {
 
     await hotelImageRepo.deleteHotelImageByHotelId(hotelId);
 
+    const batchUpload = [];
+    const testDir = (process.env.NODE_ENV === 'production') ? '' : 'test/';
+    let bucket: Bucket = null;
+    if (gcs) {
+      bucket = gcs.bucket(process.env.GCS_BUCKET);
+    }
     for (let idx = 0; idx < ctx.request.body['imgs'].length; idx += 1) {
       const image = ctx.request.body['imgs'][idx];
+      const ext = image.substr(0, 3);
+      const fname = `${testDir}h${hotelId}_${idx}.${ext}`;
       const hotelImageInfo: HotelImage = {
         hotel_id: hotelId,
         img_id: idx,
-        img: image,
+        img: fname,
       };
       await hotelImageRepo.createHotelImage(hotelImageInfo);
+
+      if (gcs) {
+        batchUpload.push(bucket.file(fname).save(image.substr(3), { resumable: false }));
+      }
+    }
+
+    if (gcs) {
+      await Promise.all(batchUpload);
     }
 
     return next();

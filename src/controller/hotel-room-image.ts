@@ -1,5 +1,16 @@
 import koa from 'koa';
 import { hotelRoomImageRepo, HotelRoomImage }  from '../model/hotel-room-image';
+import { Storage, Bucket } from '@google-cloud/storage';
+
+let gcs = null;
+if (process.env.ENABLE_GCS) {
+  if (process.env.GCP_PROJECT_ID && process.env.GCS_SERVICE_KEY_PATH && process.env.GCS_BUCKET) {
+    gcs = new Storage({
+      projectId: process.env.GCP_PROJECT_ID,
+      keyFilename: process.env.GCS_SERVICE_KEY_PATH,
+    });
+  }
+}
 
 const ctrlHotelRoomImage = {
   // After ctrlHotelRoom.getHotelRoom
@@ -40,21 +51,33 @@ const ctrlHotelRoomImage = {
 
     await hotelRoomImageRepo.deleteHotelRoomImageByHotelId(hotelId);
 
+    const batchUpload = [];
+    const testDir = (process.env.NODE_ENV === 'production') ? '' : 'test/';
+    const bucket: Bucket = gcs ? gcs.bucket(process.env.GCS_BUCKET) : null;
     for (let i = 0; i < ctx.request.body['rooms'].length; i += 1) {
       const hotelRoomInfo = ctx.request.body['rooms'][i];
       const roomId = hotelRoomInfo['room_id'];
 
       for (let idx = 0; idx < hotelRoomInfo['imgs'].length; idx += 1) {
         const image = hotelRoomInfo['imgs'][idx];
+        const ext = image.substr(0, 3);
+        const fname = `${testDir}h${hotelId}r${roomId}_${idx}.${ext}`;
         const hotelRoomImageInfo: HotelRoomImage = {
           hotel_id: hotelId,
           room_id: roomId,
           img_id: idx,
-          img: image,
+          img: fname,
         };
-
         await hotelRoomImageRepo.createHotelRoomImage(hotelRoomImageInfo);
+
+        if (gcs) {
+          batchUpload.push(bucket.file(fname).save(image.substr(3), { resumable: false }));
+        }
       }
+    }
+
+    if (gcs) {
+      await Promise.all(batchUpload);
     }
 
     return next();

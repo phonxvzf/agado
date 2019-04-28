@@ -2,10 +2,10 @@ import { validGender, validUserType } from '../src/common/validator';
 import database from '../src/model/database';
 import { userRepo, User } from '../src/model/user';
 import { hotelRepo, Hotel } from '../src/model/hotel';
-import { hotelRoomRepo, HotelRoom } from '../src/model/hotel-room';
 import { hotelManagerRepo, HotelManager } from '../src/model/hotel-manager';
-import request from '../src/model/request';
 import crypto from 'crypto';
+
+jest.setTimeout(20000);
 
 const validGenderArray = Array.from(validGender);
 const validUserTypeArray = Array.from(validUserType);

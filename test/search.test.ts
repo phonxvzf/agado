@@ -1,8 +1,6 @@
 import supertest from 'supertest';
 import index from '../src/index';
 import util from './util';
-import httpStatus from '../src/common/http-status';
-import database from '../src/model/database';
 
 const request = supertest;
 const server = index;
