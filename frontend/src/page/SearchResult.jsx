@@ -55,7 +55,7 @@ export default class SearchResult extends Component {
         (hotel.rooms.some(room => (room.available_room === undefined || room.available_room > 0) && amenities.every(amenity => room.amenities.includes(amenity))))
       ).sort((a, b) => {
         if (sort_by === "price") return a.start_price - b.start_price;
-        else if (sort_by === "rating") return b.rating - a.rating;
+        else return b.rating - a.rating;
       })
     );
   }
@@ -64,7 +64,8 @@ export default class SearchResult extends Component {
     if (!this.state) {
       return <></>;
     }
-    const hotels = this.getFilteredHotels();
+    // const hotels = this.getFilteredHotels();
+    const hotels = this.state.hotels;
     return (
       <div className="search-result-bg">
         <div className="scroll-snap-child" />

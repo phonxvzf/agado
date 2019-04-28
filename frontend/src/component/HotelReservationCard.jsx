@@ -22,7 +22,7 @@ export default class HotelReservationCard extends Component {
     const dayLeft = Math.max(0, (new Date(checkin) - new Date()) / 24 / 60 / 60 / 1000);
     if (new Date(checkout) <= new Date()) {
       return "Passed";
-    } else if (new Date(checkin) <= new Date) {
+    } else if (new Date(checkin) <= new Date()) {
       return "During";
     } 
     return dayLeft.toFixed(0) > 1 ? dayLeft.toFixed(0) + " days left" :

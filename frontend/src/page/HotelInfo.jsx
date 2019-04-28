@@ -274,7 +274,7 @@ export default class HotelInfo extends Component {
   getReviewsComponent = () => {
     return this.state.hotel.reviews.map(review => {
       const user = review.user;
-      if (!user) return;
+      if (!user) return <></>;
       return (
         <>
           <hr className="my-2" />
@@ -330,7 +330,7 @@ export default class HotelInfo extends Component {
         <Row>
           {
             hotel.managers_info.map(user => {
-              if (!user) return;
+              if (!user) return <></>;
               return (
                 <Col xs={12} sm={6} md={4} lg={4} className="my-3">
                   <a className="text-dark" href={this.getProfileLink(user.user_id)}>

@@ -12,7 +12,7 @@ export default class Home extends Component {
     this.setState({
       pathname: pathname,
       search: search,
-      currentUser, currentUser
+      currentUser: currentUser
     });
 
     if (currentUser && currentUser.user_type === "hotel_manager") {
