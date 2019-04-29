@@ -61,7 +61,7 @@ export default class NewRoomCard extends Component {
       })
       return;
     }
-    if (img.size > 5000000) {
+    if (img.size > 2000000) {
       this.setState({
         showModal: "upload_large_img"
       })
@@ -396,7 +396,7 @@ export default class NewRoomCard extends Component {
           showModal={this.state.showModal === "upload_large_img"}
           closeModal={() => this.setState({ showModal: null })}
           title="Unable to upload the file"
-          body="The file size exceeds the limit of 5 MB." />
+          body="The file size exceeds the limit of 2 MB." />
       </>
     )
   }

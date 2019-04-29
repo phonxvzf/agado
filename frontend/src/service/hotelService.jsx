@@ -7,7 +7,12 @@ export class hotelService {
   static fillHotelInfo = (hotel) => {
     const reviews = hotel.reviews;
     hotel.imgs = hotel.imgs.map(img => img ? baseImgPath + img : img)
-    hotel.rooms = hotel.rooms.map(room => ({ ...room, img: room.img ? baseImgPath + room.img : room.img }))
+    hotel.rooms = hotel.rooms.map(room => {
+      return {
+        ...room,
+        imgs: room.imgs.map(img => img ? baseImgPath + img : img)
+      };
+    });
     hotel.rating = reviews.length > 0 ? (reviews.map(review => review.rating).reduce((a, b) => a + b, 0)) / reviews.length : 0;
     hotel.total_review = reviews.length;
     hotel.num_rating5 = (reviews.filter(review => review.rating === 5)).length;

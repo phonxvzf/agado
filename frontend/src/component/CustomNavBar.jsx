@@ -2,7 +2,7 @@ import 'bootstrap-daterangepicker/daterangepicker.css';
 import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Badge, Button, Col, Dropdown, Form, Image, InputGroup, Nav, Navbar, OverlayTrigger, Popover, Row } from 'react-bootstrap';
+import { Badge, Button, Col, Dropdown, Form, Image, InputGroup, Nav, Navbar, OverlayTrigger, Popover, ProgressBar, Row } from 'react-bootstrap';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
@@ -19,46 +19,70 @@ export default class CustomNavBar extends Component {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
-    let hotel = null;
-    if (pathname === "/hotel" && search.hotel_id) {
-      hotel = await hotelService.getHotel(search.hotel_id);
+    const priceRange = this.props.priceRange;
+    const minPrice = search.min_price ? Math.max(Number(search.min_price).toFixed(0), priceRange.min) : priceRange.min;
+    const maxPrice = search.max_price ? Math.min(Number(search.max_price).toFixed(0), priceRange.max) : priceRange.max;
+
+    let amenities = [];
+    if (search.amenities) {
+      search.amenities.forEach(id => id <= 1 ? amenities[0] = !id : amenities[id - 1] = true);
     }
-    const requests = currentUser && currentUser.user_type === "hotel_manager" ? await requestService.getRequestOf() : "";
-    const isRequestPending = currentUser && search.hotel_id ? await requestService.isRequestPending(Number(search.hotel_id), currentUser.user_id) : null;
+
+    if (pathname === "/hotel" && search.hotel_id) {
+      hotelService.getHotel(search.hotel_id)
+        .then(hotel => this.setState({ hotel: hotel }));
+    }
+    if (currentUser && currentUser.user_type === "hotel_manager") {
+      requestService.getRequestOf()
+        .then(requests => this.setState({ requests: requests }));
+    }
+    if (currentUser && search.hotel_id) {
+      requestService.isRequestPending(Number(search.hotel_id), currentUser.user_id)
+        .then(isRequestPending => this.setState({ isRequestPending: isRequestPending }));
+    }
+
     this.setState({
       pathname: pathname,
       search: search,
       currentUser: currentUser,
-      hotel: hotel,
-      requests: requests,
-      isRequestPending: isRequestPending
+      hotel: null,
+      requests: [],
+      isRequestPending: null,
+      price: {
+        min: minPrice <= maxPrice ? minPrice : priceRange.min,
+        max: minPrice <= maxPrice ? maxPrice : priceRange.max
+      },
+      rating: search.rating ? Number(search.rating) : 0,
+      showRating: search.rating ? Number(search.rating) : 0,
+      amenities: amenities,
+      sortBy: search.sort_by ? search.sort_by : "rating"
     });
-
-    this.loadPrice();
-    this.loadRating();
-    this.loadAmenities();
-    this.loadSortBy();
-
-    this.setState({
-      loaded: true
-    });
   }
 
-  componentDidMount() {
-    if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
-      window.addEventListener('scroll', this.handleScroll, true);
-    }
-  }
+  // componentDidMount() {
+  //   if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
+  //     window.addEventListener('scroll', this.handleScroll, true);
+  //   }
+  // }
 
-  componentWillUnmount() {
-    if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
-      window.removeEventListener('scroll', this.handleScroll, true);
-    }
-  }
+  // componentWillUnmount() {
+  //   if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
+  //     window.removeEventListener('scroll', this.handleScroll, true);
+  //   }
+  // }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.priceRange.min !== -Infinity || nextProps.priceRange.max !== Infinity) {
-      this.loadPrice(nextProps.priceRange);
+    if (this.state.price.min === -Infinity || this.state.price.max === Infinity) {
+      const search = this.state.search
+      const priceRange = nextProps.priceRange;
+      const minPrice = search.min_price ? Math.max(Number(search.min_price).toFixed(0), priceRange.min) : priceRange.min;
+      const maxPrice = search.max_price ? Math.min(Number(search.max_price).toFixed(0), priceRange.max) : priceRange.max;
+      this.setState({
+        price: {
+          min: minPrice <= maxPrice ? minPrice : priceRange.min,
+          max: minPrice <= maxPrice ? maxPrice : priceRange.max
+        }
+      });
     }
   }
 
@@ -96,7 +120,7 @@ export default class CustomNavBar extends Component {
       max_price: this.state.price.max === Infinity || this.state.price.max === this.props.priceRange.max ? undefined : this.state.price.max,
       rating: this.state.rating === 0 ? undefined : this.state.rating,
       amenities: this.getAmenitiesQs(),
-      sort_by: this.state.sortBy === "price" ? undefined : this.state.sortBy
+      sort_by: this.state.sortBy === "rating" ? undefined : this.state.sortBy
     }, { addQueryPrefix: true, indices: false });
     return pathname + search;
   }
@@ -156,59 +180,6 @@ export default class CustomNavBar extends Component {
     return hotel && hotel.managers.includes(this.state.currentUser.user_id);
   }
 
-  loadPrice = (priceRange) => {
-    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-    priceRange = priceRange ? priceRange : this.props.priceRange;
-    const minPrice = search.min_price ? Math.max(Number(search.min_price).toFixed(0), priceRange.min) : priceRange.min;
-    const maxPrice = search.max_price ? Math.min(Number(search.max_price).toFixed(0), priceRange.max) : priceRange.max;
-    this.setState({
-      price: {
-        min: minPrice <= maxPrice ? minPrice : priceRange.min,
-        max: minPrice <= maxPrice ? maxPrice : priceRange.max
-      }
-    });
-  }
-
-  loadRating = () => {
-    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-    this.setState({
-      rating: search.rating ? Number(search.rating) : 0,
-      showRating: search.rating ? Number(search.rating) : 0
-    });
-  }
-
-  loadAmenities = () => {
-    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-    if (!search.amenities) {
-      this.setState({
-        amenities: []
-      });
-      return;
-    }
-
-    let amenities = []
-    for (let i = 0; i < search.amenities.length; i++) {
-      const num = Number(search.amenities[i]);
-      if (num === 0) {
-        amenities[0] = true;
-      } else if (num === 1) {
-        amenities[0] = false;
-      } else if (num >= 2) {
-        amenities[num - 1] = true;
-      }
-    }
-    this.setState({
-      amenities: amenities
-    });
-  }
-
-  loadSortBy = () => {
-    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
-    this.setState({
-      sortBy: search.sort_by ? search.sort_by : "price"
-    })
-  }
-
   toggleAmenitiesFilter = (idx) => {
     let amenities = this.state.amenities;
     if (idx === 0) {
@@ -222,9 +193,11 @@ export default class CustomNavBar extends Component {
     } else {
       amenities[idx] = !amenities[idx];
     }
+    this.state.amenities = amenities;
+    this.changeFilter();
     this.setState({
       amenities: amenities
-    })
+    });
   }
 
   closeAllFilters = () => {
@@ -254,10 +227,12 @@ export default class CustomNavBar extends Component {
     return checkin + " - " + checkout;
   }
 
+  changeFilter = () => {
+    window.history.pushState({}, null, this.getSearchLink());
+    this.props.setFiltering(true);
+  }
+
   render() {
-    if (!this.state || !this.state.loaded) {
-      return <></>;
-    }
     return (
       <>
         <Navbar className="shadow pb-md-0 pt-md-2" bg="light" variant="light" fixed="top" expand="md" collapseOnSelect>
@@ -286,9 +261,9 @@ export default class CustomNavBar extends Component {
                 {this.getSecondRowComponent()}
               </Navbar.Collapse>
             </Col>
-            {/* <Col xs={12} className="px-0 pt-1">
+            <Col xs={12} className="px-0 pt-1">
               <ProgressBar className="scroll-indicator bg-none" variant="dark" now={this.state.scrolled} />
-            </Col> */}
+            </Col>
           </Row>
         </Navbar>
         <div className="d-md-none">
@@ -342,7 +317,7 @@ export default class CustomNavBar extends Component {
   }
 
   getSearchTab = () => {
-    const pathname = this.state.pathname;
+    const pathname = window.location.pathname;
     if (pathname === "/hotel") {
       return (
         <>
@@ -656,12 +631,12 @@ export default class CustomNavBar extends Component {
               !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
                 <>
                   <Col xs={7}>
-                    <Form onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                    <Form onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}>
                       <InputGroup>
                         <Form.Control
                           className="border-dark"
                           type="search"
-                          onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
+                          onChange={(e) => { this.state.search.hotel_name = e.currentTarget.value; this.changeFilter(); }}
                           placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                           defaultValue={this.state.search.hotel_name}
                           autoFocus />
@@ -701,12 +676,12 @@ export default class CustomNavBar extends Component {
                 </>
                 :
                 <Col md={11} lg={9} xl={7}>
-                  <Form onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                  <Form onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}>
                     <InputGroup>
                       <Form.Control
                         className="border-dark"
                         type="search"
-                        onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
+                        onChange={(e) => { this.state.search.hotel_name = e.currentTarget.value; this.changeFilter(); }}
                         placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                         defaultValue={this.state.search.hotel_name}
                         autoFocus />
@@ -721,12 +696,12 @@ export default class CustomNavBar extends Component {
           <div className="text-right d-md-none">
             <Row noGutters>
               <Col>
-                <Form inline onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                <Form inline onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}>
                   <InputGroup>
                     <Form.Control
                       className="border-dark"
                       type="search"
-                      onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
+                      onChange={(e) => { this.state.search.hotel_name = e.currentTarget.value; this.changeFilter(); }}
                       placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                       defaultValue={this.state.search.hotel_name}
                       autoFocus />
@@ -782,10 +757,11 @@ export default class CustomNavBar extends Component {
       return (
         <>
           <Navbar.Text>Signed in as Traveler:</Navbar.Text>
+          {/* {this.state.pathname === "/" ? <div className="mx-2">&nbsp;</div> : ""} */}
           <Dropdown className="mr-md-4 d-xs-sm-none d-sm-md-none">
             <Dropdown.Toggle bsPrefix="none" variant="link" className="text-dark bold">
               <Row className="align-items-center">
-                <Col>{this.state.pathname === "/" ? "" : currentUser.username}</Col>
+                <Col>{currentUser.username}</Col>
                 <div className="d-inline-block circle-avatar icon" style={currentUser.img ? { backgroundImage: `url(${currentUser.img})` } : { backgroundColor: userService.getUserColor() }} />
               </Row>
             </Dropdown.Toggle>
@@ -863,7 +839,7 @@ export default class CustomNavBar extends Component {
           <hr className="mx-0 my-3" />
           <Navbar.Text>filter:</Navbar.Text>
           <div className="my-2">
-            <OverlayTrigger ref={ref => this.filterPrice = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
+            <OverlayTrigger ref={ref => this.filterPrice = ref} trigger="manual" onExited={() => this.changeFilter()} placement="bottom" overlay={
               <Popover className="text-dark">
                 <h6><strong>Price per night</strong></h6>
                 <br />
@@ -876,7 +852,11 @@ export default class CustomNavBar extends Component {
                       max: this.state.price.min > this.state.price.max ? this.state.price.min : this.state.price.max
                     }}
                     step={100}
-                    onChange={val => this.setState({ price: val })} />
+                    onChange={val => {
+                      this.state.price = val;
+                      this.changeFilter();
+                      this.setState({ price: val });
+                    }} />
                 </div>
                 <br />
                 <Row>
@@ -886,7 +866,11 @@ export default class CustomNavBar extends Component {
                       className={this.state.price.min > this.state.price.max ? "border-danger" : ""}
                       step={1}
                       type="number"
-                      onChange={(e) => this.setState({ price: { ...this.state.price, min: e.currentTarget.value === "" ? "" : Number(e.currentTarget.value.replace(/\D/g,'')) } })}
+                      onChange={(e) => {
+                        this.state.price.min = e.currentTarget.value === "" ? "" : Number(e.currentTarget.value.replace(/\D/g, ''));
+                        this.changeFilter();
+                        this.setState({ price: { ...this.state.price, min: e.currentTarget.value === "" ? "" : Number(e.currentTarget.value.replace(/\D/g, '')) } })
+                      }}
                       value={this.state.price.min} />
                   </Col>
                   <Col>MAX:
@@ -894,19 +878,37 @@ export default class CustomNavBar extends Component {
                       className={this.state.price.min > this.state.price.max ? "border-danger" : ""}
                       step={1}
                       type="number"
-                      onChange={(e) => this.setState({ price: { ...this.state.price, max: e.currentTarget.value === "" ? "" : Number(e.currentTarget.value.replace(/\D/g,'')) } })}
+                      onChange={(e) => {
+                        this.state.price.max = e.currentTarget.value === "" ? "" : Number(e.currentTarget.value.replace(/\D/g, ''));
+                        this.changeFilter();
+                        this.setState({ price: { ...this.state.price, max: e.currentTarget.value === "" ? "" : Number(e.currentTarget.value.replace(/\D/g, '')) } })
+                      }}
                       value={this.state.price.max} />
                   </Col>
                 </Row>
                 <br />
-                <Button className="w-100" variant="dark" onClick={() => this.setState({ price: { min: this.props.priceRange.min, max: this.props.priceRange.max } })}><div className="fs-12">Clear</div></Button>
+                <Button className="w-100" variant="dark" onClick={() => {
+                  this.state.price = {
+                    min: this.props.priceRange.min,
+                    max: this.props.priceRange.max
+                  };
+                  this.changeFilter();
+                  this.setState({ price: { min: this.props.priceRange.min, max: this.props.priceRange.max } });
+                }}><div className="fs-12">Clear</div></Button>
               </Popover>
             }>
               {
                 (this.props.priceRange.min !== Infinity && this.props.priceRange.max !== Infinity) &&
                   (this.state.price.min !== this.props.priceRange.min || this.state.price.max !== this.props.priceRange.max) ?
                   <Button variant="dark" className="bold mx-2 text-light" onClick={() => { this.filterPrice.show(); this.setState({ showFilter: true }); }}>
-                    <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ price: { min: this.props.priceRange.min, max: this.props.priceRange.max } })} />
+                    <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => {
+                      this.state.price = {
+                        min: this.props.priceRange.min,
+                        max: this.props.priceRange.max
+                      };
+                      this.changeFilter();
+                      this.setState({ price: { min: this.props.priceRange.min, max: this.props.priceRange.max } });
+                    }} />
                   </Button>
                   :
                   <Button variant="light" className="bold mx-2 text-dark" onClick={() => { this.filterPrice.show(); this.setState({ showFilter: true }); }}>
@@ -916,40 +918,50 @@ export default class CustomNavBar extends Component {
             </OverlayTrigger>
           </div>
           <div className="my-2">
-            <OverlayTrigger ref={ref => this.filterRating = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
+            <OverlayTrigger ref={ref => this.filterRating = ref} trigger="manual" onExited={() => this.changeFilter()} placement="bottom" overlay={
               <Popover className="text-dark">
                 <h6><strong>Review rating</strong></h6>
                 <div>At least:</div>
                 <h4>
                   <i className={(this.state.showRating >= 1 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onClick={() => { this.state.rating = this.state.showRating; this.changeFilter(); this.setState({ rating: this.state.showRating }); }}
                     onMouseEnter={() => this.setState({ showRating: 1 })}
                     onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
                   <i className={(this.state.showRating >= 2 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onClick={() => { this.state.rating = this.state.showRating; this.changeFilter(); this.setState({ rating: this.state.showRating }); }}
                     onMouseEnter={() => this.setState({ showRating: 2 })}
                     onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
                   <i className={(this.state.showRating >= 3 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onClick={() => { this.state.rating = this.state.showRating; this.changeFilter(); this.setState({ rating: this.state.showRating }); }}
                     onMouseEnter={() => this.setState({ showRating: 3 })}
                     onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
                   <i className={(this.state.showRating >= 4 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onClick={() => { this.state.rating = this.state.showRating; this.changeFilter(); this.setState({ rating: this.state.showRating }); }}
                     onMouseEnter={() => this.setState({ showRating: 4 })}
                     onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
                   <i className={(this.state.showRating >= 5 ? "fas fa-star" : "far fa-star") + " text-dark"}
-                    onClick={() => this.setState({ rating: this.state.showRating })}
+                    onClick={() => { this.state.rating = this.state.showRating; this.changeFilter(); this.setState({ rating: this.state.showRating }); }}
                     onMouseEnter={() => this.setState({ showRating: 5 })}
                     onMouseLeave={() => this.setState({ showRating: this.state.rating })} />
                 </h4>
                 <br />
-                <Button className="w-100" variant="dark" onClick={() => this.setState({ rating: 0, showRating: 0 })}><div className="fs-12">Clear</div></Button>
+                <Button className="w-100" variant="dark" onClick={() => {
+                  this.state.rating = 0;
+                  this.state.showRating = 0;
+                  this.changeFilter();
+                  this.setState({ rating: 0, showRating: 0 });
+                }}><div className="fs-12">Clear</div></Button>
               </Popover>
             }>
               {
                 this.state.rating !== 0 ?
                   <Button variant="dark" className="bold mx-2 text-light" onClick={() => { this.filterRating.show(); this.setState({ showFilter: true }); }}>
-                    <i className="fas fa-star text-light" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ rating: 0, showRating: 0 })} />
+                    <i className="fas fa-star text-light" />&nbsp;&nbsp;Rating&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => {
+                      this.state.rating = 0;
+                      this.state.showRating = 0;
+                      this.changeFilter();
+                      this.setState({ rating: 0, showRating: 0 });
+                    }} />
                   </Button>
                   :
                   <Button variant="light" className="bold mx-2 text-dark" onClick={() => { this.filterRating.show(); this.setState({ showFilter: true }); }}>
@@ -959,7 +971,7 @@ export default class CustomNavBar extends Component {
             </OverlayTrigger>
           </div>
           <div className="my-2">
-            <OverlayTrigger ref={ref => this.filterAmenities = ref} trigger="manual" onExited={() => window.location.href = this.getSearchLink()} placement="bottom" overlay={
+            <OverlayTrigger ref={ref => this.filterAmenities = ref} trigger="manual" onExited={() => this.changeFilter()} placement="bottom" overlay={
               <Popover className="text-dark">
                 <h6><strong>Property amenities</strong></h6>
                 <Row noGutters>
@@ -989,13 +1001,21 @@ export default class CustomNavBar extends Component {
                   }
                 </Row>
                 <br />
-                <Button className="w-100" variant="dark" onClick={() => this.setState({ amenities: [] })}><div className="fs-12">Clear</div></Button>
+                <Button className="w-100" variant="dark" onClick={() => {
+                  this.state.amenities = [];
+                  this.changeFilter();
+                  this.setState({ amenities: [] });
+                }}><div className="fs-12">Clear</div></Button>
               </Popover>
             }>
               {
                 this.isAnyAmenitesChanged() ?
                   <Button variant="dark" className="bold mx-2 text-light" onClick={() => { this.filterAmenities.show(); this.setState({ showFilter: true }); }}>
-                    <i className="fas fa-concierge-bell text-light" />&nbsp;&nbsp;Amenities&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => this.setState({ amenities: [] })} />
+                    <i className="fas fa-concierge-bell text-light" />&nbsp;&nbsp;Amenities&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => {
+                      this.state.amenities = [];
+                      this.changeFilter();
+                      this.setState({ amenities: [] });
+                    }} />
                   </Button>
                   :
                   <Button variant="light" className="bold mx-2 text-dark" onClick={() => { this.filterAmenities.show(); this.setState({ showFilter: true }); }}>
@@ -1006,10 +1026,18 @@ export default class CustomNavBar extends Component {
           </div>
           <Navbar.Text className="ml-md-5">sort by:</Navbar.Text>
           <div>
-            <Button variant="light" className={"mx-2 my-2 text-dark bold" + (this.state.sortBy !== "rating" ? " highlight" : "")} onClick={() => { this.state.sortBy = "price"; window.location.href = this.getSearchLink(); }}><i className="fas fa-coins" />&nbsp;&nbsp;LOWEST PRICE FIRST</Button>
+            <Button variant="light"
+              className={"mx-2 my-2 text-dark bold" + (this.state.sortBy !== "price" ? " highlight" : "")}
+              onClick={() => { this.state.sortBy = "rating"; this.changeFilter(); this.setState({ sortBy: "rating" }); }}>
+              <i className="fas fa-award" />&nbsp;&nbsp;TOP RATING
+            </Button>
           </div>
           <div>
-            <Button variant="light" className={"mx-2 my-2 text-dark bold" + (this.state.sortBy === "rating" ? " highlight" : "")} onClick={() => { this.state.sortBy = "rating"; window.location.href = this.getSearchLink(); }}><i className="fas fa-award" />&nbsp;&nbsp;TOP RATING</Button>
+            <Button variant="light"
+              className={"mx-2 my-2 text-dark bold" + (this.state.sortBy === "price" ? " highlight" : "")}
+              onClick={() => { this.state.sortBy = "price"; this.changeFilter(); this.setState({ sortBy: "price" }); }}>
+              <i className="fas fa-coins" />&nbsp;&nbsp;LOWEST PRICE FIRST
+            </Button>
           </div>
         </>
       );
@@ -1023,7 +1051,7 @@ export default class CustomNavBar extends Component {
           <div className="d-md-none">
             <Navbar.Text>search:</Navbar.Text>
             <Col xs={10} sm={8}>
-              <Form onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+              <Form onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}>
                 <InputGroup>
                   <Form.Control
                     className="border-dark"

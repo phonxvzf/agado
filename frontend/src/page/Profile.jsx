@@ -9,6 +9,7 @@ import '../css/Profile.css';
 import { hotelService } from '../service/hotelService';
 import { reviewService } from '../service/reviewService';
 import { userService } from '../service/userService';
+import Loading from './Loading';
 
 export default class Profile extends Component {
   async componentWillMount() {
@@ -56,7 +57,7 @@ export default class Profile extends Component {
       })
       return;
     }
-    if (img.size > 1e7) {
+    if (img.size > 2000000) {
       this.setState({
         showModal: "upload_large_img"
       })
@@ -83,9 +84,7 @@ export default class Profile extends Component {
     };
     if (await userService.editUserInfo(editedUser)) {
       this.setState({
-        user: user,
-        showModal: "save_completed",
-        mode: ""
+        showModal: "save_completed"
       });
     } else {
       this.setState({ showModal: "save_failed" });
@@ -125,6 +124,12 @@ export default class Profile extends Component {
     } else if (type === "year") {
       date.year(value);
     }
+    if (date >= moment()) {
+      this.setState({
+        showModal: "invalid_date_of_birth"
+      });
+      return;
+    }
     this.setState({
       editedUser: {
         ...this.state.editedUser,
@@ -135,7 +140,7 @@ export default class Profile extends Component {
 
   render() {
     if (!this.state) {
-      return <div className="error-bg scroll-snap-child" />
+      return <Loading />
     }
     const user = this.state.user;
     if (!user) {
@@ -160,7 +165,7 @@ export default class Profile extends Component {
         </div>
         <CustomModal
           showModal={this.state.showModal === "save_completed"}
-          closeModal={() => this.setState({ showModal: null })}
+          closeModal={() => window.history.go()}
           title="Save completed"
           body="Your profile was changed." />
         <CustomModal
@@ -190,7 +195,12 @@ export default class Profile extends Component {
           showModal={this.state.showModal === "upload_large_img"}
           closeModal={() => this.setState({ showModal: null })}
           title="Unable to upload the file"
-          body="The file size exceeds the limit of 10 MB." />
+          body="The file size exceeds the limit of 2 MB." />
+        <CustomModal
+          showModal={this.state.showModal === "invalid_date_of_birth"}
+          closeModal={() => this.setState({ showModal: null })}
+          title="Invlid date of birth"
+          body="The date must be in the past." />
       </>
     )
   }

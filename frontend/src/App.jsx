@@ -17,33 +17,14 @@ import Tutorial from './page/Tutorial';
 
 class App extends Component {
   componentWillMount() {
-    if (!localStorage.getItem("users")) {
-      localStorage.setItem("users", JSON.stringify([]));
-    }
-
-    if (!localStorage.getItem("reviews")) {
-      localStorage.setItem("reviews", JSON.stringify([]));
-    }
-
-    if (!localStorage.getItem("hotels")) {
-      localStorage.setItem("hotels", JSON.stringify([]));
-    }
-
-    if (!localStorage.getItem("requests")) {
-      localStorage.setItem("requests", JSON.stringify([]));
-    }
-
-    if (!localStorage.getItem("reservations")) {
-      localStorage.setItem("reservations", JSON.stringify([]));
-    }
-
     this.setState({
       mode: "view",
       priceRange: {
         min: -Infinity,
         max: Infinity
       },
-      preventLeavePage: true
+      preventLeavePage: true,
+      isFiltering: false
     });
   }
 
@@ -98,16 +79,22 @@ class App extends Component {
     });
   }
 
+  setFiltering = (isFiltering) => {
+    this.setState({
+      isFiltering: isFiltering
+    });
+  }
+
   render() {
     return (
       <>
         <div className="scroll-snap-container">
-          <CustomNavBar mode={this.state.mode} toggleMode={this.toggleMode} priceRange={this.state.priceRange} />
+          <CustomNavBar mode={this.state.mode} toggleMode={this.toggleMode} priceRange={this.state.priceRange} setFiltering={this.setFiltering} />
           <Router>
             <Switch>
               <Route exact path="/" render={() => <Home />} />
               <Route path="/tutorial" render={() => <Tutorial />} />
-              <Route path="/search" render={() => <SearchResult setPriceRange={this.setPriceRange} />} />
+              <Route path="/search" render={() => <SearchResult setPriceRange={this.setPriceRange} setFiltering={this.setFiltering} isFiltering={this.state.isFiltering} />} />
               <Route path="/profile" render={() => <Profile />} />
 
               <Route path="/payment" render={() => <Payment setPreventLeavePage={this.setPreventLeavePage} />} />

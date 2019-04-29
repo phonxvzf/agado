@@ -4,6 +4,7 @@ import { Button, Card, Col, Image, Row } from 'react-bootstrap';
 import { hotelService } from '../service/hotelService';
 import { requestService } from '../service/requestService';
 import { userService } from '../service/userService';
+import Loading from './Loading';
 
 export default class Request extends Component {
   async componentWillMount() {
@@ -60,7 +61,7 @@ export default class Request extends Component {
 
   render() {
     if (!this.state) {
-      return <div className="error-bg scroll-snap-child" />
+      return <Loading />
     } else if (!this.state.validUser) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">

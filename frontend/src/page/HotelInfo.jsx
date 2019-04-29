@@ -11,26 +11,30 @@ import { requestService } from '../service/requestService';
 import { reviewService } from '../service/reviewService';
 import { userService } from '../service/userService';
 import CreateHotel from './CreateHotel';
+import Loading from './Loading';
 
 export default class HotelInfo extends Component {
   async componentWillMount() {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
-    let oldReview = null;
-    let isRequestPending = false;
+
     if (currentUser) {
-      oldReview = await reviewService.getOldReview(Number(search.hotel_id));
-      isRequestPending = await requestService.isRequestPending(Number(search.hotel_id), currentUser.user_id);
+      reviewService.getOldReview(Number(search.hotel_id))
+        .then(oldReview => this.setState({ oldReview: oldReview }));
+      requestService.isRequestPending(Number(search.hotel_id), currentUser.user_id)
+        .then(isRequestPending => this.setState({ isRequestPending: isRequestPending }));
     }
-    const hotel = await hotelService.getHotel(Number(search.hotel_id), search.checkin, search.checkout);
+    hotelService.getHotel(Number(search.hotel_id), search.checkin, search.checkout)
+      .then(hotel => this.setState({ hotel: hotel }));
+
     this.setState({
       pathname: pathname,
       search: search,
       currentUser: currentUser,
-      hotel: hotel,
-      oldReview: oldReview,
-      isRequestPending: isRequestPending
+      hotel: undefined,
+      oldReview: undefined,
+      isRequestPending: false
     });
   }
 
@@ -57,9 +61,10 @@ export default class HotelInfo extends Component {
   }
 
   render() {
-    if (!this.state) {
-      return <div className="error-bg scroll-snap-child" />
-    } else if (!this.state.hotel) {
+    const hotel = this.state.hotel;
+    if (hotel === undefined) {
+      return <Loading />
+    } else if (!hotel) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h1>This page is not exist</h1>
@@ -71,7 +76,7 @@ export default class HotelInfo extends Component {
         <div className="hotel-bg px-auto hotel-info">
           {
             this.props.mode === "edit" && this.isUserOwn() ?
-              <CreateHotel pathname={this.state.pathname} search={this.state.search} currentUser={this.state.currentUser} hotel={this.state.hotel} setPreventLeavePage={this.props.setPreventLeavePage} />
+              <CreateHotel pathname={this.state.pathname} search={this.state.search} currentUser={this.state.currentUser} hotel={hotel} setPreventLeavePage={this.props.setPreventLeavePage} />
               :
               <>
                 <div id="hotel_info">
@@ -82,7 +87,7 @@ export default class HotelInfo extends Component {
                 </div>
                 <div id="hotel_rooms">
                   {
-                    <RoomSelection search={this.state.search} currentUser={this.state.currentUser} rooms={this.state.hotel.rooms} />
+                    <RoomSelection search={this.state.search} currentUser={this.state.currentUser} rooms={hotel.rooms} />
                   }
                 </div>
               </>
