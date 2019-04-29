@@ -56,6 +56,7 @@ export default class CustomNavBar extends Component {
       showRating: search.rating ? Number(search.rating) : 0,
       amenities: amenities,
       sortBy: search.sort_by ? search.sort_by : "rating",
+      loading: 0,
       scrolled: 0
     });
   }
@@ -65,15 +66,15 @@ export default class CustomNavBar extends Component {
     window.addEventListener('scroll', this.handleScroll, true);
     // }
     this.loading = setInterval(() => {
-      if (this.state.scrolled >= 100) {
+      if (this.state.loading >= 100) {
         clearTimeout(this.loading);
-        this.props.setLoading(false);
+        setTimeout(() => this.props.setLoading(false), 500);
       } else {
         this.setState({
-          scrolled: this.state.scrolled + 1
+          loading: this.state.loading + 1
         })
       }
-    }, 10);
+    }, 5);
   }
 
   componentWillUnmount() {
@@ -98,11 +99,22 @@ export default class CustomNavBar extends Component {
   }
 
   handleScroll = (e) => {
-    // const winScroll = e.target.scrollTop;
-    // const height = e.target.scrollHeight - e.target.clientHeight;
-    // const scrolled = (winScroll / height) * 100;
+    const winScroll = e.target.scrollTop;
+    const height = e.target.scrollHeight - e.target.clientHeight;
+    const scrolled = this.state.scrolled;
+    const newScrolled = (winScroll / height) * 100;
+    if (newScrolled > scrolled) {
+      this.setState({
+        hide: true
+      })
+    } else {
+      this.setState({
+        hide: false
+      })
+    }
+
     this.setState({
-      // scrolled: scrolled,
+      scrolled: newScrolled,
       justScrolled: true
     });
     clearTimeout(this.timeout);
@@ -244,6 +256,7 @@ export default class CustomNavBar extends Component {
   }
 
   render() {
+    const pathname = this.state.pathname;
     return (
       <>
         <Navbar className="shadow pb-md-0 pt-md-2" bg="light" variant="light" fixed="top" expand="md" collapseOnSelect>
@@ -254,26 +267,31 @@ export default class CustomNavBar extends Component {
             <Col xs={2} className="d-md-none">
               <Navbar.Toggle />
             </Col>
-            <Col xs={4} md={3} xl={2} className="ml-lg-3 px-0">
-              <Navbar.Brand className="py-0 mx-0" href={this.state.currentUser && this.state.currentUser.user_type === "hotel_manager" ? "/myhotel" : "/"}>
-                <Image src={agadoLogo} fluid />
-              </Navbar.Brand>
-            </Col>
-            <Col className="py-0 mr-auto">
-              {this.getSearchTab()}
-            </Col>
-            <Col xs={12} md={4} className="mr-lg-3">
-              <Navbar.Collapse className="justify-content-end">
-                {this.getUserActions()}
-              </Navbar.Collapse>
-            </Col>
+            {
+              window.innerWidth > 768 && (pathname === "/search" || pathname === "/hotel") && this.state.hide ? "" :
+                <>
+                  <Col xs={4} md={3} xl={2} className="ml-lg-3 px-0">
+                    <Navbar.Brand className="py-0 mx-0" href={this.state.currentUser && this.state.currentUser.user_type === "hotel_manager" ? "/myhotel" : "/"}>
+                      <Image src={agadoLogo} fluid />
+                    </Navbar.Brand>
+                  </Col>
+                  <Col className="py-0 mr-auto">
+                    {this.getSearchTab()}
+                  </Col>
+                  <Col xs={12} md={4} className="mr-lg-3">
+                    <Navbar.Collapse className="justify-content-end">
+                      {this.getUserActions()}
+                    </Navbar.Collapse>
+                  </Col>
+                </>
+            }
             <Col xs={12}>
               <Navbar.Collapse className="mx-lg-3 mx-xl-5">
                 {this.getSecondRowComponent()}
               </Navbar.Collapse>
             </Col>
             <Col xs={12} className="px-0 pt-1">
-              <ProgressBar className="scroll-indicator bg-none" variant="dark" now={this.state.scrolled} />
+              <ProgressBar className="scroll-indicator bg-none" variant={this.state.loading >= 100 ? "secondary" : "dark"} now={this.state.loading} />
             </Col>
           </Row>
         </Navbar>
