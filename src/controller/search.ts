@@ -154,7 +154,7 @@ const ctrlSearch = {
         iHotelImgs < hotelImgs.length &&
         availableHotels[i].hotel_id === hotelImgs[iHotelImgs].hotel_id;
         iHotelImgs += 1) {
-        availableHotels[i]['imgs'].push(hotelImgs[iHotelImgs]['img']);
+        availableHotels[i]['imgs'] = hotelImgs[iHotelImgs]['img'].split(',');
       }
 
       availableHotels[i]['managers_info'] = [];
@@ -183,7 +183,8 @@ const ctrlSearch = {
         hotelRooms[iHotelRooms]['amenities'].sort();
         hotelRooms[iHotelRooms]['imgs'] = hotelRoomImages
           .filter(img => img.room_id === hotelRooms[iHotelRooms].room_id)
-          .map(img => img.img);
+          .map(img => img.img)
+          .map(l => l.split(','));
         hotelRooms[iHotelRooms]['price'] =
           Number(String(hotelRooms[iHotelRooms]['price']).replace(/[,$]/g, ''));
         availableHotels[i]['rooms'].push(hotelRooms[iHotelRooms]);

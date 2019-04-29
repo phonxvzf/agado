@@ -1,4 +1,5 @@
 import koa from 'koa';
+import crypto from 'crypto';
 import { hotelRoomImageRepo, HotelRoomImage }  from '../model/hotel-room-image';
 import { Storage, Bucket } from '@google-cloud/storage';
 
@@ -48,9 +49,6 @@ const ctrlHotelRoomImage = {
   // After ctrlHotelRoom.createHotelRoom
   updateHotelRoomImage: async(ctx: koa.Context, next: () => Promise<any>) => {
     const hotelId = ctx.response.body['hotel_id'];
-
-    await hotelRoomImageRepo.deleteHotelRoomImageByHotelId(hotelId);
-
     const batchUpload = [];
     const testDir = (process.env.NODE_ENV === 'production') ? '' : 'test/';
     const bucket: Bucket = gcs ? gcs.bucket(process.env.GCS_BUCKET) : null;
@@ -59,25 +57,29 @@ const ctrlHotelRoomImage = {
       const roomId = hotelRoomInfo['room_id'];
 
       for (let idx = 0; idx < hotelRoomInfo['imgs'].length; idx += 1) {
-        const image = hotelRoomInfo['imgs'][idx];
-        const ext = (image) ?
-          image.substr(image.search('/') + 1, image.search(';') - image.search('/') - 1) : null;
-        const fname = (image) ? `${testDir}h${hotelId}r${roomId}_${idx}.${ext}` : null;
-        const hotelRoomImageInfo: HotelRoomImage = {
-          hotel_id: hotelId,
-          room_id: roomId,
-          img_id: idx,
-          img: fname,
-        };
-        await hotelRoomImageRepo.createHotelRoomImage(hotelRoomImageInfo);
+        const image: string = hotelRoomInfo['imgs'][idx];
+        const isImage = (image != null) && (image.substr(0, 20).search('data:image') >= 0);
 
         if (gcs) {
-          if (fname != null) {
+          if (isImage) {
             const blob = Buffer.from(image.substr(image.search(',') + 1), 'base64');
+            const ext = image.substr(
+              image.search('/') + 1,
+              image.search(';') - image.search('/') - 1,
+            );
+            const fname = `${testDir}${crypto.randomBytes(16).toString('hex')}.${ext}`;
+            hotelRoomInfo['imgs'][idx] = fname;
             batchUpload.push(bucket.file(fname).save(blob, { resumable: false }));
           }
         }
       }
+
+      const hotelRoomImageInfo: HotelRoomImage = {
+        hotel_id: hotelId,
+        room_id: roomId,
+        img: hotelRoomInfo['imgs'].toString(),
+      };
+      await hotelRoomImageRepo.createHotelRoomImage(hotelRoomImageInfo);
     }
 
     if (gcs) {
