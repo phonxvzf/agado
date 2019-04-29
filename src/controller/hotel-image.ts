@@ -1,4 +1,6 @@
 import koa from 'koa';
+import crypto from 'crypto';
+import Hotel from '../model/entity/Hotel';
 import { hotelImageRepo, HotelImage }  from '../model/hotel-image';
 import { Storage, Bucket } from '@google-cloud/storage';
 
@@ -24,7 +26,7 @@ const ctrlHotelImage = {
   },
 
   getUserHotelImage: async (ctx: koa.Context, next: () => Promise<any>) => {
-    const hotelIdList = ctx.response.body.map(hotel => hotel['hotel_id']);
+    const hotelIdList = ctx.response.body.map((hotel: Hotel) => hotel['hotel_id']);
     const hotelImageInfo = await hotelImageRepo.getByHotelIds(hotelIdList);
 
     for (const each of ctx.response.body) {
@@ -41,31 +43,32 @@ const ctrlHotelImage = {
   // After ctrlHotel.createHotel
   updateHotelImage: async (ctx: koa.Context, next: () => Promise<any>) => {
     const hotelId = ctx.request.body['hotel_id'];
-
-    await hotelImageRepo.deleteHotelImageByHotelId(hotelId);
-
     const batchUpload = [];
     const testDir = (process.env.NODE_ENV === 'production') ? '' : 'test/';
     const bucket: Bucket = gcs ? gcs.bucket(process.env.GCS_BUCKET) : null;
     for (let idx = 0; idx < ctx.request.body['imgs'].length; idx += 1) {
       const image: string = ctx.request.body['imgs'][idx];
-      const ext = (image) ?
-        image.substr(image.search('/') + 1, image.search(';') - image.search('/') - 1) : null;
-      const fname = (image) ? `${testDir}h${hotelId}_${idx}.${ext}` : null;
-      const hotelImageInfo: HotelImage = {
-        hotel_id: hotelId,
-        img_id: idx,
-        img: fname,
-      };
-      await hotelImageRepo.createHotelImage(hotelImageInfo);
+      const isImage = (image != null) && (image.substr(0, 20).search('data:image') >= 0);
 
       if (gcs) {
-        if (fname != null) {
+        if (isImage) {
           const blob = Buffer.from(image.substr(image.search(',') + 1), 'base64');
+          const ext = image.substr(
+            image.search('/') + 1,
+            image.search(';') - image.search('/') - 1,
+          );
+          const fname = `${testDir}${crypto.randomBytes(16).toString('hex')}.${ext}`;
+          ctx.request.body['imgs'][idx] = fname;
           batchUpload.push(bucket.file(fname).save(blob, { resumable: false }));
         }
       }
     }
+
+    const hotelImageInfo: HotelImage = {
+      hotel_id: hotelId,
+      img: ctx.request.body['imgs'].toString(),
+    };
+    await hotelImageRepo.createHotelImage(hotelImageInfo);
 
     if (gcs) {
       await Promise.all(batchUpload);

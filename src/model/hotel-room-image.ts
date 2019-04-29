@@ -3,7 +3,20 @@ import HotelRoomImage from './entity/HotelRoomImage';
 
 const hotelRoomImageRepo = {
   createHotelRoomImage: async (hotelRoomImageData: HotelRoomImage): Promise<number[]> => {
-    return database.insert(hotelRoomImageData).returning('img_id').into('hotel_room_img');
+    return database.raw(
+      `
+      INSERT INTO "hotel_room_img" ("hotel_id", "room_id", "img")
+      VALUES (?, ?, ?)
+      ON CONFLICT ("hotel_id", "room_id") DO UPDATE SET ("img") = (?)
+      RETURNING "hotel_id"
+      `,
+      [
+        hotelRoomImageData.hotel_id,
+        hotelRoomImageData.room_id,
+        hotelRoomImageData.img,
+        hotelRoomImageData.img,
+      ],
+    );
   },
 
   getByHotelIds: async (hotelIds: number[]): Promise<HotelRoomImage[]> => {

@@ -47,7 +47,7 @@ const defaultHotelData = {
   city: 'city',
   address: 'address',
   desc: 'desc',
-  imgs: ['img1', 'img2', 'img3', 'img4', 'img5'],
+  imgs: ['img1', 'img2', 'img3', 'img4', 'img5', 'data:image/png;base64,DEFAULT_IMG'],
   rooms: [
     {
       name: 'room1',
@@ -94,7 +94,7 @@ const hotelData2 = {
       price: 2,
       total_room: 2,
       amenities: [3, 4],
-      imgs: ['r2img1', 'r2img2'],
+      imgs: ['data:image/png;base64,r2img1', 'data:image/png;base64,r2img2'],
     },
   ],
 };
