@@ -5,7 +5,7 @@ import { hotelRepo, Hotel } from '../src/model/hotel';
 import { hotelManagerRepo, HotelManager } from '../src/model/hotel-manager';
 import crypto from 'crypto';
 
-jest.setTimeout(20000);
+jest.setTimeout(30000);
 
 const validGenderArray = Array.from(validGender);
 const validUserTypeArray = Array.from(validUserType);

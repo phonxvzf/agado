@@ -61,7 +61,8 @@ const ctrlHotelRoomImage = {
       for (let idx = 0; idx < hotelRoomInfo['imgs'].length; idx += 1) {
         const image = hotelRoomInfo['imgs'][idx];
         const ext = image.substr(0, 3);
-        const fname = `${testDir}h${hotelId}r${roomId}_${idx}.${ext}`;
+        const fname = (image && image.length > 3) ?
+          `${testDir}h${hotelId}r${roomId}_${idx}.${ext}` : null;
         const hotelRoomImageInfo: HotelRoomImage = {
           hotel_id: hotelId,
           room_id: roomId,
@@ -71,7 +72,9 @@ const ctrlHotelRoomImage = {
         await hotelRoomImageRepo.createHotelRoomImage(hotelRoomImageInfo);
 
         if (gcs) {
-          batchUpload.push(bucket.file(fname).save(image.substr(3), { resumable: false }));
+          if (fname != null) {
+            batchUpload.push(bucket.file(fname).save(image.substr(3), { resumable: false }));
+          }
         }
       }
     }

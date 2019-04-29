@@ -6,6 +6,7 @@
   "scripts": {
     "start": "TZ=UTC node ./build/index.js",
     "migrate": "knex migrate:latest",
+    "rollback": "knex migrate:rollback",
     "test": "TZ=UTC jest --forceExit --runInBand --testPathIgnorePatterns util.ts",
     "test-coverage": "TZ=UTC jest --forceExit --runInBand --testPathIgnorePatterns util.ts --coverage --collectCoverageFrom=src/**/*.ts",
     "test-coverage-ci": "TZ=UTC jest --forceExit --runInBand --testPathIgnorePatterns util.ts --coverage --collectCoverageFrom=src/**/*.ts --coverageReporters=json && mv coverage/coverage-final.json coverage/coverage.json",
@@ -13,6 +14,7 @@
     "build": "tsc -p src",
     "gcp-build": "tsc -p src",
     "migrate-db": "knex migrate:latest",
+    "rollback-db": "knex migrate:rollback",
     "clean": "rm -rf ./build/*"
   },
   "author": "agado",
