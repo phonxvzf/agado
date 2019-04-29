@@ -48,8 +48,10 @@ const ctrlHotelImage = {
     const testDir = (process.env.NODE_ENV === 'production') ? '' : 'test/';
     const bucket: Bucket = gcs ? gcs.bucket(process.env.GCS_BUCKET) : null;
     for (let idx = 0; idx < ctx.request.body['imgs'].length; idx += 1) {
-      const image = ctx.request.body['imgs'][idx];
-      const fname = (image) ? `${testDir}h${hotelId}_${idx}` : null;
+      const image: string = ctx.request.body['imgs'][idx];
+      const ext = (image) ?
+        image.substr(image.search('/') + 1, image.search(';') - image.search('/') - 1) : null;
+      const fname = (image) ? `${testDir}h${hotelId}_${idx}.${ext}` : null;
       const hotelImageInfo: HotelImage = {
         hotel_id: hotelId,
         img_id: idx,
@@ -59,7 +61,8 @@ const ctrlHotelImage = {
 
       if (gcs) {
         if (fname != null) {
-          batchUpload.push(bucket.file(fname).save(image, { resumable: false }));
+          const blob = Buffer.from(image.substr(image.search(',') + 1), 'base64');
+          batchUpload.push(bucket.file(fname).save(blob, { resumable: false }));
         }
       }
     }
