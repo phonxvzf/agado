@@ -183,8 +183,8 @@ const ctrlSearch = {
         hotelRooms[iHotelRooms]['amenities'].sort();
         hotelRooms[iHotelRooms]['imgs'] = hotelRoomImages
           .filter(img => img.room_id === hotelRooms[iHotelRooms].room_id)
-          .map(img => img.img)
-          .map(l => l.split(','));
+          .map(img => img.img.split(','))
+          .flat();
         hotelRooms[iHotelRooms]['price'] =
           Number(String(hotelRooms[iHotelRooms]['price']).replace(/[,$]/g, ''));
         availableHotels[i]['rooms'].push(hotelRooms[iHotelRooms]);

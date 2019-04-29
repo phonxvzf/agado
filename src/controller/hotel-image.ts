@@ -20,7 +20,7 @@ const ctrlHotelImage = {
     const hotelId = ctx.response.body['hotel_id'];
     const hotelImageInfo = await hotelImageRepo.getHotelImage(hotelId);
 
-    ctx.response.body['imgs'] = hotelImageInfo.map(image => image['img']);
+    ctx.response.body['imgs'] = hotelImageInfo.map(img => img.img.split(',')).flat();
 
     return next();
   },
@@ -32,9 +32,11 @@ const ctrlHotelImage = {
     for (const each of ctx.response.body) {
       const hotelId = each['hotel_id'];
       const currentHotelImageInfo =
-        hotelImageInfo.filter(hotelImage => hotelImage['hotel_id'] === hotelId);
+        hotelImageInfo.filter(hotelImage => hotelImage['hotel_id'] === hotelId)
+        .map(imageInfo => imageInfo.img.split(','))
+        .flat();
 
-      each['imgs'] = currentHotelImageInfo.map(image => image['img']);
+      each['imgs'] = currentHotelImageInfo;
     }
 
     return next();
