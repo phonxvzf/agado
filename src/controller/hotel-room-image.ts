@@ -1,5 +1,6 @@
 import koa from 'koa';
 import crypto from 'crypto';
+import Hotel from '../model/entity/Hotel';
 import { hotelRoomImageRepo, HotelRoomImage }  from '../model/hotel-room-image';
 import { Storage, Bucket } from '@google-cloud/storage';
 
@@ -22,14 +23,15 @@ const ctrlHotelRoomImage = {
       const roomId = ctx.response.body['rooms'][i]['room_id'];
       const hotelRoomImageInfo =
         await hotelRoomImageRepo.getHotelRoomImage(hotelId, roomId);
-      ctx.response.body['rooms'][i]['imgs'] = hotelRoomImageInfo.map(image => image['img']);
+      ctx.response.body['rooms'][i]['imgs'] = hotelRoomImageInfo.map(img => img.img.split(','))
+        .flat();
     }
 
     return next();
   },
 
   getUserHotelRoomImage: async(ctx: koa.Context, next: () => Promise<any>) => {
-    const hotelIdList = ctx.response.body.map(hotel => hotel['hotel_id']);
+    const hotelIdList = ctx.response.body.map((hotel: Hotel) => hotel['hotel_id']);
     const hotelRoomImageInfo = await hotelRoomImageRepo.getByHotelIds(hotelIdList);
 
     for (const each of ctx.response.body) {
@@ -39,7 +41,10 @@ const ctrlHotelRoomImage = {
         const roomId = each['rooms'][i]['room_id'];
         const currentHotelRoomImageInfo = hotelRoomImageInfo.filter(image =>
           image['hotel_id'] === hotelId && image['room_id'] === roomId);
-        each['rooms'][i]['imgs'] = currentHotelRoomImageInfo.map(image => image['img']);
+
+        each['rooms'][i]['imgs'] = currentHotelRoomImageInfo
+          .map(image => image['img'].split(','))
+          .flat();
       }
     }
 
