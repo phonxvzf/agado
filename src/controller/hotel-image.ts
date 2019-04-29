@@ -49,8 +49,7 @@ const ctrlHotelImage = {
     const bucket: Bucket = gcs ? gcs.bucket(process.env.GCS_BUCKET) : null;
     for (let idx = 0; idx < ctx.request.body['imgs'].length; idx += 1) {
       const image = ctx.request.body['imgs'][idx];
-      const ext = image.substr(0, 3);
-      const fname = (image && image.length > 3) ? `${testDir}h${hotelId}_${idx}.${ext}` : null;
+      const fname = (image) ? `${testDir}h${hotelId}_${idx}` : null;
       const hotelImageInfo: HotelImage = {
         hotel_id: hotelId,
         img_id: idx,
@@ -60,7 +59,7 @@ const ctrlHotelImage = {
 
       if (gcs) {
         if (fname != null) {
-          batchUpload.push(bucket.file(fname).save(image.substr(3), { resumable: false }));
+          batchUpload.push(bucket.file(fname).save(image, { resumable: false }));
         }
       }
     }
