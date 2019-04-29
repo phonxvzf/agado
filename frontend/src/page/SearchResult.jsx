@@ -106,7 +106,7 @@ export default class SearchResult extends Component {
           <h4>There are no hotels match your search and filter criteria.</h4>
           <hr />
           <h4>Suggestion:&nbsp;&nbsp;&nbsp;
-            <Button variant="secondary" href="/search">See recommended hotels</Button>
+            <Button variant="secondary" className="my-2" href="/search">See recommended hotels</Button>
           </h4>
         </div>
       );
@@ -124,6 +124,11 @@ export default class SearchResult extends Component {
               )
             })
           }
+        </Row>
+        <Row className="my-3 align-items-center">
+          <Col><hr /></Col>
+          <h5 className="text-secondary">No more results</h5>
+          <Col><hr /></Col>
         </Row>
       </div>
     )

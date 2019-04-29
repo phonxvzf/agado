@@ -2,7 +2,7 @@ import 'bootstrap-daterangepicker/daterangepicker.css';
 import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Badge, Button, Col, Dropdown, Form, Image, InputGroup, Nav, Navbar, OverlayTrigger, Popover, Row } from 'react-bootstrap';
+import { Badge, Button, Col, Dropdown, Form, Image, InputGroup, Nav, Navbar, OverlayTrigger, Popover, ProgressBar, Row } from 'react-bootstrap';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
@@ -55,20 +55,31 @@ export default class CustomNavBar extends Component {
       rating: search.rating ? Number(search.rating) : 0,
       showRating: search.rating ? Number(search.rating) : 0,
       amenities: amenities,
-      sortBy: search.sort_by ? search.sort_by : "rating"
+      sortBy: search.sort_by ? search.sort_by : "rating",
+      scrolled: 0
     });
   }
 
   componentDidMount() {
-    if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
-      window.addEventListener('scroll', this.handleScroll, true);
-    }
+    // if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
+    window.addEventListener('scroll', this.handleScroll, true);
+    // }
+    this.loading = setInterval(() => {
+      if (this.state.scrolled >= 100) {
+        clearTimeout(this.loading);
+        this.props.setLoading(false);
+      } else {
+        this.setState({
+          scrolled: this.state.scrolled + 1
+        })
+      }
+    }, 10);
   }
 
   componentWillUnmount() {
-    if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
-      window.removeEventListener('scroll', this.handleScroll, true);
-    }
+    // if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
+    window.removeEventListener('scroll', this.handleScroll, true);
+    // }
   }
 
   componentWillReceiveProps(nextProps) {
@@ -87,11 +98,11 @@ export default class CustomNavBar extends Component {
   }
 
   handleScroll = (e) => {
-    const winScroll = e.target.scrollTop;
-    const height = e.target.scrollHeight - e.target.clientHeight;
-    const scrolled = (winScroll / height) * 100;
+    // const winScroll = e.target.scrollTop;
+    // const height = e.target.scrollHeight - e.target.clientHeight;
+    // const scrolled = (winScroll / height) * 100;
     this.setState({
-      scrolled: scrolled,
+      // scrolled: scrolled,
       justScrolled: true
     });
     clearTimeout(this.timeout);
@@ -261,9 +272,9 @@ export default class CustomNavBar extends Component {
                 {this.getSecondRowComponent()}
               </Navbar.Collapse>
             </Col>
-            {/* <Col xs={12} className="px-0 pt-1">
+            <Col xs={12} className="px-0 pt-1">
               <ProgressBar className="scroll-indicator bg-none" variant="dark" now={this.state.scrolled} />
-            </Col> */}
+            </Col>
           </Row>
         </Navbar>
         <div className="d-md-none">

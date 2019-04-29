@@ -7,6 +7,7 @@ import CreateHotel from './page/CreateHotel';
 import Home from './page/Home';
 import HotelInfo from './page/HotelInfo';
 import HotelReservation from './page/HotelReservation';
+import Loading from './page/Loading';
 import MyHotel from './page/MyHotel';
 import Payment from './page/Payment';
 import Profile from './page/Profile';
@@ -24,7 +25,8 @@ class App extends Component {
         max: Infinity
       },
       preventLeavePage: true,
-      isFiltering: false
+      isFiltering: false,
+      isLoading: true
     });
   }
 
@@ -85,29 +87,40 @@ class App extends Component {
     });
   }
 
+  setLoading = (isLoading) => {
+    this.setState({
+      isLoading: isLoading
+    });
+  }
+
   render() {
     return (
       <>
         <div className="scroll-snap-container">
-          <CustomNavBar mode={this.state.mode} toggleMode={this.toggleMode} priceRange={this.state.priceRange} setFiltering={this.setFiltering} />
-          <Router>
-            <Switch>
-              <Route exact path="/" render={() => <Home />} />
-              <Route path="/tutorial" render={() => <Tutorial />} />
-              <Route path="/search" render={() => <SearchResult setPriceRange={this.setPriceRange} setFiltering={this.setFiltering} isFiltering={this.state.isFiltering} />} />
-              <Route path="/profile" render={() => <Profile />} />
+          <CustomNavBar mode={this.state.mode} toggleMode={this.toggleMode} priceRange={this.state.priceRange} setFiltering={this.setFiltering} setLoading={this.setLoading} />
+          <div className={this.state.isLoading ? "" : "d-none"}>
+            <Loading />
+          </div>
+          <div className={this.state.isLoading ? "d-none" : ""}>
+            <Router>
+              <Switch>
+                <Route exact path="/" render={() => <Home />} />
+                <Route path="/tutorial" render={() => <Tutorial />} />
+                <Route path="/search" render={() => <SearchResult setPriceRange={this.setPriceRange} setFiltering={this.setFiltering} isFiltering={this.state.isFiltering} />} />
+                <Route path="/profile" render={() => <Profile />} />
 
-              <Route path="/payment" render={() => <Payment setPreventLeavePage={this.setPreventLeavePage} />} />
-              <Route path="/reservation" render={() => <Reservation />} />
+                <Route path="/payment" render={() => <Payment setPreventLeavePage={this.setPreventLeavePage} />} />
+                <Route path="/reservation" render={() => <Reservation />} />
 
-              <Route path="/request" render={() => <Request />} />
-              <Route path="/myhotel" render={() => <MyHotel />} />
-              <Route path="/hotel/reservation" render={() => <HotelReservation />} />
-              <Route path="/hotel/create" render={() => <CreateHotel setPreventLeavePage={this.setPreventLeavePage} />} />
-              <Route path="/hotel" render={() => <HotelInfo mode={this.state.mode} setPreventLeavePage={this.setPreventLeavePage} />} />
-            </Switch>
-          </Router>
-          <Footer />
+                <Route path="/request" render={() => <Request />} />
+                <Route path="/myhotel" render={() => <MyHotel />} />
+                <Route path="/hotel/reservation" render={() => <HotelReservation />} />
+                <Route path="/hotel/create" render={() => <CreateHotel setPreventLeavePage={this.setPreventLeavePage} />} />
+                <Route path="/hotel" render={() => <HotelInfo mode={this.state.mode} setPreventLeavePage={this.setPreventLeavePage} />} />
+              </Switch>
+            </Router>
+            <Footer />
+          </div>
         </div>
       </>
     );

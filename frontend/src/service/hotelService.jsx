@@ -97,11 +97,11 @@ export class hotelService {
 
   static createHotel = async (data) => {
     let hotel = JSON.parse(JSON.stringify(data));
-    hotel.imgs = hotel.imgs.map(img => img.startsWith('data:') ? img : img.substr(41));
+    hotel.imgs = hotel.imgs.map(img => !img ? null : img.startsWith('data:') ? img : img.substr(41));
     hotel.rooms = hotel.rooms.map(room => {
       return {
         ...room,
-        imgs: room.imgs.map(img => img.startsWith('data:') ? img : img.substr(41))
+        imgs: room.imgs.map(img => !img ? null : img.startsWith('data:') ? img : img.substr(41))
       };
     });
     return await axios.post('/hotel', hotel, {
@@ -124,11 +124,11 @@ export class hotelService {
 
   static editHotel = async (data) => {
     let editedHotel = JSON.parse(JSON.stringify(data));
-    editedHotel.imgs = editedHotel.imgs.map(img => img.startsWith('data:') ? img : img.substr(41));
+    editedHotel.imgs = editedHotel.imgs.map(img => !img ? null : img.startsWith('data:') ? img : img.substr(41));
     editedHotel.rooms = editedHotel.rooms.map(room => {
       return {
         ...room,
-        imgs: room.imgs.map(img => img.startsWith('data:') ? img : img.substr(41))
+        imgs: room.imgs.map(img => !img ? null : img.startsWith('data:') ? img : img.substr(41))
       };
     });
     return await axios.put('/hotel', editedHotel, {
