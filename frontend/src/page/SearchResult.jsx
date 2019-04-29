@@ -1,6 +1,6 @@
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Col, Row } from 'react-bootstrap';
+import { Button, Col, Row } from 'react-bootstrap';
 import HotelCard from '../component/HotelCard';
 import '../css/SearchResult.css';
 import { hotelService } from '../service/hotelService';
@@ -35,11 +35,12 @@ export default class SearchResult extends Component {
         rating: search.rating ? Number(search.rating) : 0,
         amenities: search.amenities ? Array.isArray(search.amenities) ? search.amenities.map(amenity => Number(amenity)) : [Number(search.amenities)] : [],
         sort_by: search.sort_by === "price" ? "price" : "rating"
-      }
+      },
+      loaded: 6
     });
   }
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps(nextProps) {
     if (nextProps.isFiltering) {
       this.applyFilter();
       this.props.setFiltering(false);
@@ -91,9 +92,27 @@ export default class SearchResult extends Component {
     if (!this.state) {
       return <Loading />
     }
-    const hotels = this.getFilteredHotels();
+    let hotels = this.getFilteredHotels();
+    if (hotels && hotels.length === 0) {
+      hotels = this.state.hotels;
+      hotels.sort((a, b) => {
+        if (this.state.filters.sort_by === "price") return a.start_price - b.start_price;
+        else return b.rating - a.rating;
+      })
+      return (
+        <div className="search-result-bg text-secondary">
+          <div className="scroll-snap-child mt-5" />
+          <h1>No results found</h1>
+          <h4>There are no hotels match your search and filter criteria.</h4>
+          <hr />
+          <h4>Suggestion:&nbsp;&nbsp;&nbsp;
+            <Button variant="secondary" href="/search">See recommended hotels</Button>
+          </h4>
+        </div>
+      );
+    }
     return (
-      <div className="search-result-bg">
+      <div className="search-result-bg hotel-info">
         <div className="scroll-snap-child" />
         <Row>
           {

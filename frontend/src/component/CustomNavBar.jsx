@@ -2,7 +2,7 @@ import 'bootstrap-daterangepicker/daterangepicker.css';
 import moment from 'moment';
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Badge, Button, Col, Dropdown, Form, Image, InputGroup, Nav, Navbar, OverlayTrigger, Popover, ProgressBar, Row } from 'react-bootstrap';
+import { Badge, Button, Col, Dropdown, Form, Image, InputGroup, Nav, Navbar, OverlayTrigger, Popover, Row } from 'react-bootstrap';
 import DateRangePicker from 'react-bootstrap-daterangepicker';
 import InputRange from 'react-input-range';
 import 'react-input-range/lib/css/index.css';
@@ -59,17 +59,17 @@ export default class CustomNavBar extends Component {
     });
   }
 
-  // componentDidMount() {
-  //   if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
-  //     window.addEventListener('scroll', this.handleScroll, true);
-  //   }
-  // }
+  componentDidMount() {
+    if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
+      window.addEventListener('scroll', this.handleScroll, true);
+    }
+  }
 
-  // componentWillUnmount() {
-  //   if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
-  //     window.removeEventListener('scroll', this.handleScroll, true);
-  //   }
-  // }
+  componentWillUnmount() {
+    if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
+      window.removeEventListener('scroll', this.handleScroll, true);
+    }
+  }
 
   componentWillReceiveProps(nextProps) {
     if (this.state.price.min === -Infinity || this.state.price.max === Infinity) {
@@ -261,9 +261,9 @@ export default class CustomNavBar extends Component {
                 {this.getSecondRowComponent()}
               </Navbar.Collapse>
             </Col>
-            <Col xs={12} className="px-0 pt-1">
+            {/* <Col xs={12} className="px-0 pt-1">
               <ProgressBar className="scroll-indicator bg-none" variant="dark" now={this.state.scrolled} />
-            </Col>
+            </Col> */}
           </Row>
         </Navbar>
         <div className="d-md-none">

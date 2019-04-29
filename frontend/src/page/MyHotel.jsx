@@ -82,7 +82,7 @@ export default class MyHotel extends Component {
               <Form.Control
                 type="text"
                 onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
-                placeholder="Find hotels"
+                placeholder="Find other hotels"
                 defaultValue={this.state.search.hotel_name}
                 autoFocus />
               <InputGroup.Append>

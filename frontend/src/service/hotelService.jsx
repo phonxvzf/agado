@@ -6,11 +6,11 @@ const baseImgPath = "http://agado-imgs.storage.googleapis.com/";
 export class hotelService {
   static fillHotelInfo = (hotel) => {
     const reviews = hotel.reviews;
-    hotel.imgs = hotel.imgs[0].split(',').map(img => img ? baseImgPath + img : img)
+    hotel.imgs = hotel.imgs.map(img => img ? baseImgPath + img : img)
     hotel.rooms = hotel.rooms.map(room => {
       return {
         ...room,
-        imgs: room.imgs[0].split(',').map(img => img ? baseImgPath + img : img)
+        imgs: room.imgs.map(img => img ? baseImgPath + img : img)
       };
     });
     hotel.rating = reviews.length > 0 ? (reviews.map(review => review.rating).reduce((a, b) => a + b, 0)) / reviews.length : 0;
