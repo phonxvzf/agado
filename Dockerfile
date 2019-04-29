@@ -10,11 +10,11 @@ RUN apk add -U tzdata python alpine-sdk\
   && echo "UTC" > /etc/timezone\
   && npm install
 
-ENV NODE_ENV=production
-RUN npm run build\
+RUN NODE_ENV=production npm run build\
   && chmod +x ./start-server.sh\
   && addgroup -S app\
   && adduser -S app -G app\
+  && mkdir /usr/src/app/secrets\
   && chown -R app /usr/src/app
 
 RUN apk del tzdata alpine-sdk

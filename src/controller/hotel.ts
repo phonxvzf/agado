@@ -6,7 +6,6 @@ import { validator } from '../common/validator';
 import { hotelManagerRepo } from '../model/hotel-manager';
 import review from '../model/review';
 import { userRepo } from '../model/user';
-import { COPYFILE_EXCL } from 'constants';
 
 const reviewRepo = review;
 

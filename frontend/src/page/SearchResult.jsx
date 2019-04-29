@@ -1,9 +1,10 @@
 import qs from 'qs';
 import React, { Component } from 'react';
-import { Col, Row } from 'react-bootstrap';
+import { Button, Col, Row } from 'react-bootstrap';
 import HotelCard from '../component/HotelCard';
 import '../css/SearchResult.css';
 import { hotelService } from '../service/hotelService';
+import Loading from './Loading';
 
 export default class SearchResult extends Component {
   async componentWillMount() {
@@ -26,13 +27,40 @@ export default class SearchResult extends Component {
       pathname: pathname,
       search: search,
       hotels: hotels,
+      priceRange: priceRange,
       filters: {
         hotel_name: search.hotel_name ? search.hotel_name : "",
         min_price: minPrice <= maxPrice ? minPrice : priceRange.min,
         max_price: minPrice <= maxPrice ? maxPrice : priceRange.max,
         rating: search.rating ? Number(search.rating) : 0,
         amenities: search.amenities ? Array.isArray(search.amenities) ? search.amenities.map(amenity => Number(amenity)) : [Number(search.amenities)] : [],
-        sort_by: search.sort_by === "rating" ? "rating" : "price"
+        sort_by: search.sort_by === "price" ? "price" : "rating"
+      },
+      loaded: 6
+    });
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.isFiltering) {
+      this.applyFilter();
+      this.props.setFiltering(false);
+    }
+  }
+
+  applyFilter = () => {
+    const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
+    const priceRange = this.state.priceRange;
+    const minPrice = search.min_price ? Math.max(Number(search.min_price).toFixed(0), priceRange.min) : priceRange.min;
+    const maxPrice = search.max_price ? Math.min(Number(search.max_price).toFixed(0), priceRange.max) : priceRange.max;
+
+    this.setState({
+      filters: {
+        hotel_name: search.hotel_name ? search.hotel_name : "",
+        min_price: minPrice <= maxPrice ? minPrice : priceRange.min,
+        max_price: minPrice <= maxPrice ? maxPrice : priceRange.max,
+        rating: search.rating ? Number(search.rating) : 0,
+        amenities: search.amenities ? Array.isArray(search.amenities) ? search.amenities.map(amenity => Number(amenity)) : [Number(search.amenities)] : [],
+        sort_by: search.sort_by === "price" ? "price" : "rating"
       }
     });
   }
@@ -62,11 +90,29 @@ export default class SearchResult extends Component {
 
   render() {
     if (!this.state) {
-      return <></>;
+      return <Loading />
     }
-    const hotels = this.getFilteredHotels();
+    let hotels = this.getFilteredHotels();
+    if (hotels && hotels.length === 0) {
+      hotels = this.state.hotels;
+      hotels.sort((a, b) => {
+        if (this.state.filters.sort_by === "price") return a.start_price - b.start_price;
+        else return b.rating - a.rating;
+      })
+      return (
+        <div className="search-result-bg text-secondary">
+          <div className="scroll-snap-child mt-5" />
+          <h1>No results found</h1>
+          <h4>There are no hotels match your search and filter criteria.</h4>
+          <hr />
+          <h4>Suggestion:&nbsp;&nbsp;&nbsp;
+            <Button variant="secondary" className="my-2" href="/search">See recommended hotels</Button>
+          </h4>
+        </div>
+      );
+    }
     return (
-      <div className="search-result-bg">
+      <div className="search-result-bg hotel-info">
         <div className="scroll-snap-child" />
         <Row>
           {
@@ -78,6 +124,11 @@ export default class SearchResult extends Component {
               )
             })
           }
+        </Row>
+        <Row className="my-3 align-items-center">
+          <Col><hr /></Col>
+          <h5 className="text-secondary">No more results</h5>
+          <Col><hr /></Col>
         </Row>
       </div>
     )

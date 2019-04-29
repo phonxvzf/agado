@@ -11,6 +11,7 @@ import '../css/Payment.css';
 import { hotelService } from '../service/hotelService';
 import { reservationService } from '../service/reservationService';
 import { userService } from '../service/userService';
+import Loading from './Loading';
 
 const theme = createMuiTheme({
   palette: {
@@ -79,7 +80,7 @@ export default class Payment extends Component {
 
   render() {
     if (!this.state) {
-      return <></>;
+      return <Loading />;
     } else if (!this.state.validUser) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">

@@ -5,6 +5,9 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "target": "es2017",
+    "lib": [
+      "esnext"
+    ],
     "removeComments": true,
     "typeRoots": [
       "./node_modules/@types"

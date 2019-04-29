@@ -59,7 +59,7 @@ export default class CreateHotel extends Component {
       })
       return;
     }
-    if (img.size > 1e7) {
+    if (img.size > 2000000) {
       this.setState({
         showModal: "upload_large_img"
       })
@@ -124,7 +124,7 @@ export default class CreateHotel extends Component {
   deleteImg = (idx) => {
     const hotel = this.state.hotel;
     let imgs = hotel.imgs;
-    imgs[idx] = "";
+    imgs[idx] = null;
     this.setState({
       hotel: {
         ...hotel,
@@ -424,7 +424,7 @@ export default class CreateHotel extends Component {
           showModal={this.state.showModal === "upload_large_img"}
           closeModal={() => this.setState({ showModal: null })}
           title="Unable to upload the file"
-          body="The file size exceeds the limit of 10 MB." />
+          body="The file size exceeds the limit of 2 MB." />
       </>
     )
   }

@@ -5,14 +5,10 @@ import { Badge, Card, Col, Row } from 'react-bootstrap';
 import { userService } from '../service/userService';
 
 export default class HotelReservationCard extends Component {
-  state = {
-    user: null
-  }
-
   async componentWillMount() {
-    const user = await userService.getUser(this.props.reservation.user_id);
+    userService.getUser(this.props.reservation.user_id).then(user => this.setState({ user: user }))
     this.setState({
-      user: user
+      user: null
     });
   }
 
@@ -24,7 +20,7 @@ export default class HotelReservationCard extends Component {
       return "Passed";
     } else if (new Date(checkin) <= new Date()) {
       return "During";
-    } 
+    }
     return dayLeft.toFixed(0) > 1 ? dayLeft.toFixed(0) + " days left" :
       dayLeft.toFixed(0) === 1 ? "1 day left" :
         (dayLeft * 24).toFixed(0) > 1 ? (dayLeft * 24).toFixed(0) + " hours left" :
@@ -53,22 +49,19 @@ export default class HotelReservationCard extends Component {
   render() {
     const reservation = this.props.reservation;
     const hotel = this.props.hotel;
-    const room = hotel.rooms.filter(room => room.room_id === Number(reservation.room_id))[0];
+    const room = !hotel ? null : hotel.rooms.filter(room => room.room_id === Number(reservation.room_id))[0];
     const user = this.state.user;
     const days = this.getDayleft();
-    if (!user) {
-      return <></>;
-    }
     return (
       <Card className="shadow">
         <Card.Header className="py-4">
           <Row className="align-items-end" noGutters>
             <Col xs={8}>
-              <Card.Title as="h6">{room.name}</Card.Title>
+              <Card.Title as="h6">{!room ? <>&nbsp;</> : room.name}</Card.Title>
               <Card.Subtitle as="h6">{moment(reservation.checkin).format("D MMM YYYY") + " - " + moment(reservation.checkout).format("D MMM YYYY")}</Card.Subtitle>
             </Col>
             <Col xs={4} className="text-center">
-            <Badge variant={(days === "Passed" ? "secondary" : days === "During" ? "success" : "dark")}>{days}</Badge>
+              <Badge variant={(days === "Passed" ? "secondary" : days === "During" ? "success" : "dark")}>{days}</Badge>
             </Col>
           </Row>
         </Card.Header>
@@ -81,15 +74,15 @@ export default class HotelReservationCard extends Component {
         </div> */}
         <a className="link-only">
           <Card.Body>
-            <a className="text-dark d-inline" href={this.getProfileLink(user.user_id)}>
+            <a className="text-dark d-inline" href={user && this.getProfileLink(user.user_id)}>
               <Row className="align-items-center mx-2">
-                <div className="d-inline-block circle-avatar w-25" style={user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: userService.getUserColor(user.username) }} />
+                <div className="d-inline-block circle-avatar w-25" style={user && user.img ? { backgroundImage: `url(${user.img})` } : { backgroundColor: user ? userService.getUserColor(user.username) : "#fff" }} />
                 <Col>
-                  <strong>{user.first_name + " " + user.last_name}</strong>
+                  <strong>{user ? user.first_name + " " + user.last_name : " "}</strong>
                   <br />
-                  {user.email}
+                  {user ? user.email : " "}
                   <br />
-                  Tel: {user.phone_num}
+                  Tel: {user ? user.phone_num : " "}
                 </Col>
               </Row>
             </a>
@@ -103,7 +96,7 @@ export default class HotelReservationCard extends Component {
               {reservation.num} Reserved rooms
             </Col>
             <Col >
-              Price: {this.getPrice(room.price)}
+              Price: {this.getPrice(!room ? 0 : room.price)}
             </Col>
           </Row>
         </Card.Footer>

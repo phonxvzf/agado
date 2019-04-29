@@ -11,40 +11,45 @@ export default class Reservation extends Component {
     const pathname = window.location.pathname;
     const search = qs.parse(window.location.search, { ignoreQueryPrefix: true });
     const currentUser = userService.getCurrentUser();
-    let reservations = []
+
     if (currentUser && currentUser.user_type === "traveler") {
-      reservations = await reservationService.getReservationOf(currentUser.user_id);
-      reservations.sort((a, b) => {
-        const x1 = new Date(a.checkin);
-        const x2 = new Date(a.checkout);
-        const y1 = new Date(b.checkin);
-        const y2 = new Date(b.checkout);
-        const now = new Date();
-        let tx, ty;
-        if (x2 <= now) {
-          tx = 3;
-        } else if (x1 <= now) {
-          tx = 1;
-        } else {
-          tx = 2;
-        }
-        if (y2 <= now) {
-          ty = 3;
-        } else if (y1 <= now) {
-          ty = 1;
-        } else {
-          ty = 2;
-        }
-        if (tx === ty) {
-          if (tx === 3) {
-            return y2 - x2;
-          } else if (tx === 1) {
-            return x2 - y2;
+      reservationService.getReservationOf(currentUser.user_id)
+      .then(reservations => {
+        reservations.sort((a, b) => {
+          const x1 = new Date(a.checkin);
+          const x2 = new Date(a.checkout);
+          const y1 = new Date(b.checkin);
+          const y2 = new Date(b.checkout);
+          const now = new Date();
+          let tx, ty;
+          if (x2 <= now) {
+            tx = 3;
+          } else if (x1 <= now) {
+            tx = 1;
           } else {
-            return x1 - y1;
+            tx = 2;
           }
-        }
-        return tx - ty;
+          if (y2 <= now) {
+            ty = 3;
+          } else if (y1 <= now) {
+            ty = 1;
+          } else {
+            ty = 2;
+          }
+          if (tx === ty) {
+            if (tx === 3) {
+              return y2 - x2;
+            } else if (tx === 1) {
+              return x2 - y2;
+            } else {
+              return x1 - y1;
+            }
+          }
+          return tx - ty;
+        });
+        this.setState({
+          reservations: reservations
+        })
       });
     }
 
@@ -53,14 +58,12 @@ export default class Reservation extends Component {
       search: search,
       currentUser: currentUser,
       validUser: currentUser && currentUser.user_type === "traveler",
-      reservations: reservations
+      reservations: null
     });
   }
 
   render() {
-    if (!this.state) {
-      return <></>;
-    }
+    const reservations = this.state.reservations;
     if (!this.state.validUser) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
@@ -68,7 +71,7 @@ export default class Reservation extends Component {
           <h4>You have to be a Traveler to access this page.</h4>
         </div>
       )
-    } else if (this.state.reservations.length === 0) {
+    } else if (reservations && reservations.length === 0) {
       return (
         <div className="error-bg px-auto hotel-info scroll-snap-child">
           <h4>You have no reservations at this time.</h4>
@@ -80,7 +83,7 @@ export default class Reservation extends Component {
         <div className="scroll-snap-child" />
         <Row>
           {
-            this.state.reservations.map(reservation => {
+            reservations && reservations.map(reservation => {
               return (
                 <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child">
                   <ReservationCard reservation={reservation} />

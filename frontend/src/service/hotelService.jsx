@@ -1,9 +1,18 @@
 import axios from 'axios';
 import { userService } from './userService';
 
+const baseImgPath = "http://agado-imgs.storage.googleapis.com/";
+
 export class hotelService {
   static fillHotelInfo = (hotel) => {
     const reviews = hotel.reviews;
+    hotel.imgs = hotel.imgs.map(img => img ? baseImgPath + img : img)
+    hotel.rooms = hotel.rooms.map(room => {
+      return {
+        ...room,
+        imgs: room.imgs.map(img => img ? baseImgPath + img : img)
+      };
+    });
     hotel.rating = reviews.length > 0 ? (reviews.map(review => review.rating).reduce((a, b) => a + b, 0)) / reviews.length : 0;
     hotel.total_review = reviews.length;
     hotel.num_rating5 = (reviews.filter(review => review.rating === 5)).length;
@@ -86,7 +95,15 @@ export class hotelService {
     // return hotels;
   }
 
-  static createHotel = async (hotel) => {
+  static createHotel = async (data) => {
+    let hotel = JSON.parse(JSON.stringify(data));
+    hotel.imgs = hotel.imgs.map(img => !img ? null : img.startsWith('data:') ? img : img.substr(41));
+    hotel.rooms = hotel.rooms.map(room => {
+      return {
+        ...room,
+        imgs: room.imgs.map(img => !img ? null : img.startsWith('data:') ? img : img.substr(41))
+      };
+    });
     return await axios.post('/hotel', hotel, {
       headers: {
         Authorization: `Bearer ${userService.getToken()}`
@@ -105,7 +122,15 @@ export class hotelService {
     // return true;
   }
 
-  static editHotel = async (editedHotel) => {
+  static editHotel = async (data) => {
+    let editedHotel = JSON.parse(JSON.stringify(data));
+    editedHotel.imgs = editedHotel.imgs.map(img => !img ? null : img.startsWith('data:') ? img : img.substr(41));
+    editedHotel.rooms = editedHotel.rooms.map(room => {
+      return {
+        ...room,
+        imgs: room.imgs.map(img => !img ? null : img.startsWith('data:') ? img : img.substr(41))
+      };
+    });
     return await axios.put('/hotel', editedHotel, {
       headers: {
         Authorization: `Bearer ${userService.getToken()}`
@@ -177,10 +202,10 @@ export class hotelService {
 
   static addManager = async (hotel_id, user_id) => {
     return await axios.post(`/hotel/manager?hotel_id=${hotel_id}&user_id=${user_id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${userService.getToken()}`
-        }
-      })
+      headers: {
+        Authorization: `Bearer ${userService.getToken()}`
+      }
+    })
       .then(res => {
         return true;
       })
