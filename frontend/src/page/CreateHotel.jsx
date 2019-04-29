@@ -124,7 +124,7 @@ export default class CreateHotel extends Component {
   deleteImg = (idx) => {
     const hotel = this.state.hotel;
     let imgs = hotel.imgs;
-    imgs[idx] = "";
+    imgs[idx] = null;
     this.setState({
       hotel: {
         ...hotel,

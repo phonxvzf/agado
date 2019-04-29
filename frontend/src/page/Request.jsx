@@ -144,7 +144,7 @@ export default class Request extends Component {
         <Col xs={12} sm={6}>
           <div className="ratio4-3">
             {
-              hotel.imgs[0] === "" ?
+              !hotel.imgs[0] ?
                 <div className="bg-dark abs-center border-none" />
                 : <Image className="absolute" src={hotel.imgs[0]} fluid />
             }
@@ -155,7 +155,7 @@ export default class Request extends Component {
             <Col>
               <div className="ratio4-3">
                 {
-                  hotel.imgs[1] === "" ?
+                  !hotel.imgs[1] ?
                     <div className="bg-dark abs-center border-none" />
                     : <Image className="absolute" src={hotel.imgs[1]} fluid />
                 }
@@ -164,7 +164,7 @@ export default class Request extends Component {
             <Col>
               <div className="ratio4-3">
                 {
-                  hotel.imgs[2] === "" ?
+                  !hotel.imgs[2] ?
                     <div className="bg-dark abs-center border-none" />
                     : <Image className="absolute" src={hotel.imgs[2]} fluid />
                 }
@@ -175,7 +175,7 @@ export default class Request extends Component {
             <Col>
               <div className="ratio4-3">
                 {
-                  hotel.imgs[3] === "" ?
+                  !hotel.imgs[3] ?
                     <div className="bg-dark abs-center border-none" />
                     : <Image className="absolute" src={hotel.imgs[3]} fluid />
                 }
@@ -184,7 +184,7 @@ export default class Request extends Component {
             <Col>
               <div className="ratio4-3">
                 {
-                  hotel.imgs[4] === "" ?
+                  !hotel.imgs[4] ?
                     <div className="bg-dark abs-center border-none" />
                     : <Image className="absolute" src={hotel.imgs[4]} fluid />
                 }

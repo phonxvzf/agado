@@ -248,7 +248,7 @@ export default class Profile extends Component {
           <br />
           <div>
             <Form className="custom-file w-75">
-              <Form.Control type="file" className="custom-file-input" onClick={e => e.currentTarget.value = ""} onChange={this.uploadImg} />
+              <Form.Control type="file" className="custom-file-input" onClick={e => e.currentTarget.value = null} onChange={this.uploadImg} />
               <Form.Label className="custom-file-label text-left">
                 {
                   this.state.imgName ?
