@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 axios.defaults.baseURL = (process.env.NODE_ENV !== 'production') ? 'http://' + window.location.hostname + ':3000' : '/api';
+const baseImgPath = "http://agado-imgs.storage.googleapis.com/";
 
 export class userService {
   static getCurrentUser = () => {
@@ -19,7 +20,9 @@ export class userService {
   static getUser = async (user_id) => {
     return await axios.get(`/user?user_id=${user_id}`)
       .then(res => {
-        return res.data;
+        let user = res.data;
+        user.img = baseImgPath + user.img;
+        return user;
       })
       .catch(err => {
         return null;
@@ -33,7 +36,9 @@ export class userService {
     // return null;
   }
 
-  static signup = async (user) => {
+  static signup = async (data) => {
+    let user = JSON.parse(JSON.stringify(data));
+    user.img = !user.img ? null : user.img.startsWith('data:') ? user.img : user.img.substr(41);
     return await axios.post('/user', user)
       .then(res => {
         localStorage.setItem("user", JSON.stringify({ ...user, ...res.data }));
@@ -55,7 +60,9 @@ export class userService {
     // return true;
   }
 
-  static signin = async (user) => {
+  static signin = async (data) => {
+    let user = JSON.parse(JSON.stringify(data));
+    user.img = !user.img ? null : user.img.startsWith('data:') ? user.img : user.img.substr(41);
     return await axios.post('/user/login', user)
       .then(res => {
         localStorage.setItem("user", JSON.stringify(res.data));
@@ -79,7 +86,9 @@ export class userService {
     window.location.href = "/";
   }
 
-  static editUserInfo = async (editedUser) => {
+  static editUserInfo = async (data) => {
+    let editedUser = JSON.parse(JSON.stringify(data));
+    editedUser.img = !editedUser.img ? null : editedUser.img.startsWith('data:') ? editedUser.img : editedUser.img.substr(41);
     return await axios.put('/user', editedUser, {
       headers: {
         Authorization: `Bearer ${this.getToken()}`
