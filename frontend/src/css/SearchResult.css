@@ -48,3 +48,14 @@
 .scroll-snap-child {
   scroll-snap-align: start;
 }
+
+.life {
+  opacity: 1;
+  visibility: visible;
+  transition: all 2s ease;
+}
+
+.life.dead {
+  opacity: 0;
+  visibility: hidden;
+}

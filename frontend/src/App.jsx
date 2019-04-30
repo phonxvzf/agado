@@ -26,7 +26,8 @@ class App extends Component {
       },
       preventLeavePage: true,
       isFiltering: false,
-      isLoading: true
+      isLoading: true,
+      isActivate: false
     });
   }
 
@@ -93,11 +94,17 @@ class App extends Component {
     });
   }
 
+  setActivate = (isActivate) => {
+    this.setState({
+      isActivate: isActivate
+    });
+  }
+
   render() {
     return (
       <>
         <div className="scroll-snap-container">
-          <CustomNavBar mode={this.state.mode} toggleMode={this.toggleMode} priceRange={this.state.priceRange} setFiltering={this.setFiltering} setLoading={this.setLoading} />
+          <CustomNavBar mode={this.state.mode} toggleMode={this.toggleMode} priceRange={this.state.priceRange} setFiltering={this.setFiltering} setLoading={this.setLoading} isActivate={this.state.isActivate} />
           <div className={this.state.isLoading ? "" : "d-none"}>
             <Loading />
           </div>
@@ -106,7 +113,7 @@ class App extends Component {
               <Switch>
                 <Route exact path="/" render={() => <Home />} />
                 <Route path="/tutorial" render={() => <Tutorial />} />
-                <Route path="/search" render={() => <SearchResult setPriceRange={this.setPriceRange} setFiltering={this.setFiltering} isFiltering={this.state.isFiltering} />} />
+                <Route path="/search" render={() => <SearchResult setPriceRange={this.setPriceRange} isFiltering={this.state.isFiltering} setFiltering={this.setFiltering} isActivate={this.state.isActivate} setActivate={this.setActivate} />} />
                 <Route path="/profile" render={() => <Profile />} />
 
                 <Route path="/payment" render={() => <Payment setPreventLeavePage={this.setPreventLeavePage} />} />

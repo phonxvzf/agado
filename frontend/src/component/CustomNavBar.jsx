@@ -68,7 +68,7 @@ export default class CustomNavBar extends Component {
     this.loading = setInterval(() => {
       if (this.state.loading >= 100) {
         clearTimeout(this.loading);
-        setTimeout(() => this.props.setLoading(false), 500);
+        setTimeout(() => this.props.setLoading(false), 400);
       } else {
         this.setState({
           loading: this.state.loading + 1
@@ -103,6 +103,14 @@ export default class CustomNavBar extends Component {
     const height = e.target.scrollHeight - e.target.clientHeight;
     const scrolled = this.state.scrolled;
     const newScrolled = (winScroll / height) * 100;
+    if (this.props.isActivate) {
+      if (!this.state.hide) {
+        this.setState({
+          hide: true
+        });
+      }
+      return;
+    }
     if (newScrolled > scrolled) {
       this.setState({
         hide: true
@@ -268,7 +276,7 @@ export default class CustomNavBar extends Component {
               <Navbar.Toggle />
             </Col>
             {
-              window.innerWidth > 768 && (pathname === "/search" || pathname === "/hotel") && this.state.hide ? "" :
+              window.innerWidth > 768 && (pathname === "/search" || pathname === "/hotel") && (this.state.hide || this.props.isActivate) ? "" :
                 <>
                   <Col xs={4} md={3} xl={2} className="ml-lg-3 px-0">
                     <Navbar.Brand className="py-0 mx-0" href={this.state.currentUser && this.state.currentUser.user_type === "hotel_manager" ? "/myhotel" : "/"}>
@@ -862,6 +870,7 @@ export default class CustomNavBar extends Component {
   }
 
   getSecondRowComponent = () => {
+    const result = this.props.result;
     if (this.state.pathname === "/search") {
       return (
         <>

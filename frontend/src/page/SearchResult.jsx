@@ -35,8 +35,7 @@ export default class SearchResult extends Component {
         rating: search.rating ? Number(search.rating) : 0,
         amenities: search.amenities ? Array.isArray(search.amenities) ? search.amenities.map(amenity => Number(amenity)) : [Number(search.amenities)] : [],
         sort_by: search.sort_by === "price" ? "price" : "rating"
-      },
-      loaded: 6
+      }
     });
   }
 
@@ -45,6 +44,60 @@ export default class SearchResult extends Component {
       this.applyFilter();
       this.props.setFiltering(false);
     }
+  }
+
+  activateHalf = (hotels) => {
+    const population = hotels.length;
+    const selected = hotels.map(hotel => hotel.hotel_id).sort(() => 0.5 - Math.random()).slice(0, (population / 2).toFixed(0));
+    const deleted = selected.slice(0, 3);
+    const losted = selected.slice(3);
+    deleted.forEach((id, i) => {
+      this.activate = setTimeout(() => {
+        setTimeout(() => {
+          document.querySelector("#hotel_" + id).scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center'
+          });
+        }, 1000 + (4000 * i));
+        setTimeout(() => {
+          document.querySelector("#hotel_" + id).setAttribute('class', 'life dead');
+        }, 2000 + (4000 * i));
+      }, 1000);
+    });
+    losted.forEach(id => {
+      this.activate = setTimeout(() => {
+        setTimeout(() => {
+          document.querySelector("#hotel_" + id).scrollIntoView({
+            behavior: 'smooth',
+            block: 'center',
+            inline: 'center'
+          });
+        }, 1000 + (4000 * 3));
+        setTimeout(() => {
+          document.querySelector("#hotel_" + id).setAttribute('class', 'life dead');
+        }, 2000 + (4000 * 3));
+      }, 1000);
+    });
+    setTimeout(() => {
+      document.querySelector("#result").scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'center'
+      });
+      setTimeout(() => {
+        this.lostPop = setInterval(() => {
+          if (this.state.half <= (hotels.length / 2).toFixed(0)) {
+            clearInterval(this.lostPop);
+            this.props.setActivate(false);
+            return;
+          }
+          this.setState({
+            half: this.state.half - 1
+          })
+        }, 100)
+      }, 1000);
+    }, 16000);
   }
 
   applyFilter = () => {
@@ -75,6 +128,18 @@ export default class SearchResult extends Component {
     const amenities = filters.amenities;
     const sort_by = filters.sort_by;
 
+    if (name === 'thanos') {
+      if (!this.props.isActivate && !this.state.activated) {
+        this.props.setActivate(true);
+        this.setState({
+          activated: true,
+          half: hotels.length
+        });
+        this.activateHalf(hotels);
+      }
+      return hotels;
+    }
+
     return (
       hotels.filter(hotel =>
         (hotel.name.toLowerCase().includes(name) || hotel.city.toLowerCase().includes(name) || hotel.address.toLowerCase().includes(name)) &&
@@ -94,11 +159,6 @@ export default class SearchResult extends Component {
     }
     let hotels = this.getFilteredHotels();
     if (hotels && hotels.length === 0) {
-      hotels = this.state.hotels;
-      hotels.sort((a, b) => {
-        if (this.state.filters.sort_by === "price") return a.start_price - b.start_price;
-        else return b.rating - a.rating;
-      })
       return (
         <div className="search-result-bg text-secondary">
           <div className="scroll-snap-child mt-5" />
@@ -114,12 +174,19 @@ export default class SearchResult extends Component {
     return (
       <div className="search-result-bg hotel-info">
         <div className="scroll-snap-child" />
+        <Row className="mt-5 mb-3 align-items-center">
+          <Col><hr /></Col>
+          <h5 id="result">Result: {this.state.activated ? this.state.half : hotels.length} hotel{hotels.length >= 2 ? "s" : ""}</h5>
+          <Col><hr /></Col>
+        </Row>
         <Row>
           {
             hotels.map(hotel => {
               return (
                 <Col xl={4} sm={6} xs={12} className="my-3 scroll-snap-child" key={hotel.hotel_id}>
-                  <HotelCard search={this.state.search} hotel={hotel} />
+                  <div id={"hotel_" + hotel.hotel_id} className="life">
+                    <HotelCard search={this.state.search} hotel={hotel} />
+                  </div>
                 </Col>
               )
             })
