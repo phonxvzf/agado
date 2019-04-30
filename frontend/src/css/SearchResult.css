@@ -41,7 +41,8 @@
 
 .scroll-snap-container {
   height: 100vh;
-  overflow: auto;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
   /* scroll-snap-type: y proximity; */
 }
 
@@ -52,7 +53,7 @@
 .life {
   opacity: 1;
   visibility: visible;
-  transition: all 2s ease;
+  transition: all 1.5s ease;
 }
 
 .life.dead {

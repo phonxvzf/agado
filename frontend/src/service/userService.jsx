@@ -21,7 +21,7 @@ export class userService {
     return await axios.get(`/user?user_id=${user_id}`)
       .then(res => {
         let user = res.data;
-        user.img = baseImgPath + user.img;
+        user.img = user.img ? baseImgPath + user.img : null;
         return user;
       })
       .catch(err => {

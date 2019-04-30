@@ -192,3 +192,19 @@
 .border-danger {
   border: 1px solid var(--danger);
 }
+
+.fade-out {
+  opacity: 1;
+  visibility: visible;
+  transition: all 1s;
+}
+
+.fade-out.hidden {
+  opacity: 0;
+  visibility: hidden;
+}
+
+.bottom-0 {
+  position: absolute;
+  bottom: 0;
+}

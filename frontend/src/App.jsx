@@ -47,7 +47,9 @@ class App extends Component {
       const gotoHash = setInterval(() => {
         const element = document.querySelector(hash);
         if (element) {
-          element.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(() => {
+            element.scrollIntoView({ behavior: 'smooth' });
+          }, 2000);
           clearInterval(gotoHash);
         }
       }, 100);

@@ -61,31 +61,34 @@ export default class CustomNavBar extends Component {
     });
   }
 
+  shouldListenScroll = () => {
+    const pathname = this.state.pathname;
+    return (window.innerWidth > 768 && pathname === "/search") ||
+      (window.innerWidth <= 768 && pathname === "/hotel")
+  }
+
   componentDidMount() {
-    // if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
-    window.addEventListener('scroll', this.handleScroll, true);
-    // }
-    this.loading = setInterval(() => {
-      if (this.state.loading >= 100) {
-        clearTimeout(this.loading);
-        setTimeout(() => this.props.setLoading(false), 400);
-      } else {
-        this.setState({
-          loading: this.state.loading + 1
-        })
-      }
-    }, 5);
+    if (this.shouldListenScroll()) {
+      window.addEventListener('scroll', this.handleScroll, true);
+    }
+    setTimeout(() => {
+      this.setState({
+        loading: 100,
+        hideLoadingBar: true
+      });
+      this.props.setLoading(false);
+    }, 100);
   }
 
   componentWillUnmount() {
-    // if (window.innerWidth <= 768 && window.location.pathname === "/hotel") {
-    window.removeEventListener('scroll', this.handleScroll, true);
-    // }
+    if (this.shouldListenScroll()) {
+      window.removeEventListener('scroll', this.handleScroll, true);
+    }
   }
 
   componentWillReceiveProps(nextProps) {
     if (this.state.price.min === -Infinity || this.state.price.max === Infinity) {
-      const search = this.state.search
+      const search = this.state.search;
       const priceRange = nextProps.priceRange;
       const minPrice = search.min_price ? Math.max(Number(search.min_price).toFixed(0), priceRange.min) : priceRange.min;
       const maxPrice = search.max_price ? Math.min(Number(search.max_price).toFixed(0), priceRange.max) : priceRange.max;
@@ -267,7 +270,7 @@ export default class CustomNavBar extends Component {
     const pathname = this.state.pathname;
     return (
       <>
-        <Navbar className="shadow pb-md-0 pt-md-2" bg="light" variant="light" fixed="top" expand="md" collapseOnSelect>
+        <Navbar className="shadow pb-0 pt-md-2" bg="light" variant="light" fixed="top" expand="md" collapseOnSelect>
           <h3 className="text-center-fixed text-dark bold mb-4 d-xs-sm-none d-sm-md-none">
             {this.getTitle()}
           </h3>
@@ -276,7 +279,7 @@ export default class CustomNavBar extends Component {
               <Navbar.Toggle />
             </Col>
             {
-              window.innerWidth > 768 && (pathname === "/search" || pathname === "/hotel") && (this.state.hide || this.props.isActivate) ? "" :
+              window.innerWidth > 768 && (pathname === "/search") && (this.state.hide || this.props.isActivate) ? "" :
                 <>
                   <Col xs={4} md={3} xl={2} className="ml-lg-3 px-0">
                     <Navbar.Brand className="py-0 mx-0" href={this.state.currentUser && this.state.currentUser.user_type === "hotel_manager" ? "/myhotel" : "/"}>
@@ -298,8 +301,8 @@ export default class CustomNavBar extends Component {
                 {this.getSecondRowComponent()}
               </Navbar.Collapse>
             </Col>
-            <Col xs={12} className="px-0 pt-1">
-              <ProgressBar className="scroll-indicator bg-none" variant={this.state.loading >= 100 ? "secondary" : "dark"} now={this.state.loading} />
+            <Col xs={12} className="px-0 pt-1 pb-0">
+              <ProgressBar className={"scroll-indicator bg-none fade-out " + (this.state.hideLoadingBar ? "hidden" : "")} variant={this.state.loading >= 100 ? "secondary" : "dark"} now={this.state.loading} />
             </Col>
           </Row>
         </Navbar>
@@ -938,7 +941,7 @@ export default class CustomNavBar extends Component {
               {
                 (this.props.priceRange.min !== Infinity && this.props.priceRange.max !== Infinity) &&
                   (this.state.price.min !== this.props.priceRange.min || this.state.price.max !== this.props.priceRange.max) ?
-                  <Button variant="dark" className="bold mx-2 text-light" onClick={() => { this.filterPrice.show(); this.setState({ showFilter: true }); }}>
+                  <Button disabled={this.props.priceRange.min >= this.props.priceRange.max} variant="dark" className="bold mx-2 text-light" onClick={() => { this.filterPrice.show(); this.setState({ showFilter: true }); }}>
                     <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-times-circle" onClick={() => {
                       this.state.price = {
                         min: this.props.priceRange.min,
@@ -949,7 +952,7 @@ export default class CustomNavBar extends Component {
                     }} />
                   </Button>
                   :
-                  <Button variant="light" className="bold mx-2 text-dark" onClick={() => { this.filterPrice.show(); this.setState({ showFilter: true }); }}>
+                  <Button disabled={this.props.priceRange.min >= this.props.priceRange.max} variant="light" className="bold mx-2 text-dark" onClick={() => { this.filterPrice.show(); this.setState({ showFilter: true }); }}>
                     <i className="fas fa-tag flip" />&nbsp;&nbsp;Price&nbsp;&nbsp;<i className="fas fa-caret-down" />
                   </Button>
               }
