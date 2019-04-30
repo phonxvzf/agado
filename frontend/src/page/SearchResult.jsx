@@ -176,7 +176,7 @@ export default class SearchResult extends Component {
         <div className="scroll-snap-child" />
         <Row className="mt-5 mb-3 align-items-center">
           <Col><hr /></Col>
-          <h5 id="result">Result: {this.state.activated ? this.state.half : hotels.length} result{hotels.length >= 2 ? "s" : ""}</h5>
+          <h5 id="result">Result: {this.state.activated ? this.state.half : hotels.length} hotel{hotels.length >= 2 ? "s" : ""}</h5>
           <Col><hr /></Col>
         </Row>
         <Row>

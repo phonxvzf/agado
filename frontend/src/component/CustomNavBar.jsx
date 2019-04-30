@@ -261,9 +261,6 @@ export default class CustomNavBar extends Component {
   changeFilter = () => {
     window.history.pushState({}, null, this.getSearchLink());
     this.props.setFiltering(true);
-    if (this.state.search.hotel_name === 'thanos') {
-      this.props.setActivate(true);
-    }
   }
 
   render() {
