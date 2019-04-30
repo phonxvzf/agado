@@ -8,6 +8,17 @@ import koaJwt from 'koa-jwt';
 import { codes, ApiError } from '../common/api-error';
 import { userRepo, User } from '../model/user';
 import { validator } from '../common/validator';
+import { Storage, Bucket } from '@google-cloud/storage';
+
+let gcs = null;
+if (process.env.ENABLE_GCS) {
+  if (process.env.GCP_PROJECT_ID && process.env.GCS_SERVICE_KEY_PATH && process.env.GCS_BUCKET) {
+    gcs = new Storage({
+      projectId: process.env.GCP_PROJECT_ID,
+      keyFilename: process.env.GCS_SERVICE_KEY_PATH,
+    });
+  }
+}
 
 function generateToken(userId: number): string {
   return jsonwebtoken.sign(
@@ -121,7 +132,7 @@ const ctrl = {
     // always check getUser first
     const [userInfo] = await userRepo.getUser(ctx.request.body['user_id']);
     if (userInfo.user_type !== 'hotel_manager') {
-      throw new ApiError('access denied', codes.UNAUTHORIZED, 401);
+      throw new ApiError('access denied (user_type not matched)', codes.UNAUTHORIZED, 401);
     }
     ctx.response.status = httpStatus.NO_CONTENT.code;
     return next();
@@ -130,7 +141,7 @@ const ctrl = {
   checkTravelerType: async (ctx: koa.Context, next: () => Promise<any>) => {
     const [userInfo] = await userRepo.getUser(ctx.request.body['user_id']);
     if (userInfo.user_type !== 'traveler') {
-      throw new ApiError('access denied', codes.UNAUTHORIZED, 401);
+      throw new ApiError('access denied (user_type not matched)', codes.UNAUTHORIZED, 401);
     }
     ctx.response.status = httpStatus.NO_CONTENT.code;
     return next();
@@ -196,7 +207,25 @@ const ctrl = {
     const userType = validator.validateUndefined(ctx.request.body['user_type'], invalidMessage);
     const dateOfBirth =
       validator.validateUndefined(ctx.request.body['date_of_birth'], invalidMessage);
-    const img = validator.validateNullable(ctx.request.body['img'], invalidMessage);
+    let img = validator.validateNullable(ctx.request.body['img'], invalidMessage);
+
+    const image: string = ctx.request.body['img'];
+    const isImage = (image != null) && (image.substr(0, 20).search('data:image') >= 0);
+
+    if (gcs) {
+      if (isImage) {
+        const testDir = (process.env.NODE_ENV === 'production') ? '' : 'test/';
+        const blob = Buffer.from(image.substr(image.search(',') + 1), 'base64');
+        const ext = image.substr(
+          image.search('/') + 1,
+          image.search(';') - image.search('/') - 1,
+        );
+        const fname = `${testDir}${crypto.randomBytes(16).toString('hex')}.${ext}`;
+        img = fname;
+        const bucket: Bucket = gcs.bucket(process.env.GCS_BUCKET);
+        await bucket.file(fname).save(blob, { resumable: false });
+      }
+    }
 
     const userData: User = {
       username,
