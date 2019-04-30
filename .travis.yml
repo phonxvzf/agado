@@ -17,7 +17,6 @@ env:
   global:
     - GOOGLE_APPLICATION_CREDENTIALS=~/gcloud-service-key.json
     - NODE_ENV=CI
-    - CXX=g++-4.8
 
 jobs:
   include:
@@ -27,12 +26,6 @@ jobs:
         - docker
       addons:
         postgresql: "9.6"
-        apt:
-          sources:
-            - ubuntu-toolchain-r-test
-          packages:
-            - g++-4.8
-            - bc
       before_script:
         - psql -c 'create database agado_test;' -U postgres
       env:
@@ -40,7 +33,6 @@ jobs:
         - DB_DATABASE=agado_test
         - DB_USER=postgres
         - DB_PASSWORD=
-        - MATRIX_EVAL="CC=gcc-4.8 && CXX=g++-4.8"
       script: 
         # Backend
         - npm run lint
