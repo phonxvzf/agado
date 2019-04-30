@@ -59,11 +59,11 @@ export default class SearchResult extends Component {
             block: 'center',
             inline: 'center'
           });
-        }, 1000 + (4000 * i));
+        }, 300 + (2000 * i));
         setTimeout(() => {
           document.querySelector("#hotel_" + id).setAttribute('class', 'life dead');
-        }, 2000 + (4000 * i));
-      }, 1000);
+        }, 600 + (2000 * i));
+      }, 300);
     });
     losted.forEach(id => {
       this.activate = setTimeout(() => {
@@ -73,11 +73,11 @@ export default class SearchResult extends Component {
             block: 'center',
             inline: 'center'
           });
-        }, 1000 + (4000 * 3));
+        }, 300 + (2000 * 3));
         setTimeout(() => {
           document.querySelector("#hotel_" + id).setAttribute('class', 'life dead');
-        }, 2000 + (4000 * 3));
-      }, 1000);
+        }, 600 + (2000 * 3));
+      }, 300);
     });
     setTimeout(() => {
       document.querySelector("#result").scrollIntoView({
@@ -86,18 +86,21 @@ export default class SearchResult extends Component {
         inline: 'center'
       });
       setTimeout(() => {
+        const decrease = this.state.half / 10;
+        document.querySelector("#result").setAttribute('class', 'text-danger bold');
         this.lostPop = setInterval(() => {
-          if (this.state.half <= (hotels.length / 2).toFixed(0)) {
-            clearInterval(this.lostPop);
+          if (this.state.half - (hotels.length / 2).toFixed(0) <= 1e-5) {
+            // document.querySelector("#result").setAttribute('class', '');
             this.props.setActivate(false);
+            clearInterval(this.lostPop);
             return;
           }
           this.setState({
-            half: this.state.half - 1
+            half: this.state.half - decrease
           })
         }, 100)
-      }, 1000);
-    }, 16000);
+      }, 500);
+    }, 9000);
   }
 
   applyFilter = () => {
@@ -176,7 +179,7 @@ export default class SearchResult extends Component {
         <div className="scroll-snap-child" />
         <Row className="mt-5 mb-3 align-items-center">
           <Col><hr /></Col>
-          <h5 id="result">Result: {this.state.activated ? this.state.half : hotels.length} hotel{hotels.length >= 2 ? "s" : ""}</h5>
+          <h5 id="result">Result: {this.state.activated ? this.state.half.toFixed(0) : hotels.length} hotel{hotels.length >= 2 ? "s" : ""}</h5>
           <Col><hr /></Col>
         </Row>
         <Row>
