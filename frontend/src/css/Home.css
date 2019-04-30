@@ -261,3 +261,7 @@ input::-webkit-calendar-picker-indicator{
 a {
   cursor: pointer;
 }
+
+.h-100 {
+  height: 100%;
+}

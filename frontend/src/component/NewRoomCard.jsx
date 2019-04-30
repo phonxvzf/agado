@@ -260,7 +260,7 @@ export default class NewRoomCard extends Component {
                       <Col xs={3} sm={2} md={3} lg={2}>
                         <Button
                           variant="light"
-                          className="room-card-amenity text-center px-0 py-0 my-2 bold text-dark"
+                          className="room-card-amenity text-center px-0 py-0 my-2 bold text-dark w-100 h-100"
                           onClick={() => {
                             if (!this.state.edit && this.props.room) return;
                             let amenities = room.amenities;
@@ -275,7 +275,7 @@ export default class NewRoomCard extends Component {
                             this.onChange({ ...room, amenities: amenities });
                           }}>
                           <p dangerouslySetInnerHTML={{ __html: room.amenities.includes(0) ? hotelService.amenities[0].tag : hotelService.amenities[1].tag }} />
-                          {room.amenities.includes(0) ? <>{hotelService.amenities[0].name}<br />&nbsp;&nbsp;&nbsp;</> : hotelService.amenities[1].name}
+                          {room.amenities.includes(0) ? <>{hotelService.amenities[0].name}<br />&nbsp;&nbsp;&nbsp;</> : <>{hotelService.amenities[1].name}<br />&nbsp;&nbsp;</>}
                         </Button>
                       </Col>
                       {
@@ -284,7 +284,7 @@ export default class NewRoomCard extends Component {
                             <Col xs={3} sm={2} md={3} lg={2} className="text-center">
                               <Button
                                 variant="light"
-                                className={"room-card-amenity text-center px-0 py-0 my-2 bold" + (room.amenities.includes(idx + 2) ? " text-dark" : " text-lightgray")}
+                                className={"room-card-amenity text-center px-0 py-0 my-2 bold w-100 h-100" + (room.amenities.includes(idx + 2) ? " text-dark" : " text-lightgray")}
                                 onClick={() => {
                                   if (!this.state.edit && this.props.room) return;
                                   let amenities = room.amenities;
