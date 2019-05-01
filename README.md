@@ -29,3 +29,13 @@ $ npm run test
 # Run tests with code coverage collection
 $ npm run test-coverage
 ```
+
+## API Documentation
+Though not fully detailed, it is available in Swagger.
+```shell
+$ docker-compose up
+```
+
+You can also just put the `swagger` container up if you are not going to try out the API.
+
+Navigate to `http://localhost:9999` for swagger-ui.

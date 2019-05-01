@@ -75,7 +75,7 @@ paths:
       security:
         - Bearer: []
       summary: "Create a new hotel"
-      description: "Omit review and identification number fields"
+      description: "Omit review, manager and identification number fields"
       consumes:
         - "application/json"
       parameters:
@@ -174,8 +174,6 @@ paths:
     get:
       tags:
       - "user"
-      security:
-        - Bearer: []
       summary: "Get a user's data by ID."
       description: "Password and token will be excluded."
       produces:
@@ -689,6 +687,10 @@ definitions:
       managers:
         type: array
         items:
+          type: integer
+      managers_info:
+        type: array
+        items:
           $ref: '#/definitions/user'
       reviews:
         type: array
@@ -700,30 +702,6 @@ definitions:
         type: integer
       user_id:
         type: integer
-  hotel_room:
-    properties:
-      hotel_id:
-        type: integer
-      room_id:
-        type: integer
-      name:
-        type: string
-      num_bed:
-        type: integer
-      max_person:
-        type: integer
-      price:
-        type: number
-      total_room:
-        type: integer
-      amenities:
-        type: array
-        items:
-          type: integer
-      imgs:
-        type: array
-        items:
-          type: string
   reservation:
     properties:
       reservation_id:
