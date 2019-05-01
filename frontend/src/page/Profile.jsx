@@ -353,11 +353,14 @@ export default class Profile extends Component {
               <Col xs={5} sm={4} md={3} xl={2} as="h6"><strong>Tel:</strong></Col>
               <Col as="h6">
                 <Form.Control
+                  pattern="^0[0-9]{9}$"
+                  maxLength={10}
                   type="tel"
-                  onChange={(e) => this.setState({ editedUser: { ...editedUser, phone_num: e.currentTarget.value } })}
+                  onChange={(e) => this.setState({ editedUser: { ...editedUser, phone_num: e.currentTarget.value.replace(/\D/g, '') } })}
                   placeholder="Phone"
                   defaultValue={editedUser.phone_num}
                   required />
+                <Form.Text className={"text-danger " + (!editedUser.phone_num || /^0[0-9]{9}$/.test(editedUser.phone_num) ? "d-none" : "")}>Format: 0 followed by 9 digits</Form.Text>
               </Col>
             </Row>
             {
