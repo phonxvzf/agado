@@ -65,6 +65,7 @@ export class userService {
     user.img = !user.img ? null : user.img.startsWith('data:') ? user.img : user.img.substr(41);
     return await axios.post('/user/login', user)
       .then(res => {
+        res.data.img = res.data.img ? baseImgPath + res.data.img : null;
         localStorage.setItem("user", JSON.stringify(res.data));
         return true;
       })
@@ -95,6 +96,7 @@ export class userService {
       }
     })
       .then(res => {
+        res.data.img = res.data.img ? baseImgPath + res.data.img : null;
         localStorage.setItem("user", JSON.stringify({ ...editedUser, ...res.data }));
         return true;
       })
