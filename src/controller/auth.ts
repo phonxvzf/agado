@@ -246,7 +246,10 @@ const ctrl = {
     if (rawPassword == null) delete userData.password;
 
     const [userId] = await userRepo.updateUser(ctx.request.body['user_id'], userData);
-    ctx.response.body = { userId };
+    userData.user_id = userId;
+    delete userData.password;
+    delete userData.token;
+    ctx.response.body = userData;
     ctx.response.status = httpStatus.OK.code;
     return next();
   },
