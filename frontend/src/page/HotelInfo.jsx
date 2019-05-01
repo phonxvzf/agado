@@ -188,7 +188,7 @@ export default class HotelInfo extends Component {
           <div className="fs-18"><i className="fas fa-map-marker-alt" /> {hotel.address}</div>
         </Row>
         <Row className="align-items-center mt-3" noGutters>
-          <div className="fs-18 break-all-word"><i className="fas fa-file-alt" /> {hotel.desc}</div>
+          <div className="fs-18"><i className="fas fa-file-alt" /> {hotel.desc}</div>
         </Row>
         {
           !this.state.currentUser || this.state.currentUser.user_type === "traveler" || this.isUserOwn() ? "" :
@@ -283,7 +283,7 @@ export default class HotelInfo extends Component {
       return (
         <>
           <hr className="my-2" />
-          <Row className="align-items-center scroll-snap-child">
+          <Row className="align-items-center scroll-snap-child break-all-word">
             <Col xs={12} sm={4} md={3} lg={2} className="text-center">
               <a className="text-dark" href={this.getProfileLink(user.user_id)}>
                 <div className="w-xs-25 w-sm-50">
