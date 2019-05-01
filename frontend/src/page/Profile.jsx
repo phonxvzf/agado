@@ -72,16 +72,6 @@ export default class Profile extends Component {
   editUserInfo = async (e) => {
     e.preventDefault();
     const editedUser = this.state.editedUser;
-    const user = {
-      user_id: editedUser.user_id,
-      first_name: editedUser.first_name,
-      last_name: editedUser.last_name,
-      gender: editedUser.gender,
-      email: editedUser.email,
-      phone_num: editedUser.phone_num,
-      date_of_birth: editedUser.date_of_birth,
-      img: editedUser.img
-    };
     if (await userService.editUserInfo(editedUser)) {
       this.setState({
         showModal: "save_completed"

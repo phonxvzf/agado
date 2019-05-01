@@ -49,7 +49,7 @@ class App extends Component {
         if (element) {
           setTimeout(() => {
             element.scrollIntoView({ behavior: 'smooth' });
-          }, 2000);
+          }, 200);
           clearInterval(gotoHash);
         }
       }, 100);

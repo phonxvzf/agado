@@ -14,11 +14,14 @@ export default class ReviewModal extends Component {
         rating: 5
       }
     });
-    this.loadOldReview();
   }
 
-  loadOldReview = () => {
-    const oldReview = this.props.oldReview;
+  componentWillReceiveProps(nextProps) {
+    this.loadOldReview(nextProps.review);
+  }
+
+  loadOldReview = (review) => {
+    const oldReview = review ? review : this.props.oldReview;
     if (oldReview) {
       this.setState({
         showRating: oldReview.rating,
@@ -33,6 +36,10 @@ export default class ReviewModal extends Component {
 
   createReview = async (e) => {
     e.preventDefault();
+    if (this.props.oldReview) {
+      this.editReview();
+      return;
+    }
     const review = {
       hotel_id: this.props.hotel_id,
       user_id: this.state.currentUser.user_id,
@@ -46,8 +53,7 @@ export default class ReviewModal extends Component {
     }
   }
 
-  editReview = async (e) => {
-    e.preventDefault();
+  editReview = async () => {
     const editedReview = {
       hotel_id: this.props.hotel_id,
       title: this.state.review.title,
@@ -151,7 +157,7 @@ export default class ReviewModal extends Component {
                 {
                   this.props.oldReview ?
                     <>
-                      <Button variant="info" onClick={this.editReview}>Edit</Button>
+                      <Button type="submit" variant="info">Edit</Button>
                       <Button variant="danger" onClick={() => this.setState({ showModal: "delete_confirm" })}>Delete</Button>
                     </> :
                     <Button type="submit" variant="success">Create</Button>
