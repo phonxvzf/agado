@@ -401,7 +401,7 @@ export default class Profile extends Component {
                       {this.state.currentUser && "" + this.state.currentUser.user_id === "" + user.user_id ? <strong>Me</strong> : user.first_name + " " + user.last_name}
                     </a>
                   </Col>
-                  <Col xs={12} sm={8} md={9} lg={10}>
+                  <Col xs={12} sm={8} md={9} lg={10} className="break-all-word">
                     <h5 className="d-inline">{review.title} </h5>
                     <a className="fs-14 text-dark" href={this.getHotelLink(hotel.hotel_id)}>@{hotel.name}</a>
                     <div className="fs-14">{this.getRatingStar(review.rating)} {moment(review.date).format("D MMM YYYY")}</div>
