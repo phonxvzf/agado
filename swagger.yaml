@@ -3,8 +3,7 @@ info:
   description: "Agado API"
   version: "1.0.0"
   title: "Agado API"
-host: "localhost"
-basePath: "/api"
+host: "localhost:3000"
 tags:
 - name: "general"
   description: "General endpoints"
@@ -12,8 +11,15 @@ tags:
   description: "Operations on user"
 - name: "hotel"
   description: "Operations on hotel"
-- name: "hotelManager"
-  description: "Operations on hotel manager"
+- name: "search"
+  description: "Searching hotel"
+- name: "review"
+  description: "Operations on review"
+- name: "reservation"
+  description: "Operations on reservation"
+- name: "request"
+  description: "Operations on request"
+  
 schemes:
 - "http"
 securityDefinitions:
@@ -41,8 +47,6 @@ paths:
           description: "pong"
   /hotel:
     get:
-      security:
-        - Bearer: []
       tags:
       - "hotel"
       summary: "Get hotel by ID"
@@ -51,33 +55,16 @@ paths:
       produces:
       - "application/json"
       parameters:
-      - name: "id"
+      - name: "hotel_id"
         in: "query"
         description: "A hotel's ID"
         required: true
-        type: "number"
+        type: "integer"
       responses:
         200:
           description: "successful operation"
           schema:
-            type: object
-            properties:
-              id:
-                type: number
-              name:
-                type: string
-              desc:
-                type: string
-              addr:
-                type: string
-              prov:
-                type: string
-              lat:
-                type: number
-              long:
-                type: number
-              rating:
-                type: number
+            $ref: '#/definitions/hotel'
         400:
           description: "Invalid ID"
         404:
@@ -88,7 +75,7 @@ paths:
       security:
         - Bearer: []
       summary: "Create a new hotel"
-      description: "Use JSON body"
+      description: "Omit review and identification number fields"
       consumes:
         - "application/json"
       parameters:
@@ -96,28 +83,7 @@ paths:
           name: hotel
           description: hotel to create
           schema:
-            type: object
-            required:
-              - name
-              - addr
-              - prov
-              - lat
-              - long
-            properties:
-              name:
-                type: string
-              desc:
-                type: string
-              addr:
-                type: string
-              prov:
-                type: string
-              lat:
-                type: number
-              long:
-                type: number
-              rating:
-                type: number
+            $ref: '#/definitions/hotel'
       produces:
         - "application/json"
       responses:
@@ -126,8 +92,8 @@ paths:
           schema:
             type: object
             properties:
-              id:
-                type: string
+              hotel_id:
+                type: integer
         400:
           description: "hotel already exists"
     put:
@@ -136,36 +102,20 @@ paths:
       security:
         - Bearer: []
       summary: "Update an existing hotel"
-      description: "This operation is idempotent. One should provide all data field."
+      description: "This operation is idempotent. One should provide all data fields except reviews and identification numbers."
       consumes:
         - "application/json"
       parameters:
+        - name: hotel_id
+          in: "query"
+          description: "A hotel's ID"
+          required: true
+          type: integer
         - in: body
           name: hotel
           description: hotel to create
           schema:
-            type: object
-            required:
-              - name
-              - addr
-              - prov
-              - lat
-              - long
-            properties:
-              name:
-                type: string
-              desc:
-                type: string
-              addr:
-                type: string
-              prov:
-                type: string
-              lat:
-                type: number
-              long:
-                type: number
-              rating:
-                type: number
+            $ref: '#/definitions/hotel'
       produces:
         - "application/json"
       responses:
@@ -174,8 +124,8 @@ paths:
           schema:
             type: object
             properties:
-              id:
-                type: string
+              hotel_id:
+                type: integer
         404:
           description: "hotel not found"
     delete:
@@ -186,67 +136,68 @@ paths:
       summary: "Delete an existing hotel"
       description: "Delete a hotel specified by an ID"
       parameters:
-      - name: "id"
+      - name: hotel_id
         in: "query"
         description: "A hotel's ID"
         required: true
-        type: "number"
+        type: integer
       responses:
         204:
           description: "hotel deleted"
         404:
           description: "hotel not found"
+  /hotel/of_user:
+    get:
+      tags:
+      - "hotel"
+      summary: "Get hotels managed by a user"
+      description: "Specifying a user's ID"
+      operationId: "getHotelByUserId"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "user_id"
+        in: "query"
+        description: "A user's ID"
+        required: true
+        type: "integer"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/hotel'
+        400:
+          description: "Invalid ID"
   /user:
     get:
       tags:
       - "user"
       security:
         - Bearer: []
-      summary: "Get a user's data by ID"
-      consumes:
-      - "application/json"
+      summary: "Get a user's data by ID."
+      description: "Password and token will be excluded."
       produces:
       - "application/json"
       parameters:
-      - in: body
-        name: "user id"
-        description: user's id
-        schema:
-          type: object
-          required:
-            - user_id
-          properties:
-            user_id:
-              type: string
+      - name: user_id
+        in: "query"
+        description: "A user's ID"
+        required: true
+        type: integer
       responses:
         200:
           description: "user found"
           schema:
-            type: object
-            properties:
-              username:
-                type: string
-              password:
-                type: string
-              first_name:
-                type: string
-              last_name:
-                type: string
-              gender:
-                type: string
-              email:
-                type: string
-              phone_num:
-                type: string
-              user_type:
-                type: string
-              date_of_birth:
-                type: string
+            $ref: '#/definitions/user'
+        404:
+          description: "user not found"
     post:
       tags:
       - "user"
       summary: "Create a new user"
-      description: "Use this for registration"
+      description: "Use this for registration. Omit token and user_id."
       operationId: "createUser"
       produces:
       - "application/json"
@@ -257,45 +208,13 @@ paths:
         name: user
         description: user to create
         schema:
-          type: object
-          required:
-            - username
-            - password
-            - first_name
-            - last_name
-            - gender
-            - email
-            - phone_num
-            - user_type
-            - date_of_birth
-          properties:
-            username:
-              type: string
-            password:
-              type: string
-            first_name:
-              type: string
-            last_name:
-              type: string
-            gender:
-              type: string
-            email:
-              type: string
-            phone_num:
-              type: string
-            user_type:
-              type: string
-            date_of_birth:
-              type: string
+          $ref: '#/definitions/user'
       responses:
         201:
-          description: "user created"
+          description: "user created. password field will be excluded"
           schema:
-            type: object
-            properties:
-              id:
-                type: number
-        400:
+            $ref: '#/definitions/user'
+        409:
           description: "user already exists"
     put:
       tags:
@@ -303,54 +222,28 @@ paths:
       security:
         - Bearer: []
       summary: "Update an existing user"
-      description: "This operation is idempotent. One should provide all data field except the password field. If a new password is specified, the user's password will be updated."
+      description: "This operation is idempotent. One should provide all data field except the password field. If a new password is specified, the user's password will be updated. Omit token and user_id field"
       operationId: "updateUser"
       produces:
       - "application/json"
       consumes:
       - "application/json"
       parameters:
+      - name: user_id
+        in: "query"
+        description: "A user's ID"
+        required: true
+        type: integer
       - in: body
         name: user
         description: user to create
         schema:
-          type: object
-          required:
-            - username
-            - first_name
-            - last_name
-            - gender
-            - email
-            - phone_num
-            - user_type
-            - date_of_birth
-          properties:
-            username:
-              type: string
-            password:
-              type: string
-            first_name:
-              type: string
-            last_name:
-              type: string
-            gender:
-              type: string
-            email:
-              type: string
-            phone_num:
-              type: string
-            user_type:
-              type: string
-            date_of_birth:
-              type: string
+          $ref: '#/definitions/user'
       responses:
         200:
-          description: "user modified"
+          description: "User modified. Password field will be excluded."
           schema:
-            type: object
-            properties:
-              id:
-                type: number
+            $ref: '#/definitions/user'
     delete:
       tags:
       - "user"
@@ -359,6 +252,11 @@ paths:
       summary: "Delete an existing user"
       description: "Delete a user who's identified by an ID"
       parameters:
+      - name: user_id
+        in: "query"
+        description: "A user's ID"
+        required: true
+        type: integer
       - in: "body"
         name: "user id"
         description: "A user's ID"
@@ -390,37 +288,21 @@ paths:
           required:
             - username
             - password
+            - user_type
           properties:
             username:
               type: string
             password:
               type: string
+            user_type:
+              type: string
       responses:
         200:
           description: "successful operation"
           schema:
-            type: object
-            properties:
-              username:
-                type: string
-              first_name:
-                type: string
-              last_name:
-                type: string
-              gender:
-                type: string
-              email:
-                type: string
-              phone_num:
-                type: string
-              user_type:
-                type: string
-              date_of_birth:
-                type: string
-              token:
-                type: string
+            $ref: '#/definitions/user'
         401:
-          description: "incorrect username or password"
+          description: "incorrect username or password or user_type"
   /user/logout:
     post:
       tags:
@@ -433,45 +315,11 @@ paths:
       responses:
         204:
           description: "user logged out"
-  /hotelManager:
-    get:
-      tags:
-      - "hotelManager"
-      summary: "Get a hotel manager's data"
-      description: "Specify user_id in json body and hotel_id in query string. Only accessible by a hotel manager."
-      security:
-      - Bearer: []
-      parameters:
-        - name: hotel_id
-          in: query
-          description: a hotel's id
-          type: number
-        - in: body
-          name: user id
-          description: the manager's user id
-          schema:
-            type: object
-            properties:
-              user_id:
-                type: number
-      responses:
-        200:
-          description: "hotel manager found"
-          schema:
-            type: object
-            properties:
-              uid:
-                type: number
-              hid:
-                type: number
-              permitted:
-                type: string
-        404:
-          description: "hotel manager not found"
+  /hotel/manager:
     post:
       tags:
-      - "hotelManager"
-      summary: "Create a new hotel manager"
+      - "hotel"
+      summary: "Add a hotel manager to a hotel"
       description: "Can only be operated by a hotel manager."
       security:
       - Bearer: []
@@ -481,18 +329,7 @@ paths:
           description: new hotel manager's data
           required: true
           schema:
-            type: object
-            required:
-              - user_id
-              - hotel_id
-              - permission_type
-            properties:
-              user_id:
-                type: number
-              hotel_id:
-                type: number
-              permission_type:
-                type: string
+            $ref: "#/definitions/hotel_manager"
       produces:
         - none
       responses:
@@ -500,62 +337,414 @@ paths:
           description: "hotel manager created"
         400:
           description: "hotel manager already exists"
-    put:
+    delete:
       tags:
-      - "hotelManager"
-      summary: "Update an existing hotel manager"
-      description: "Can only be operated by a permitted hotel manager. (permission_type = 'pmt')"
+      - "hotel"
+      summary: "Remove an existing hotel manager from a hotel"
+      description: "Can only be operated by a permitted hotel manager."
       security:
       - Bearer: []
       parameters:
-        - in: body
-          name: hotel manager
-          description: new hotel manager's data
-          required: true
-          schema:
-            type: object
-            required:
-              - user_id
-              - hotel_id
-              - permission_type
-            properties:
-              user_id:
-                type: number
-              hotel_id:
-                type: number
-              permission_type:
-                type: string
+      - name: user_id
+        in: "query"
+        description: "The manager's ID"
+        required: true
+        type: integer
+      - name: hotel_id
+        in: "query"
+        description: "The hotel's ID"
+        required: true
+        type: integer
       produces:
         - none
       responses:
-        200:
-          description: "hotel manager modified"
-        404:
-          description: "hotel manager not found"
-    delete:
+        201:
+          description: "hotel manager created"
+        400:
+          description: "hotel manager already exists"
+  /search:
+    get:
       tags:
-      - "hotelManager"
-      summary: "Delete an existing hotel manager"
-      description: "Can only be operated by a permitted hotel manager. (permission_type = 'pmt')"
+      - "search"
+      summary: "Search for hotels which have at least 1 room available for reservation or all hotels"
+      description: "Optionally specify both checkin and checkout datetime to filter hotels. This service will return all hotels otherwise."
+      parameters:
+      - name: checkin
+        in: "query"
+        description: "Checkin time"
+        required: false
+        type: "string"
+      - name: checkout
+        in: "query"
+        description: "Checkout time"
+        required: false
+        type: "string"
+      produces:
+        - 'application/json'
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/hotel'
+  /review:
+    get:
+      tags:
+      - "review"
+      summary: "Get the review written to a hotel by a user"
       security:
       - Bearer: []
       parameters:
-        - in: body
-          name: hotel manager
-          description: new hotel manager's data
-          required: true
-          schema:
-            type: object
-            required:
-              - user_id
-              - hotel_id
-            properties:
-              user_id:
-                type: number
-              hotel_id:
-                type: number
+      - name: hotel_id
+        in: "query"
+        description: "ID of the hotel"
+        required: true
+        type: integer
       responses:
-        204:
-          description: "hotel manager deleted"
+        200:
+          description: "successful operation"
+          schema:
+            $ref: '#/definitions/review'
         404:
-          description: "hotel manager not found"
+          description: "review not found"
+    post:
+      tags:
+      - "review"
+      summary: "Create a review for a hotel"
+      security:
+      - Bearer: []
+      parameters:
+      - in: body
+        name: review
+        description: Omit review_id
+        required: true
+        schema:
+          $ref: "#/definitions/review"
+      responses:
+        200:
+          description: "sucessful operation"
+    put:
+      tags:
+      - "review"
+      summary: "Edit a review of a hotel"
+      security:
+      - Bearer: []
+      parameters:
+      - in: body
+        name: review
+        description: Omit review_id
+        required: true
+        schema:
+          $ref: "#/definitions/review"
+      responses:
+        200:
+          description: "sucessful operation"
+        404:
+          description: "review not found"
+    delete:
+      tags:
+      - "review"
+      summary: "Delete a review"
+      security:
+      - Bearer: []
+      parameters:
+      - name: review_id
+        in: "query"
+        description: "ID of the review"
+        required: true
+        type: integer
+      responses:
+        200:
+          description: "sucessful operation"
+        404:
+          description: "review not found"
+  /review/of_user:
+    get:
+      tags:
+      - "review"
+      summary: "Find all reviews written by a user"
+      parameters:
+      - name: user_id
+        in: "query"
+        description: "ID of the user"
+        required: true
+        type: integer
+      produces:
+        - 'application/json'
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/review'
+  /review/of_hotel:
+    get:
+      tags:
+      - "review"
+      summary: "Find all reviews written to a hotel"
+      parameters:
+      - name: hotel_id
+        in: "query"
+        description: "ID of the hotel"
+        required: true
+        type: integer
+      produces:
+        - 'application/json'
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/review'
+  /reservation:
+    get:
+      tags:
+      - "reservation"
+      summary: "Find a user's reservations"
+      security:
+      - Bearer: []
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: reservations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/reservation'
+    post:
+      tags:
+      - "reservation"
+      summary: "Reserve hotel rooms"
+      description: "Omit reservation_id"
+      security:
+      - Bearer: []
+      parameters:
+      - in: body
+        name: reservation
+        description: Omit reservation_id
+        required: true
+        schema:
+          $ref: "#/definitions/reservation"
+      responses:
+        200:
+          description: successful operation
+    delete:
+      tags:
+      - "reservation"
+      summary: "Delete a reservation"
+      security:
+      - Bearer: []
+      parameters:
+      - name: reservation_id
+        in: "query"
+        description: "ID of the reservation"
+        required: true
+        type: integer
+      produces:
+        - 'application/json'
+      responses:
+        200:
+          description: "successful operation"
+  /reservation/of_hotel:
+    get:
+      tags:
+      - "reservation"
+      summary: "Find all reservations of a hotel"
+      security:
+      - Bearer: []
+      parameters:
+      - name: hotel_id
+        in: "query"
+        description: "ID of the hotel"
+        required: true
+        type: integer
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: reservations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/reservation'
+  /request:
+    get:
+      tags:
+      - "request"
+      summary: "Check if the user has already sent a request to manage a hotel with hotel_id"
+      description: "If hotel_id is not supplied, return the requests sent to the hotel which the user identified by the token is managing."
+      security:
+      - Bearer: []
+      parameters:
+      - name: hotel_id
+        in: "query"
+        description: "ID of the hotel"
+        required: false
+        type: integer
+      responses:
+        200:
+          description: reservations
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/request'
+        404:
+          description: No request has been made.
+    post:
+      tags:
+      - "request"
+      summary: "Create a new request to manage a hotel"
+      security:
+      - Bearer: []
+      parameters:
+      - in: body
+        name: request
+        description: "Omit request_id and user_id"
+        required: true
+        schema:
+          $ref: '#/definitions/request'
+      responses:
+        200:
+          description: seccessful operation
+    delete:
+      tags:
+      - "request"
+      summary: "Cancel a request to manage a hotel"
+      security:
+      - Bearer: []
+      parameters:
+      - name: request_id
+        in: "query"
+        description: "ID of the request"
+        required: true
+        type: integer
+      responses:
+        200:
+          description: successful operation
+        404:
+          description: No request found
+definitions:
+  user:
+    properties:
+      user_id:
+        type: integer
+      user_type:
+        type: string
+      username:
+        type: string
+      password:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      gender:
+        type: string
+      date_of_birth:
+        type: string
+      email:
+        type: string
+      phone_num:
+        type: string
+      img:
+        type: string
+      token:
+        type: string
+  review:
+    properties:
+      review_id:
+        type: integer
+      hotel_id:
+        type: integer
+      user_id:
+        type: integer
+      title:
+        type: string
+      comment:
+        type: string
+      rating:
+        type: integer
+      date:
+        type: string
+  hotel:
+    properties:
+      hotel_id:
+        type: integer
+      name:
+        type: string
+      city:
+        type: string
+      address:
+        type: string
+      desc:
+        type: string
+      imgs:
+        type: array
+        items:
+          type: string
+      managers:
+        type: array
+        items:
+          $ref: '#/definitions/user'
+      reviews:
+        type: array
+        items:
+          $ref: '#/definitions/review'
+  hotel_manager:
+    properties:
+      hotel_id:
+        type: integer
+      user_id:
+        type: integer
+  hotel_room:
+    properties:
+      hotel_id:
+        type: integer
+      room_id:
+        type: integer
+      name:
+        type: string
+      num_bed:
+        type: integer
+      max_person:
+        type: integer
+      price:
+        type: number
+      total_room:
+        type: integer
+      amenities:
+        type: array
+        items:
+          type: integer
+      imgs:
+        type: array
+        items:
+          type: string
+  reservation:
+    properties:
+      reservation_id:
+        type: integer
+      user_id:
+        type: integer
+      hotel_id:
+        type: integer
+      room_id:
+        type: integer
+      num:
+        type: integer
+      checkin:
+        type: string
+      checkout:
+        type: string
+  request:
+    properties:
+      request_id:
+        type: integer
+      user_id:
+        type: integer
+      hotel_id:
+        type: integer
