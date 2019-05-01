@@ -102,6 +102,7 @@ export class reviewService {
       }
     })
       .then(res => {
+        console.log(res.data)
         return res.data;
       })
       .catch(err => {

@@ -434,7 +434,7 @@ export default class CustomNavBar extends Component {
               !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
                 <Row noGutters>
                   <Col>
-                    <Form inline onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                    <Form onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
                       <InputGroup>
                         <Form.Control
                           className="border-dark"
@@ -474,7 +474,7 @@ export default class CustomNavBar extends Component {
                     this.props.mode === "view" ?
                       <>
                         <Col>
-                          <Form inline onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                          <Form onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
                             <InputGroup>
                               <Form.Control
                                 className="border-dark"
@@ -671,12 +671,14 @@ export default class CustomNavBar extends Component {
               !this.state.currentUser || this.state.currentUser.user_type === "traveler" ?
                 <>
                   <Col xs={7}>
-                    <Form onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}>
+                    <Form onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                      {/* <Form onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}> */}
                       <InputGroup>
                         <Form.Control
                           className="border-dark"
                           type="search"
-                          onChange={(e) => { this.state.search.hotel_name = e.currentTarget.value; this.changeFilter(); }}
+                          onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
+                          // onChange={(e) => { this.state.search.hotel_name = e.currentTarget.value; this.changeFilter(); }}
                           placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                           defaultValue={this.state.search.hotel_name}
                           autoFocus />
@@ -716,12 +718,14 @@ export default class CustomNavBar extends Component {
                 </>
                 :
                 <Col md={11} lg={9} xl={7}>
-                  <Form onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}>
+                  <Form onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                    {/* <Form onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}> */}
                     <InputGroup>
                       <Form.Control
                         className="border-dark"
                         type="search"
-                        onChange={(e) => { this.state.search.hotel_name = e.currentTarget.value; this.changeFilter(); }}
+                        onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
+                        // onChange={(e) => { this.state.search.hotel_name = e.currentTarget.value; this.changeFilter(); }}
                         placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                         defaultValue={this.state.search.hotel_name}
                         autoFocus />
@@ -736,12 +740,14 @@ export default class CustomNavBar extends Component {
           <div className="text-right d-md-none">
             <Row noGutters>
               <Col>
-                <Form inline onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}>
+                <Form onSubmit={(e) => { e.preventDefault(); window.location.href = this.getSearchLink(); }}>
+                  {/* <Form onSubmit={(e) => { e.preventDefault(); this.changeFilter(); }}> */}
                   <InputGroup>
                     <Form.Control
                       className="border-dark"
                       type="search"
-                      onChange={(e) => { this.state.search.hotel_name = e.currentTarget.value; this.changeFilter(); }}
+                      onChange={(e) => this.setState({ search: { ...this.state.search, hotel_name: e.currentTarget.value } })}
+                      // onChange={(e) => { this.state.search.hotel_name = e.currentTarget.value; this.changeFilter(); }}
                       placeholder={!this.state.currentUser || this.state.currentUser.user_type === "traveler" ? "Hotel or Destination" : "Find hotels"}
                       defaultValue={this.state.search.hotel_name}
                       autoFocus />

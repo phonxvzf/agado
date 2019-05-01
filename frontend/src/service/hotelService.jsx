@@ -13,6 +13,21 @@ export class hotelService {
         imgs: room.imgs.map(img => img ? baseImgPath + img : img)
       };
     });
+    hotel.managers_info = hotel.managers_info.map(manager => {
+      return {
+        ...manager,
+        img: manager.img ? baseImgPath + manager.img : manager.img
+      };
+    });
+    hotel.reviews = hotel.reviews.map(review => {
+      return {
+        ...review,
+        user: !review.user ? undefined : {
+          ...review.user,
+          img: review.user.img ? baseImgPath + review.user.img : review.user.img
+        }
+      };
+    });
     hotel.rating = reviews.length > 0 ? (reviews.map(review => review.rating).reduce((a, b) => a + b, 0)) / reviews.length : 0;
     hotel.total_review = reviews.length;
     hotel.num_rating5 = (reviews.filter(review => review.rating === 5)).length;
