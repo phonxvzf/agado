@@ -49,7 +49,7 @@ const ctrlSearch = {
     const allReservations = await reservation.getByHotelIds(allHotelIds);
 
     // Merge with hotel_room
-    const hotelRooms = await hotelRoomRepo.getByHotelIds(allHotelIds);
+    let hotelRooms = await hotelRoomRepo.getByHotelIds(allHotelIds);
     hotelRooms.sort(compare);
 
     let iHotelRooms = 0;
@@ -138,9 +138,11 @@ const ctrlSearch = {
       hotelRoomImageRepo.getByHotelIds(availableHotelIds),
     ]);
 
+    hotelRooms = await hotelRoomRepo.getByHotelIds(availableHotelIds);
+
     hotelImgs.sort(compare);
     hotelManagers.sort(compare);
-    // hotelRooms.sort(compare);
+    hotelRooms.sort(compare);
     hotelReviews.sort(compare);
 
     let iHotelImgs = 0;
